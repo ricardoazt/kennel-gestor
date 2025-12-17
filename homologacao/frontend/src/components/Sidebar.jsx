@@ -26,7 +26,7 @@ const Sidebar = () => {
 			]
 		},
 		{ name: 'Vendas', icon: 'shopping_cart', path: '/vendas' },
-		{ name: 'Cães', icon: 'pets', path: '/caes' },
+		{ name: 'Plantel', icon: 'pets', path: '/caes' },
 		{ name: 'Ninhadas', icon: 'grid_view', path: '/ninhadas' },
 		{ name: 'Financeiro', icon: 'payments', path: '/financeiro' },
 	];
@@ -40,8 +40,8 @@ const Sidebar = () => {
 							<button
 								onClick={() => toggleExpand(item.name)}
 								className={`w-full flex items-center justify-between gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${location.pathname.startsWith(item.path)
-										? 'bg-blue-50 text-primary'
-										: 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+									? 'bg-blue-50 text-primary'
+									: 'text-gray-700 hover:bg-gray-50 hover:text-primary'
 									}`}
 								style={{
 									display: 'flex',
