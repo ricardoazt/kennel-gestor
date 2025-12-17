@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kennel Gestor - Perfil da Ninhada</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101a22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for better look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8; 
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111518] dark:text-white overflow-hidden">
+<div class="flex h-screen w-full overflow-hidden">
+<!-- Sidebar -->
+<aside class="w-72 bg-white dark:bg-[#1A2633] border-r border-[#e5e7eb] dark:border-[#2A3B4D] flex flex-col shrink-0 transition-all z-20">
+<div class="p-6 pb-2">
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat bg-cover rounded-xl size-10 shadow-sm" data-alt="Kennel Gestor Logo showing a stylized dog paw" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDAsYH0HzwgpDlpQ3qDQwi823Fp7ER_t2Ld0vWFBB4M4WIZ-E0E-TeL9pkbva39qfgE_argf8edra78hkusa9NMmgefEcjPGpDhfqO_0NEbnLxH8T2CfK8U9Q0V8UUxZoV0M0wzawf57JAZBTdf1ptBMf6rUlmLmdmIERemN-Ch-zdvSIh7nTQi6FtB2b8f__ZUglWTwQKlpxkPdQ83HHM2hWTeVMCeo619eHHLCGey5oMYeYMg-RhyyZEIdJSh6nDWb_4ljqz27w3R");'></div>
+<div class="flex flex-col">
+<h1 class="text-[#111518] dark:text-white text-lg font-bold leading-tight">Kennel Gestor</h1>
+<p class="text-[#617989] dark:text-gray-400 text-xs font-normal">Gerenciamento Pro</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-[#2A3B4D] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#617989] dark:text-gray-400 group-hover:text-primary transition-colors">dashboard</span>
+<p class="text-[#111518] dark:text-gray-200 text-sm font-medium">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-[#2A3B4D] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#617989] dark:text-gray-400 group-hover:text-primary transition-colors">pets</span>
+<p class="text-[#111518] dark:text-gray-200 text-sm font-medium">Cães</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary" href="#">
+<span class="material-symbols-filled text-primary">grid_view</span>
+<p class="text-primary text-sm font-bold">Ninhadas</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-[#2A3B4D] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#617989] dark:text-gray-400 group-hover:text-primary transition-colors">attach_money</span>
+<p class="text-[#111518] dark:text-gray-200 text-sm font-medium">Finanças</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-[#2A3B4D] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#617989] dark:text-gray-400 group-hover:text-primary transition-colors">settings</span>
+<p class="text-[#111518] dark:text-gray-200 text-sm font-medium">Configurações</p>
+</a>
+</nav>
+<div class="p-4 border-t border-[#e5e7eb] dark:border-[#2A3B4D]">
+<div class="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#2A3B4D] rounded-lg transition-colors">
+<div class="size-8 rounded-full bg-gray-200 bg-center bg-cover" data-alt="User profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAjwprCGGTQy9rnlAMLHRLbWd2sZVKzQofJqbGn6sQOJOWzEXLC6fyIlFfX3TNWr8UfMTJ-4UNxk4Vv1N2a0_fPTR1Rxb4MmVxSGgIFIeh-DN7pCjyoslYHn4pvMG6HzsvfyigDVa3adFIgySQzCClttWEY60WAxVNUweITLWnIYHAcDj-pehzcxZYByIfohEqx6ElSlmyu3w7RcQm8V8rSHFSLHkng5tr7YHS7IVPUd7KooSaH4sgZfqUE8m0IebbSzzrovS8PygY6");'></div>
+<div class="flex flex-col">
+<p class="text-sm font-medium text-[#111518] dark:text-white">Admin User</p>
+<p class="text-xs text-[#617989] dark:text-gray-400">Canil Golden Star</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark relative">
+<div class="max-w-[1280px] mx-auto p-6 md:p-8 flex flex-col gap-6">
+<!-- Breadcrumbs -->
+<div class="flex flex-wrap gap-2 text-sm">
+<a class="text-[#617989] dark:text-gray-400 font-medium hover:text-primary transition-colors" href="#">Home</a>
+<span class="text-[#617989] dark:text-gray-500">/</span>
+<a class="text-[#617989] dark:text-gray-400 font-medium hover:text-primary transition-colors" href="#">Ninhadas</a>
+<span class="text-[#617989] dark:text-gray-500">/</span>
+<span class="text-[#111518] dark:text-white font-medium">Detalhes #B-2023</span>
+</div>
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-3">
+<h1 class="text-[#111518] dark:text-white text-3xl font-black tracking-tight">Ninhada #B-2023</h1>
+<span class="px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-wider">Ativa</span>
+</div>
+<p class="text-[#617989] dark:text-gray-400 text-base">Golden Retrievers • Gerenciamento completo do nascimento à entrega</p>
+</div>
+<button class="flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-white dark:bg-[#1A2633] border border-gray-200 dark:border-gray-700 text-[#111518] dark:text-white hover:bg-gray-50 dark:hover:bg-[#2A3B4D] transition-all text-sm font-bold shadow-sm">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+<span>Editar Ninhada</span>
+</button>
+</div>
+<!-- Vitals Stats -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+<div class="flex flex-col gap-1 p-4 bg-white dark:bg-[#1A2633] rounded-xl border border-[#e5e7eb] dark:border-[#2A3B4D] shadow-sm">
+<div class="flex items-center gap-2 text-[#617989] dark:text-gray-400">
+<span class="material-symbols-outlined text-[20px]">female</span>
+<span class="text-sm font-medium">Mãe</span>
+</div>
+<p class="text-[#111518] dark:text-white text-lg font-bold truncate" title="Luna (GR-01)">Luna (GR-01)</p>
+</div>
+<div class="flex flex-col gap-1 p-4 bg-white dark:bg-[#1A2633] rounded-xl border border-[#e5e7eb] dark:border-[#2A3B4D] shadow-sm">
+<div class="flex items-center gap-2 text-[#617989] dark:text-gray-400">
+<span class="material-symbols-outlined text-[20px]">male</span>
+<span class="text-sm font-medium">Pai</span>
+</div>
+<p class="text-[#111518] dark:text-white text-lg font-bold truncate" title="Thor (GR-05)">Thor (GR-05)</p>
+</div>
+<div class="flex flex-col gap-1 p-4 bg-white dark:bg-[#1A2633] rounded-xl border border-[#e5e7eb] dark:border-[#2A3B4D] shadow-sm">
+<div class="flex items-center gap-2 text-[#617989] dark:text-gray-400">
+<span class="material-symbols-outlined text-[20px]">cake</span>
+<span class="text-sm font-medium">Nascimento</span>
+</div>
+<p class="text-[#111518] dark:text-white text-lg font-bold">12/10/2023</p>
+</div>
+<div class="flex flex-col gap-1 p-4 bg-white dark:bg-[#1A2633] rounded-xl border border-[#e5e7eb] dark:border-[#2A3B4D] shadow-sm">
+<div class="flex items-center gap-2 text-[#617989] dark:text-gray-400">
+<span class="material-symbols-outlined text-[20px]">pets</span>
+<span class="text-sm font-medium">Total Filhotes</span>
+</div>
+<p class="text-[#111518] dark:text-white text-lg font-bold">8 <span class="text-xs font-normal text-gray-500">(4M / 4F)</span></p>
+</div>
+<div class="flex flex-col gap-1 p-4 bg-primary/5 dark:bg-primary/20 rounded-xl border border-primary/20 dark:border-primary/30 shadow-sm relative overflow-hidden">
+<div class="absolute right-0 top-0 p-2 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-[64px] text-primary">schedule</span>
+</div>
+<div class="flex items-center gap-2 text-primary dark:text-blue-300">
+<span class="material-symbols-outlined text-[20px]">event_available</span>
+<span class="text-sm font-bold">Previsão Entrega</span>
+</div>
+<p class="text-primary dark:text-blue-200 text-lg font-bold">12/12/2023</p>
+</div>
+</div>
+<!-- Individual Puppies Section -->
+<div class="flex flex-col gap-4 bg-white dark:bg-[#1A2633] rounded-xl border border-[#e5e7eb] dark:border-[#2A3B4D] shadow-sm overflow-hidden">
+<div class="flex flex-wrap items-center justify-between gap-4 p-5 border-b border-[#e5e7eb] dark:border-[#2A3B4D]">
+<div>
+<h2 class="text-[#111518] dark:text-white text-lg font-bold leading-tight">Filhotes Individuais</h2>
+<p class="text-[#617989] dark:text-gray-400 text-sm mt-1">Gerencie os dados individuais, reservas e status de cada filhote.</p>
+</div>
+<button class="flex items-center gap-2 rounded-lg bg-primary hover:bg-blue-600 text-white px-4 py-2 text-sm font-bold transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span>Lançar Dados Individuais</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm whitespace-nowrap">
+<thead class="bg-gray-50 dark:bg-[#22303F] text-[#617989] dark:text-gray-400 border-b border-[#e5e7eb] dark:border-[#2A3B4D]">
+<tr>
+<th class="px-6 py-3 font-medium">ID / Nome Provisório</th>
+<th class="px-6 py-3 font-medium">Sexo</th>
+<th class="px-6 py-3 font-medium">Cor / Marcação</th>
+<th class="px-6 py-3 font-medium">Peso Nasc.</th>
+<th class="px-6 py-3 font-medium">Status de Venda</th>
+<th class="px-6 py-3 font-medium">Reserva</th>
+<th class="px-6 py-3 font-medium text-right">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#e5e7eb] dark:divide-[#2A3B4D]">
+<!-- Puppy 1 -->
+<tr class="group hover:bg-gray-50 dark:hover:bg-[#22303F] transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-gray-200 bg-center bg-cover" data-alt="Puppy photo thumbnail" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCXFWaBp6zXV6pcnBrjcfXKXTuvA1wwQXzNEgL6kkZsig1W6_qj7XJeYGsqn09YHFCmVQcKB6YqXd4fWu0Hqd2UpXNQCEjWIPieQTMLcyYSCN35M0R_2FyfQLfsIsAHLl67ExfkjnD6o0_D-eh4yT1jxvH26tlnnPOXTY78v8B-hO-yBbzb6HggNd7fagH4kbOsGENogjRnSqcszSnkYEls6DDaUp0cAuod5WWT_aO1hBGgN8caE-beNuw4UulSemORdILaBt35onyB");'></div>
+<div class="flex flex-col">
+<span class="font-bold text-[#111518] dark:text-white">Filhote #01 (Vermelho)</span>
+<span class="text-xs text-[#617989] dark:text-gray-500 font-mono">MC: 981098102</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1 px-2 py-1 rounded-md bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 text-xs font-bold w-fit">
+<span class="material-symbols-outlined text-[16px]">male</span> Macho
+                                        </span>
+</td>
+<td class="px-6 py-4 text-[#111518] dark:text-gray-200">Dourado Escuro</td>
+<td class="px-6 py-4 text-[#111518] dark:text-gray-200 font-mono">450g</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 text-xs font-bold border border-amber-200 dark:border-amber-800">Reservado</span>
+</td>
+<td class="px-6 py-4">
+<a class="text-primary hover:text-blue-600 hover:underline font-medium text-sm flex items-center gap-1" href="#">
+                                            Ver Reserva <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-gray-400 hover:text-primary transition-colors p-1"><span class="material-symbols-outlined">edit</span></button>
+</td>
+</tr>
+<!-- Puppy 2 -->
+<tr class="group hover:bg-gray-50 dark:hover:bg-[#22303F] transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-gray-200 bg-center bg-cover" data-alt="Puppy photo thumbnail" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAiSILfB3vla9-F44Uegzal4FfQu3gToI1KqiguYcGOn8EgW6-Kgo69HpKqsrTxXDEbpMPVwA4fMSzRHQPgIRHX7eWMog4kThtef_VykVGi6rI81VS4rDSKmCRxvIy4Y_mPLkalFGfsfOh7_ttyHM73ZeOqiHtkzzOyOwXsrt35RirZQ8jerUi5DNZqD6bgQBOoqcw-mLjMXClOEBZt9Naw2T1p5tZRQ0c7IcFG4VvqdJoe_tLuJ7Dhl9zLrMJ8rvjWmGLh1lIlNR2_");'></div>
+<div class="flex flex-col">
+<span class="font-bold text-[#111518] dark:text-white">Filhote #02 (Azul)</span>
+<span class="text-xs text-[#617989] dark:text-gray-500 font-mono">MC: 981098103</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1 px-2 py-1 rounded-md bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-300 text-xs font-bold w-fit">
+<span class="material-symbols-outlined text-[16px]">female</span> Fêmea
+                                        </span>
+</td>
+<td class="px-6 py-4 text-[#111518] dark:text-gray-200">Creme</td>
+<td class="px-6 py-4 text-[#111518] dark:text-gray-200 font-mono">420g</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-xs font-bold border border-green-200 dark:border-green-800">Disponível</span>
+</td>
+<td class="px-6 py-4">
+<span class="text-gray-400 text-xs">—</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-gray-400 hover:text-primary transition-colors p-1"><span class="material-symbols-outlined">edit</span></button>
+</td>
+</tr>
+<!-- Puppy 3 -->
+<tr class="group hover:bg-gray-50 dark:hover:bg-[#22303F] transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-gray-200 bg-center bg-cover" data-alt="Puppy photo thumbnail" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDde4HtvH2UjKTWSwM_O5cbLRxRrlZvTOydxF6ZchkiCFb9_IfoeZ2iMAgQnh6U9LS2rtoEqHMaOkq9ANkAmMVTcigbaamkOnCwf0wUs8ij-INDMqDjF6UuoTbzvZvRUFP8tbC6WXQnb-94vFzpQ-FDWKgy8qdm477Fwsd23GplZ7pcootQVnRGYR-4FADfxb5wDiq-rntDRXQm8UkpnPLNrnMWQe52JI2fHgIQC4YbhKCVZlQ6SpU15IF_AUWG55OWyv6ZStChImuU");'></div>
+<div class="flex flex-col">
+<span class="font-bold text-[#111518] dark:text-white">Filhote #03 (Verde)</span>
+<span class="text-xs text-[#617989] dark:text-gray-500 font-mono">MC: 981098104</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1 px-2 py-1 rounded-md bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 text-xs font-bold w-fit">
+<span class="material-symbols-outlined text-[16px]">male</span> Macho
+                                        </span>
+</td>
+<td class="px-6 py-4 text-[#111518] dark:text-gray-200">Dourado</td>
+<td class="px-6 py-4 text-[#111518] dark:text-gray-200 font-mono">480g</td>
+<td class="px-6 py-4">
+<span class="px-2.5 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200 text-xs font-bold border border-indigo-200 dark:border-indigo-800">Em Observação</span>
+</td>
+<td class="px-6 py-4">
+<span class="text-gray-400 text-xs">—</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-gray-400 hover:text-primary transition-colors p-1"><span class="material-symbols-outlined">edit</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="bg-gray-50 dark:bg-[#22303F] p-3 text-center border-t border-[#e5e7eb] dark:border-[#2A3B4D]">
+<button class="text-sm font-medium text-[#617989] hover:text-primary transition-colors">Ver todos os 8 filhotes</button>
+</div>
+</div>
+<!-- Bottom Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Left Column: Health & Growth (2/3 width) -->
+<div class="lg:col-span-2 flex flex-col gap-6">
+<!-- Weight Chart Card -->
+<div class="bg-white dark:bg-[#1A2633] rounded-xl border border-[#e5e7eb] dark:border-[#2A3B4D] shadow-sm p-5">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h3 class="text-[#111518] dark:text-white text-lg font-bold">Controle de Peso Semanal</h3>
+<p class="text-sm text-[#617989] dark:text-gray-400">Média da ninhada vs. crescimento ideal.</p>
+</div>
+<select class="bg-transparent border border-gray-200 dark:border-gray-700 rounded-lg text-sm px-2 py-1 focus:ring-primary focus:border-primary dark:text-gray-300">
+<option>Últimas 4 Semanas</option>
+<option>Desde o Nascimento</option>
+</select>
+</div>
+<!-- Visual Chart Mockup (CSS only) -->
+<div class="h-64 w-full flex items-end justify-between gap-2 px-2 pb-4 border-b border-gray-200 dark:border-gray-700 relative">
+<!-- Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
+<div class="border-t border-gray-100 dark:border-gray-800 w-full h-0"></div>
+<div class="border-t border-gray-100 dark:border-gray-800 w-full h-0"></div>
+<div class="border-t border-gray-100 dark:border-gray-800 w-full h-0"></div>
+<div class="border-t border-gray-100 dark:border-gray-800 w-full h-0"></div>
+<div class="border-t border-gray-100 dark:border-gray-800 w-full h-0"></div>
+</div>
+<!-- Bars -->
+<div class="w-full flex flex-col items-center gap-2 group z-10">
+<div class="w-full max-w-[40px] bg-blue-100 dark:bg-blue-900 rounded-t-sm h-[20%] relative group-hover:bg-blue-200 transition-all">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">450g</div>
+</div>
+<span class="text-xs text-gray-400">Nasc.</span>
+</div>
+<div class="w-full flex flex-col items-center gap-2 group z-10">
+<div class="w-full max-w-[40px] bg-blue-200 dark:bg-blue-800 rounded-t-sm h-[35%] relative group-hover:bg-blue-300 transition-all">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">800g</div>
+</div>
+<span class="text-xs text-gray-400">Sem 1</span>
+</div>
+<div class="w-full flex flex-col items-center gap-2 group z-10">
+<div class="w-full max-w-[40px] bg-blue-300 dark:bg-blue-700 rounded-t-sm h-[50%] relative group-hover:bg-blue-400 transition-all">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">1.2kg</div>
+</div>
+<span class="text-xs text-gray-400">Sem 2</span>
+</div>
+<div class="w-full flex flex-col items-center gap-2 group z-10">
+<div class="w-full max-w-[40px] bg-primary dark:bg-primary rounded-t-sm h-[75%] relative hover:brightness-110 transition-all shadow-lg shadow-blue-200 dark:shadow-none">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-primary opacity-100 transition-opacity">1.9kg</div>
+</div>
+<span class="text-xs font-bold text-primary">Sem 3</span>
+</div>
+<div class="w-full flex flex-col items-center gap-2 group z-10 opacity-50 border border-dashed border-gray-300 rounded-t-sm bg-transparent">
+<div class="w-full max-w-[40px] h-[90%]"></div>
+<span class="text-xs text-gray-400">Sem 4</span>
+</div>
+</div>
+</div>
+<!-- Health Protocol -->
+<div class="bg-white dark:bg-[#1A2633] rounded-xl border border-[#e5e7eb] dark:border-[#2A3B4D] shadow-sm p-5">
+<h3 class="text-[#111518] dark:text-white text-lg font-bold mb-4">Protocolo de Saúde</h3>
+<div class="relative pl-4 space-y-6">
+<!-- Line -->
+<div class="absolute left-[23px] top-2 bottom-2 w-0.5 bg-gray-100 dark:bg-gray-700"></div>
+<!-- Past Item -->
+<div class="relative flex items-start gap-4 opacity-60">
+<div class="z-10 mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-green-500 ring-4 ring-white dark:ring-[#1A2633]">
+<span class="material-symbols-outlined text-white text-[12px] font-bold">check</span>
+</div>
+<div class="flex-1 bg-gray-50 dark:bg-[#22303F] p-3 rounded-lg border border-gray-100 dark:border-gray-700">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-bold text-sm text-[#111518] dark:text-white">Vermífugo (1ª Dose)</p>
+<p class="text-xs text-gray-500">Drontal Puppy</p>
+</div>
+<span class="text-xs font-mono text-gray-400">25/10/2023</span>
+</div>
+</div>
+</div>
+<!-- Next Action (Highlighted) -->
+<div class="relative flex items-start gap-4">
+<div class="z-10 mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary ring-4 ring-primary/20">
+<div class="h-2 w-2 rounded-full bg-white"></div>
+</div>
+<div class="flex-1 bg-white dark:bg-[#1A2633] p-4 rounded-lg border border-primary/30 shadow-sm ring-1 ring-primary/10">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<p class="font-bold text-sm text-primary">Vacina V10 (1ª Dose)</p>
+<span class="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-300 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase">Urgente</span>
+</div>
+<p class="text-xs text-gray-500 dark:text-gray-400">Aplicar em todos os filhotes.</p>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-sm font-bold text-[#111518] dark:text-white">25/11/2023</span>
+<span class="text-xs text-gray-400">em 3 dias</span>
+</div>
+</div>
+<button class="mt-3 w-full py-1.5 text-xs font-bold text-primary border border-primary/20 rounded hover:bg-primary/5 transition-colors">
+                                            Marcar como Concluído
+                                        </button>
+</div>
+</div>
+<!-- Future Item -->
+<div class="relative flex items-start gap-4 opacity-50">
+<div class="z-10 mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 ring-4 ring-white dark:ring-[#1A2633]">
+</div>
+<div class="flex-1 bg-gray-50 dark:bg-[#22303F] p-3 rounded-lg border border-gray-100 dark:border-gray-700">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-bold text-sm text-[#111518] dark:text-white">Vermífugo (2ª Dose)</p>
+<p class="text-xs text-gray-500">Drontal Puppy</p>
+</div>
+<span class="text-xs font-mono text-gray-400">10/12/2023</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Logistics (1/3 width) -->
+<div class="flex flex-col gap-6">
+<!-- Logistics Card -->
+<div class="bg-white dark:bg-[#1A2633] rounded-xl border border-[#e5e7eb] dark:border-[#2A3B4D] shadow-sm flex flex-col h-full">
+<div class="p-5 border-b border-[#e5e7eb] dark:border-[#2A3B4D]">
+<h3 class="text-[#111518] dark:text-white text-lg font-bold">Logística de Entrega</h3>
+<p class="text-sm text-[#617989] dark:text-gray-400 mt-1">Checklist obrigatório para liberação.</p>
+</div>
+<div class="p-5 flex flex-col gap-5 flex-1">
+<!-- Checklist -->
+<div class="flex flex-col gap-3">
+<label class="flex items-start gap-3 cursor-pointer group">
+<input checked="" class="mt-1 rounded border-gray-300 text-primary focus:ring-primary dark:bg-gray-700 dark:border-gray-600" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-medium text-gray-900 dark:text-gray-200 group-hover:text-primary transition-colors line-through decoration-gray-400 text-gray-400">Microchip Implantado</span>
+<span class="text-xs text-gray-400">Todos os filhotes identificados.</span>
+</div>
+</label>
+<label class="flex items-start gap-3 cursor-pointer group">
+<input checked="" class="mt-1 rounded border-gray-300 text-primary focus:ring-primary dark:bg-gray-700 dark:border-gray-600" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-medium text-gray-900 dark:text-gray-200 group-hover:text-primary transition-colors line-through decoration-gray-400 text-gray-400">Pedigree Solicitado</span>
+<span class="text-xs text-gray-400">Protocolo CBKC #99281.</span>
+</div>
+</label>
+<label class="flex items-start gap-3 cursor-pointer group">
+<input class="mt-1 rounded border-gray-300 text-primary focus:ring-primary dark:bg-gray-700 dark:border-gray-600" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-medium text-gray-900 dark:text-gray-200 group-hover:text-primary transition-colors">Contratos Assinados</span>
+<span class="text-xs text-gray-500">Pendente para 2 filhotes.</span>
+</div>
+</label>
+<label class="flex items-start gap-3 cursor-pointer group">
+<input class="mt-1 rounded border-gray-300 text-primary focus:ring-primary dark:bg-gray-700 dark:border-gray-600" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-medium text-gray-900 dark:text-gray-200 group-hover:text-primary transition-colors">Kit Filhote Separado</span>
+<span class="text-xs text-gray-500">Ração, Guia e Brinquedo.</span>
+</div>
+</label>
+</div>
+<hr class="border-[#e5e7eb] dark:border-[#2A3B4D]"/>
+<!-- Delivery Widget -->
+<div class="flex flex-col gap-4">
+<p class="text-sm font-bold text-[#111518] dark:text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">local_shipping</span> 
+                                        Agendamento de Retirada
+                                    </p>
+<div class="grid grid-cols-1 gap-3">
+<div>
+<label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Data de Início das Entregas</label>
+<input class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-[#22303F] text-sm focus:border-primary focus:ring-primary dark:text-white" type="date" value="2023-12-12"/>
+</div>
+<div>
+<label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Horário Preferencial</label>
+<div class="flex gap-2">
+<input class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-[#22303F] text-sm focus:border-primary focus:ring-primary dark:text-white" type="time" value="09:00"/>
+<span class="self-center text-gray-400">-</span>
+<input class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-[#22303F] text-sm focus:border-primary focus:ring-primary dark:text-white" type="time" value="18:00"/>
+</div>
+</div>
+</div>
+<button class="w-full mt-2 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-black py-2 text-sm font-bold hover:opacity-90 transition-opacity">
+                                        Salvar Planejamento
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Spacer -->
+<div class="h-10"></div>
+</div>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kennel Gestor - Protocolos de Saúde</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101a22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111518]">
+<div class="relative flex h-screen w-full flex-row overflow-hidden">
+<!-- Side Navigation -->
+<aside class="flex w-64 flex-col border-r border-[#dbe1e6] bg-white hidden md:flex shrink-0">
+<div class="flex h-full flex-col justify-between p-4">
+<div class="flex flex-col gap-4">
+<!-- User Profile / Brand -->
+<div class="flex gap-3 items-center mb-4 px-2">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 shrink-0 shadow-sm border border-gray-100" data-alt="Profile picture of the admin user" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC0kdGTKBROl960oGMLacPAcgdYa8mu6-uqYFx5KBLb4Rnov_t8dul2LhmJi4tp2pdQcKaxgHJAvKCYBX0ITBBIsMKxrjPES2C3fq8mKkirAH-AkRYopYBte6tHTF_vv6lgF-H_W1dyitLedgx0O7Cv6Mj-Vu9YjcR-te7SfO44YHkgdNra4fhuVuscbM27bJWLhdot3Hpy_qYMY1hGpBNkzvH27dN80eBtIpXk1RU1_acwUfBvlBVwQJZC3egQtfystsN5yhhAKZ-r");'></div>
+<div class="flex flex-col overflow-hidden">
+<h1 class="text-[#111518] text-base font-bold leading-normal truncate">Kennel Gestor</h1>
+<p class="text-[#617989] text-xs font-medium leading-normal">Admin</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f3f4] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#617989] group-hover:text-[#111518]">dashboard</span>
+<span class="text-[#111518] text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f3f4] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#617989] group-hover:text-[#111518]">pets</span>
+<span class="text-[#111518] text-sm font-medium">Cães</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f3f4] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#617989] group-hover:text-[#111518]">grid_view</span>
+<span class="text-[#111518] text-sm font-medium">Ninhadas</span>
+</a>
+<!-- Active Link -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 border-l-4 border-primary shadow-sm" href="#">
+<span class="material-symbols-outlined text-primary fill">medical_services</span>
+<span class="text-[#111518] text-sm font-bold">Saúde</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f3f4] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#617989] group-hover:text-[#111518]">payments</span>
+<span class="text-[#111518] text-sm font-medium">Financeiro</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f3f4] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#617989] group-hover:text-[#111518]">settings</span>
+<span class="text-[#111518] text-sm font-medium">Configurações</span>
+</a>
+</nav>
+</div>
+<div class="px-2">
+<button class="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-red-50 text-red-600 transition-colors">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-sm font-medium">Sair</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col h-full overflow-hidden bg-background-light">
+<div class="flex-1 overflow-y-auto">
+<div class="container mx-auto max-w-7xl p-4 md:p-6 lg:p-8 flex flex-col gap-6">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-xl border border-[#dbe1e6] shadow-sm">
+<div class="flex flex-col gap-1">
+<h1 class="text-[#111518] text-2xl md:text-3xl font-black leading-tight tracking-tight">Protocolos de Saúde Padrão</h1>
+<p class="text-[#617989] text-sm md:text-base font-normal">Gerencie e padronize os planos de cuidados e vacinação do canil.</p>
+</div>
+<button class="flex shrink-0 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-5 bg-primary hover:bg-primary/90 transition-colors text-white text-sm font-bold shadow-sm">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span>Novo Protocolo</span>
+</button>
+</div>
+<!-- Filter & Search Section -->
+<div class="flex flex-col sm:flex-row gap-4">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#617989]">search</span>
+<input class="w-full rounded-lg border border-[#dbe1e6] bg-white h-12 pl-12 pr-4 text-sm text-[#111518] placeholder:text-[#617989] focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm" placeholder="Buscar por nome do protocolo..."/>
+</div>
+<div class="relative w-full sm:w-64">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#617989]">filter_list</span>
+<select class="w-full appearance-none rounded-lg border border-[#dbe1e6] bg-white h-12 pl-12 pr-10 text-sm text-[#111518] focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm cursor-pointer">
+<option selected="" value="">Todos os Tipos</option>
+<option value="Vacina">Vacinação</option>
+<option value="Vermifugo">Vermifugação</option>
+<option value="Preventivo">Preventivo</option>
+<option value="Rotina">Rotina</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#617989] pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Table Section -->
+<div class="rounded-xl border border-[#dbe1e6] bg-white shadow-sm overflow-hidden flex flex-col">
+<div class="overflow-x-auto">
+<table class="w-full min-w-[800px] text-left border-collapse">
+<thead>
+<tr class="bg-gray-50/50 border-b border-[#dbe1e6]">
+<th class="px-6 py-4 text-xs font-semibold text-[#617989] uppercase tracking-wider">Nome do Protocolo</th>
+<th class="px-6 py-4 text-xs font-semibold text-[#617989] uppercase tracking-wider">Tipo</th>
+<th class="px-6 py-4 text-xs font-semibold text-[#617989] uppercase tracking-wider">Etapas</th>
+<th class="px-6 py-4 text-xs font-semibold text-[#617989] uppercase tracking-wider">Última Modificação</th>
+<th class="px-6 py-4 text-xs font-semibold text-[#617989] uppercase tracking-wider text-right">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#dbe1e6]">
+<!-- Row 1 -->
+<tr class="group hover:bg-gray-50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-[#111518] font-semibold text-sm">Vacinação de Ninhada – PA</span>
+<span class="text-[#617989] text-xs">Padrão Pastor Alemão</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                                                Vacinação
+                                            </span>
+</td>
+<td class="px-6 py-4 text-sm text-[#111518]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-[#617989]">format_list_numbered</span>
+                                                3 etapas
+                                            </div>
+</td>
+<td class="px-6 py-4 text-sm text-[#617989]">12/10/2023</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-2 text-[#617989] hover:text-primary hover:bg-blue-50 rounded-full transition-colors" title="Editar">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 text-[#617989] hover:text-primary hover:bg-blue-50 rounded-full transition-colors" title="Duplicar">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+</button>
+<button class="p-2 text-[#617989] hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Excluir">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="group hover:bg-gray-50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-[#111518] font-semibold text-sm">Vermifugação Quinzenal</span>
+<span class="text-[#617989] text-xs">Até 60 dias</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">
+                                                Vermifugação
+                                            </span>
+</td>
+<td class="px-6 py-4 text-sm text-[#111518]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-[#617989]">format_list_numbered</span>
+                                                4 etapas
+                                            </div>
+</td>
+<td class="px-6 py-4 text-sm text-[#617989]">10/09/2023</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-2 text-[#617989] hover:text-primary hover:bg-blue-50 rounded-full transition-colors" title="Editar">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 text-[#617989] hover:text-primary hover:bg-blue-50 rounded-full transition-colors" title="Duplicar">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+</button>
+<button class="p-2 text-[#617989] hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Excluir">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="group hover:bg-gray-50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-[#111518] font-semibold text-sm">Preventivo Giardia</span>
+<span class="text-[#617989] text-xs">Cães Adultos</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200">
+                                                Preventivo
+                                            </span>
+</td>
+<td class="px-6 py-4 text-sm text-[#111518]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-[#617989]">format_list_numbered</span>
+                                                2 etapas
+                                            </div>
+</td>
+<td class="px-6 py-4 text-sm text-[#617989]">05/09/2023</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-2 text-[#617989] hover:text-primary hover:bg-blue-50 rounded-full transition-colors" title="Editar">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 text-[#617989] hover:text-primary hover:bg-blue-50 rounded-full transition-colors" title="Duplicar">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+</button>
+<button class="p-2 text-[#617989] hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Excluir">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="group hover:bg-gray-50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex flex-col">
+<span class="text-[#111518] font-semibold text-sm">Check-up Anual Adultos</span>
+<span class="text-[#617989] text-xs">Geral</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                                Rotina
+                                            </span>
+</td>
+<td class="px-6 py-4 text-sm text-[#111518]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-[#617989]">format_list_numbered</span>
+                                                1 etapa
+                                            </div>
+</td>
+<td class="px-6 py-4 text-sm text-[#617989]">20/08/2023</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-2 text-[#617989] hover:text-primary hover:bg-blue-50 rounded-full transition-colors" title="Editar">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 text-[#617989] hover:text-primary hover:bg-blue-50 rounded-full transition-colors" title="Duplicar">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+</button>
+<button class="p-2 text-[#617989] hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" title="Excluir">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="bg-gray-50/50 px-6 py-4 border-t border-[#dbe1e6] flex items-center justify-between">
+<span class="text-sm text-[#617989]">Mostrando <span class="font-medium text-[#111518]">1-4</span> de <span class="font-medium text-[#111518]">12</span> protocolos</span>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 rounded border border-[#dbe1e6] bg-white text-sm text-[#617989] hover:bg-gray-50 hover:text-[#111518] disabled:opacity-50">Anterior</button>
+<button class="px-3 py-1.5 rounded border border-[#dbe1e6] bg-white text-sm text-[#617989] hover:bg-gray-50 hover:text-[#111518]">Próximo</button>
+</div>
+</div>
+</div>
+<!-- Quick Action / Helper Panel -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+<div class="bg-primary/5 rounded-xl border border-primary/20 p-6 flex flex-col justify-center items-start gap-3">
+<div class="flex items-center gap-2 text-primary font-bold text-lg">
+<span class="material-symbols-outlined">lightbulb</span>
+                                Dica
+                            </div>
+<p class="text-[#617989] text-sm leading-relaxed">
+                                Você pode criar protocolos com datas relativas ao nascimento (ex: "45 dias de vida"). O sistema calculará automaticamente as datas para cada ninhada cadastrada.
+                            </p>
+</div>
+<div class="bg-white rounded-xl border border-[#dbe1e6] p-6 flex items-center justify-between gap-4">
+<div class="flex flex-col gap-1">
+<h3 class="font-bold text-[#111518]">Precisa de ajuda?</h3>
+<p class="text-sm text-[#617989]">Consulte nossa base de conhecimento sobre saúde canina.</p>
+</div>
+<button class="text-primary hover:text-primary/80 font-medium text-sm flex items-center gap-1">
+                               Acessar Ajuda
+                               <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

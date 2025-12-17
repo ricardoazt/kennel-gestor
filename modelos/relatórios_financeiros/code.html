@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kennel Gestor - Relatórios Financeiros</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                        "primary-dark": "#0eb545",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102216",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1A2E22",
+                        "border-light": "#e5e7eb",
+                        "border-dark": "#2A4032",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased overflow-hidden selection:bg-primary/30">
+<div class="flex h-screen w-full">
+<!-- Side Navigation -->
+<aside class="flex w-64 flex-col border-r border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark transition-colors duration-300">
+<!-- Brand -->
+<div class="flex items-center gap-3 p-6">
+<div class="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+<img class="h-full w-full object-cover" data-alt="Close up of a cute beagle dog face" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMWv2VXAnKt4aZdLyzkFRdlAVrdjMarvU2qfIWsltJJPTN8buK18PgHUOKaxCm4tWDZrSrHKAoBOoPC1enE94C2ZZOOV8EFdnFPi7aMvUliMS6B3A94FvK-4eRImzFi0uyjgPFVsVdc9pOfvmgJMsvPIrX5FSywhTxofPLMtpkrn9NW05LjAY-lXKH5EYsZ1ty4wRO02pFVgBYMVmZY_tWXwi8gudlWE4lu9bGdbYCmRLsetYuURGfIAI0GXUdg-3cVv6hk8a9KdQE"/>
+</div>
+<div class="flex flex-col">
+<h1 class="text-base font-bold leading-none tracking-tight text-slate-900 dark:text-white">Kennel Gestor</h1>
+<p class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">Admin Panel</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-1 flex-col gap-1 px-3 py-4 overflow-y-auto no-scrollbar">
+<a class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" style="font-size: 24px;">home</span>
+                    Home
+                </a>
+<a class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" style="font-size: 24px;">pets</span>
+                    Cães
+                </a>
+<a class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" style="font-size: 24px;">diversity_2</span>
+                    Ninhadas
+                </a>
+<!-- Active Link -->
+<a class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-bold bg-primary/20 text-green-900 dark:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-green-700 dark:text-primary fill-1" style="font-size: 24px; font-variation-settings: 'FILL' 1;">payments</span>
+                    Financeiro
+                </a>
+<a class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" style="font-size: 24px;">inventory_2</span>
+                    Estoque
+                </a>
+<a class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" style="font-size: 24px;">settings</span>
+                    Configurações
+                </a>
+</nav>
+<!-- User Profile (Bottom) -->
+<div class="border-t border-border-light dark:border-border-dark p-4">
+<div class="flex items-center gap-3">
+<div class="h-9 w-9 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+<img class="h-full w-full object-cover" data-alt="Profile picture of the admin user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDjgO10TO_LRWEIn526MiCg4w5M1yD306nH5Ss64bD-2VwZ-iiq588_oll0AZwoNbBApUfvo5XFPgpiAorIoiyI9yQ3_Vm3Z7EZWnANr5O7vjDYexIEmHNgEtVYPj7vJnEoLA2OhJxTYJU2V3zdWvxgyY79Pxh1xy7ta_WDbSC40AjNRZ1opaijiaPWbmnYkvGq8EWe7XDqs2R76Kmt-i1GOIPXVpBd2trA6F-5a9M-k60cCpqJ2BKmIY50iF9K3FeboL7oUkG7y3f"/>
+</div>
+<div class="flex flex-col">
+<p class="text-sm font-semibold text-slate-900 dark:text-white">Carlos Silva</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Gerente</p>
+</div>
+<button class="ml-auto rounded-full p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600">
+<span class="material-symbols-outlined" style="font-size: 20px;">logout</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark transition-colors duration-300">
+<div class="mx-auto max-w-7xl px-8 py-8 flex flex-col gap-8">
+<!-- Page Header -->
+<header class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+<div class="flex flex-col gap-1">
+<h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white lg:text-4xl">Relatórios Financeiros</h1>
+<p class="text-base text-slate-500 dark:text-slate-400">Análise financeira e planejamento estratégico do canil.</p>
+</div>
+<div class="flex items-center gap-3">
+<!-- Date Range (Visual) -->
+<div class="hidden items-center gap-2 rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark px-3 py-2 sm:flex">
+<span class="material-symbols-outlined text-slate-400" style="font-size: 20px;">calendar_today</span>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-200">Jan 2024 - Jun 2024</span>
+<span class="material-symbols-outlined text-slate-400" style="font-size: 20px;">expand_more</span>
+</div>
+<button class="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-slate-900 transition-all hover:bg-primary-dark shadow-sm hover:shadow-md">
+<span class="material-symbols-outlined" style="font-size: 20px;">download</span>
+<span class="hidden sm:inline">Exportar Relatório</span>
+</button>
+</div>
+</header>
+<!-- KPI Stats -->
+<section class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+<!-- Stat 1 -->
+<div class="flex flex-col gap-1 rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark p-6 shadow-sm transition-all hover:shadow-md">
+<div class="flex items-center justify-between">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Receita Total</p>
+<span class="rounded-full bg-primary/20 p-1.5 text-green-700 dark:text-primary">
+<span class="material-symbols-outlined" style="font-size: 20px;">trending_up</span>
+</span>
+</div>
+<p class="mt-2 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">R$ 12.500,00</p>
+<div class="flex items-center gap-1">
+<span class="text-xs font-bold text-green-600 dark:text-primary">+15%</span>
+<span class="text-xs text-slate-400">vs mês anterior</span>
+</div>
+</div>
+<!-- Stat 2 -->
+<div class="flex flex-col gap-1 rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark p-6 shadow-sm transition-all hover:shadow-md">
+<div class="flex items-center justify-between">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Despesas Totais</p>
+<span class="rounded-full bg-red-100 dark:bg-red-900/30 p-1.5 text-red-600 dark:text-red-400">
+<span class="material-symbols-outlined" style="font-size: 20px;">trending_down</span>
+</span>
+</div>
+<p class="mt-2 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">R$ 4.200,00</p>
+<div class="flex items-center gap-1">
+<span class="text-xs font-bold text-red-600 dark:text-red-400">+5%</span>
+<span class="text-xs text-slate-400">vs mês anterior</span>
+</div>
+</div>
+<!-- Stat 3 -->
+<div class="flex flex-col gap-1 rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark p-6 shadow-sm transition-all hover:shadow-md">
+<div class="flex items-center justify-between">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Lucro Líquido</p>
+<span class="rounded-full bg-primary/20 p-1.5 text-green-700 dark:text-primary">
+<span class="material-symbols-outlined" style="font-size: 20px;">attach_money</span>
+</span>
+</div>
+<p class="mt-2 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">R$ 8.300,00</p>
+<div class="flex items-center gap-1">
+<span class="text-xs font-bold text-green-600 dark:text-primary">+22%</span>
+<span class="text-xs text-slate-400">margem de lucro 66%</span>
+</div>
+</div>
+</section>
+<!-- Charts Section -->
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+<!-- Chart 1: Income Statement (Bar Chart) -->
+<div class="flex flex-col rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark p-6 shadow-sm">
+<div class="mb-6 flex items-start justify-between">
+<div class="flex flex-col">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Demonstração de Resultado</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">Receitas vs Despesas (Últimos 6 meses)</p>
+</div>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="flex flex-1 items-end justify-between gap-2 sm:gap-4 h-64 w-full px-2">
+<!-- Bar Group -->
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="relative flex h-full w-full items-end gap-1 justify-center">
+<div class="w-3 sm:w-6 bg-primary rounded-t-sm h-[60%] group-hover:opacity-80 transition-opacity"></div> <!-- Receita -->
+<div class="w-3 sm:w-6 bg-slate-200 dark:bg-slate-700 rounded-t-sm h-[40%] group-hover:opacity-80 transition-opacity"></div> <!-- Despesa -->
+</div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Jan</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="relative flex h-full w-full items-end gap-1 justify-center">
+<div class="w-3 sm:w-6 bg-primary rounded-t-sm h-[75%] group-hover:opacity-80 transition-opacity"></div>
+<div class="w-3 sm:w-6 bg-slate-200 dark:bg-slate-700 rounded-t-sm h-[35%] group-hover:opacity-80 transition-opacity"></div>
+</div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Fev</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="relative flex h-full w-full items-end gap-1 justify-center">
+<div class="w-3 sm:w-6 bg-primary rounded-t-sm h-[50%] group-hover:opacity-80 transition-opacity"></div>
+<div class="w-3 sm:w-6 bg-slate-200 dark:bg-slate-700 rounded-t-sm h-[45%] group-hover:opacity-80 transition-opacity"></div>
+</div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Mar</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="relative flex h-full w-full items-end gap-1 justify-center">
+<div class="w-3 sm:w-6 bg-primary rounded-t-sm h-[85%] group-hover:opacity-80 transition-opacity"></div>
+<div class="w-3 sm:w-6 bg-slate-200 dark:bg-slate-700 rounded-t-sm h-[30%] group-hover:opacity-80 transition-opacity"></div>
+</div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Abr</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="relative flex h-full w-full items-end gap-1 justify-center">
+<div class="w-3 sm:w-6 bg-primary rounded-t-sm h-[90%] group-hover:opacity-80 transition-opacity"></div>
+<div class="w-3 sm:w-6 bg-slate-200 dark:bg-slate-700 rounded-t-sm h-[50%] group-hover:opacity-80 transition-opacity"></div>
+</div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Mai</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="relative flex h-full w-full items-end gap-1 justify-center">
+<div class="w-3 sm:w-6 bg-primary rounded-t-sm h-[65%] group-hover:opacity-80 transition-opacity"></div>
+<div class="w-3 sm:w-6 bg-slate-200 dark:bg-slate-700 rounded-t-sm h-[25%] group-hover:opacity-80 transition-opacity"></div>
+</div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Jun</span>
+</div>
+</div>
+<div class="mt-6 flex justify-center gap-6">
+<div class="flex items-center gap-2">
+<div class="h-3 w-3 rounded-full bg-primary"></div>
+<span class="text-xs font-medium text-slate-600 dark:text-slate-300">Receita</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="h-3 w-3 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+<span class="text-xs font-medium text-slate-600 dark:text-slate-300">Despesa</span>
+</div>
+</div>
+</div>
+<!-- Chart 2: Cash Flow (Line/Area Chart) -->
+<div class="flex flex-col rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark p-6 shadow-sm">
+<div class="mb-6 flex items-start justify-between">
+<div class="flex flex-col">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Fluxo de Caixa Mensal</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">Acumulado anual: R$ 120.400,00</p>
+</div>
+<span class="rounded-lg bg-background-light dark:bg-background-dark px-2 py-1 text-xs font-semibold text-green-700 dark:text-primary border border-border-light dark:border-border-dark">+5% vs ano passado</span>
+</div>
+<div class="relative flex flex-1 w-full items-end justify-center py-4">
+<!-- SVG Chart Simulation -->
+<svg class="h-full w-full overflow-visible" preserveaspectratio="none" viewbox="0 0 100 50">
+<!-- Grid lines -->
+<line class="text-slate-400" stroke="currentColor" stroke-dasharray="4" stroke-opacity="0.1" vector-effect="non-scaling-stroke" x1="0" x2="100" y1="0" y2="0"></line>
+<line class="text-slate-400" stroke="currentColor" stroke-dasharray="4" stroke-opacity="0.1" vector-effect="non-scaling-stroke" x1="0" x2="100" y1="25" y2="25"></line>
+<line class="text-slate-400" stroke="currentColor" stroke-dasharray="4" stroke-opacity="0.1" vector-effect="non-scaling-stroke" x1="0" x2="100" y1="50" y2="50"></line>
+<!-- Gradient Definition -->
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#13ec5b" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#13ec5b" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Area Path -->
+<path d="M0,45 Q10,40 20,35 T40,20 T60,25 T80,10 T100,5 V50 H0 Z" fill="url(#chartGradient)"></path>
+<!-- Line Path -->
+<path d="M0,45 Q10,40 20,35 T40,20 T60,25 T80,10 T100,5" fill="none" stroke="#13ec5b" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+<!-- Dots -->
+<circle cx="0" cy="45" fill="#13ec5b" r="2" vector-effect="non-scaling-stroke"></circle>
+<circle cx="20" cy="35" fill="#13ec5b" r="2" vector-effect="non-scaling-stroke"></circle>
+<circle cx="40" cy="20" fill="#13ec5b" r="2" vector-effect="non-scaling-stroke"></circle>
+<circle cx="60" cy="25" fill="#13ec5b" r="2" vector-effect="non-scaling-stroke"></circle>
+<circle cx="80" cy="10" fill="#13ec5b" r="2" vector-effect="non-scaling-stroke"></circle>
+<circle cx="100" cy="5" fill="#13ec5b" r="2" vector-effect="non-scaling-stroke"></circle>
+</svg>
+</div>
+<div class="mt-2 flex justify-between px-1">
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Jan</span>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Fev</span>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Mar</span>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Abr</span>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Mai</span>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Jun</span>
+</div>
+</div>
+</div>
+<!-- Cost Per Litter (Detail Section) -->
+<section class="rounded-xl border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark shadow-sm">
+<div class="flex flex-col gap-4 border-b border-border-light dark:border-border-dark p-6 sm:flex-row sm:items-center sm:justify-between">
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Custo por Ninhada</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">Detalhamento de custos diretos e indiretos.</p>
+</div>
+<div class="relative w-full sm:w-72">
+<select class="w-full appearance-none rounded-lg border border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+<option>Ninhada A - Golden Retrievers (Jan/24)</option>
+<option>Ninhada B - Beagles (Mar/24)</option>
+<option>Ninhada C - Poodles (Mai/24)</option>
+</select>
+<span class="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500" style="font-size: 20px;">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col lg:flex-row">
+<!-- Left: Cost Table -->
+<div class="flex-1 p-6">
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm">
+<thead class="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
+<tr class="border-b border-border-light dark:border-border-dark">
+<th class="px-3 py-3">Categoria</th>
+<th class="px-3 py-3">Descrição</th>
+<th class="px-3 py-3 text-right">Valor</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-light dark:divide-border-dark text-slate-700 dark:text-slate-300">
+<tr>
+<td class="px-3 py-4">
+<span class="inline-flex items-center gap-2 rounded-full bg-blue-50 dark:bg-blue-900/20 px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-300">
+                                                    Saúde
+                                                </span>
+</td>
+<td class="px-3 py-4">Vacinação (V8 e Antirrábica) - 6 filhotes</td>
+<td class="px-3 py-4 text-right font-medium">R$ 540,00</td>
+</tr>
+<tr>
+<td class="px-3 py-4">
+<span class="inline-flex items-center gap-2 rounded-full bg-orange-50 dark:bg-orange-900/20 px-2 py-1 text-xs font-medium text-orange-700 dark:text-orange-300">
+                                                    Alimentação
+                                                </span>
+</td>
+<td class="px-3 py-4">Ração Super Premium Filhotes - 15kg</td>
+<td class="px-3 py-4 text-right font-medium">R$ 280,00</td>
+</tr>
+<tr>
+<td class="px-3 py-4">
+<span class="inline-flex items-center gap-2 rounded-full bg-purple-50 dark:bg-purple-900/20 px-2 py-1 text-xs font-medium text-purple-700 dark:text-purple-300">
+                                                    Serviços
+                                                </span>
+</td>
+<td class="px-3 py-4">Assistência Veterinária (Parto)</td>
+<td class="px-3 py-4 text-right font-medium">R$ 450,00</td>
+</tr>
+<tr>
+<td class="px-3 py-4">
+<span class="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-700/50 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300">
+                                                    Outros
+                                                </span>
+</td>
+<td class="px-3 py-4">Documentação de Pedigree (CBKC)</td>
+<td class="px-3 py-4 text-right font-medium">R$ 300,00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Right: Summary Panel -->
+<div class="w-full border-t border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark/50 p-6 lg:w-80 lg:border-l lg:border-t-0">
+<h4 class="mb-4 text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Resumo da Ninhada</h4>
+<div class="mb-6 flex flex-col gap-4">
+<div class="flex justify-between">
+<span class="text-sm text-slate-600 dark:text-slate-400">Total Filhotes</span>
+<span class="text-sm font-bold text-slate-900 dark:text-white">6</span>
+</div>
+<div class="flex justify-between">
+<span class="text-sm text-slate-600 dark:text-slate-400">Custo Total</span>
+<span class="text-sm font-bold text-slate-900 dark:text-white">R$ 1.570,00</span>
+</div>
+<div class="h-px w-full bg-border-light dark:bg-border-dark"></div>
+<div class="flex justify-between items-center">
+<span class="text-sm font-medium text-slate-600 dark:text-slate-300">Custo Médio / Filhote</span>
+<span class="text-xl font-black text-primary-dark dark:text-primary">R$ 261,66</span>
+</div>
+</div>
+<button class="w-full rounded-lg border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark px-4 py-2 text-sm font-bold text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                                Ver Detalhes Completos
+                            </button>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+</body></html>

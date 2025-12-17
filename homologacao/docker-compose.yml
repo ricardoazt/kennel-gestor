@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: kennel_homolog_db
+    environment:
+      POSTGRES_USER: kennel_user
+      POSTGRES_PASSWORD: kennel_password
+      POSTGRES_DB: kennel_homolog_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: kennel_homolog_backend
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgres://kennel_user:kennel_password@db:5432/kennel_homolog_db
+      - PORT=3000
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  frontend:
+    build: ./frontend
+    container_name: kennel_homolog_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:3000
+
+volumes:
+  pgdata:
