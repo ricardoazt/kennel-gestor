@@ -26,7 +26,8 @@ const Sidebar = () => {
 			]
 		},
 		{ name: 'Vendas', icon: 'shopping_cart', path: '/vendas' },
-		{ name: 'Plantel', icon: 'pets', path: '/caes' },
+		{ name: 'Plantel', icon: 'pets', path: '/plantel' },
+		{ name: 'Estúdio Pedigree', icon: 'draw', path: '/pedigree-studio' },
 		{ name: 'Ninhadas', icon: 'grid_view', path: '/ninhadas' },
 		{ name: 'Financeiro', icon: 'payments', path: '/financeiro' },
 	];
