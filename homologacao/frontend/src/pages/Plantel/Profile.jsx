@@ -7,8 +7,17 @@ function PlantelProfile() {
     const navigate = useNavigate();
     const [animal, setAnimal] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('health'); // health, reproduction, documents, pedigree
+    const [activeTab, setActiveTab] = useState('health'); // health, reproduction, documents, pedigree, agenda, photos
+    const [uploading, setUploading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 8;
+    const [selectedMediaIndex, setSelectedMediaIndex] = useState(null);
+    const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+    const [isZoomed, setIsZoomed] = useState(false);
     const [showHealthEventForm, setShowHealthEventForm] = useState(false);
+    const [showAgendaEventForm, setShowAgendaEventForm] = useState(false);
+    const [isEditingAgendaEvent, setIsEditingAgendaEvent] = useState(false);
+    const [currentAgendaEventId, setCurrentAgendaEventId] = useState(null);
     const [healthEventForm, setHealthEventForm] = useState({
         data: '',
         tipo: 'Vacina',
@@ -16,6 +25,15 @@ function PlantelProfile() {
         veterinario: '',
         status: 'Agendado',
         observacoes: ''
+    });
+    const [agendaEventForm, setAgendaEventForm] = useState({
+        data: '',
+        tipo: 'Exposição',
+        titulo: '',
+        descricao: '',
+        local: '',
+        participantes: '',
+        status: 'Agendado'
     });
 
     useEffect(() => {
@@ -42,7 +60,18 @@ function PlantelProfile() {
                 dna_profile: response.data.dna_profile || 'Arquivado',
                 proxima_vacina: { data: '12 Out 2023', dias: 5 },
                 ultima_cruza: { data: '15 Mai 2023', parceira: 'Bella' },
-                historico_saude: getMockHealthHistory(),
+                photos: response.data.photos || [],
+                historico_saude: response.data.medicalRecords ? response.data.medicalRecords.map(mr => ({
+                    data: new Date(mr.data_exame).toLocaleDateString('pt-BR'),
+                    tipo: mr.tipo,
+                    descricao: mr.descricao,
+                    veterinario: 'Externo', // Or map from elsewhere
+                    status: 'Concluído'
+                })) : getMockHealthHistory(),
+                agenda: response.data.agendaEvents ? response.data.agendaEvents.map(ae => ({
+                    ...ae,
+                    data_formatada: new Date(ae.data).toLocaleDateString('pt-BR')
+                })) : getMockAgenda(),
                 historico_cruzas: getMockBreedingHistory(),
                 documentos: getMockDocuments(),
                 pedigreeData: getMockPedigree(response.data.id)
@@ -76,25 +105,34 @@ function PlantelProfile() {
             dna_profile: 'Arquivado',
             proxima_vacina: { data: '12 Out 2023', dias: 5 },
             ultima_cruza: { data: '15 Mai 2023', parceira: 'Bella' },
+            photos: [],
             historico_saude: getMockHealthHistory(),
+            agenda: getMockAgenda(),
             historico_cruzas: getMockBreedingHistory(),
             documentos: getMockDocuments(),
             pedigreeData: getMockPedigree(id)
         };
     }
 
+    function getMockAgenda() {
+        return [
+            { id: 1, data: '2023-12-20T10:00', tipo: 'Exposição', titulo: 'Show de Verão', local: 'São Paulo', status: 'Concluído' },
+            { id: 2, data: '2024-01-15T14:30', tipo: 'Apresentação', titulo: 'Apresentação Cliente ABC', local: 'Canil', status: 'Agendado' }
+        ];
+    }
+
     function getMockHealthHistory() {
         return [
-            { data: '12/10/2023', tipo: 'Vacina', descricao: 'Vanguard HTLP 5/CV-L (Dose 1)', veterinario: 'Dr. Silva', status: 'Agendado', cor: 'blue' },
-            { data: '10/08/2023', tipo: 'Vermífugo', descricao: 'Drontal Plus (2 cp)', veterinario: 'Interno', status: 'Concluído', cor: 'purple' },
-            { data: '15/05/2023', tipo: 'Consulta', descricao: 'Checkup anual de rotina', veterinario: 'Dra. Costa', status: 'Concluído', cor: 'amber' }
+            { id: 101, data: '12/10/2023', tipo: 'Vacina', descricao: 'Vanguard HTLP 5/CV-L (Dose 1)', veterinario: 'Dr. Silva', status: 'Agendado', cor: 'blue' },
+            { id: 102, data: '10/08/2023', tipo: 'Vermífugo', descricao: 'Drontal Plus (2 cp)', veterinario: 'Interno', status: 'Concluído', cor: 'purple' },
+            { id: 103, data: '15/05/2023', tipo: 'Consulta', descricao: 'Checkup anual de rotina', veterinario: 'Dra. Costa', status: 'Concluído', cor: 'amber' }
         ];
     }
 
     function getMockBreedingHistory() {
         return [
-            { data: '15/05/2023', parceira: 'Bella do Vale', tipo: 'Natural', resultado: '6 Filhotes' },
-            { data: '10/11/2022', parceira: 'Luna Star', tipo: 'Inseminação', resultado: '4 Filhotes' }
+            { id: 201, data: '15/05/2023', parceira: 'Bella do Vale', tipo: 'Natural', resultado: '6 Filhotes' },
+            { id: 202, data: '10/11/2022', parceira: 'Luna Star', tipo: 'Inseminação', resultado: '4 Filhotes' }
         ];
     }
 
@@ -237,6 +275,110 @@ function PlantelProfile() {
             observacoes: ''
         });
         setShowHealthEventForm(false);
+    }
+
+    function handleAgendaEventFormChange(field, value) {
+        setAgendaEventForm(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    }
+
+    function handleEditAgendaEvent(event) {
+        if (!event.id) {
+            alert('Não é possível editar este evento (ID ausente).');
+            return;
+        }
+        // Prepare date for datetime-local input (YYYY-MM-DDTHH:mm)
+        const date = new Date(event.data);
+        const pad = (num) => String(num).padStart(2, '0');
+        const formattedDate = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+
+        setAgendaEventForm({
+            data: formattedDate,
+            tipo: event.tipo,
+            titulo: event.titulo,
+            descricao: event.descricao || '',
+            local: event.local || '',
+            participantes: event.participantes || '',
+            status: event.status || 'Agendado'
+        });
+        setIsEditingAgendaEvent(true);
+        setCurrentAgendaEventId(event.id);
+        setShowAgendaEventForm(true);
+    }
+
+    async function handleDeleteAgendaEvent(eventId) {
+        if (!eventId) {
+            alert('Não é possível excluir este evento (ID ausente).');
+            return;
+        }
+        if (!window.confirm('Tem certeza que deseja excluir este evento?')) return;
+        try {
+            await api.delete(`/agenda/${eventId}`);
+            setAnimal(prev => ({
+                ...prev,
+                agenda: prev.agenda.filter(e => e.id !== eventId)
+            }));
+        } catch (error) {
+            console.error('Erro ao excluir evento:', error);
+            alert('Erro ao excluir evento.');
+        }
+    }
+
+    async function handleAgendaEventSubmit(e) {
+        e.preventDefault();
+        try {
+            let response;
+            if (isEditingAgendaEvent) {
+                response = await api.put(`/agenda/${currentAgendaEventId}`, {
+                    ...agendaEventForm,
+                    animal_id: id
+                });
+            } else {
+                response = await api.post('/agenda', {
+                    ...agendaEventForm,
+                    animal_id: id
+                });
+            }
+
+            const updatedEvent = {
+                ...response.data,
+                data_formatada: new Date(response.data.data).toLocaleDateString('pt-BR')
+            };
+
+            if (isEditingAgendaEvent) {
+                setAnimal(prev => ({
+                    ...prev,
+                    agenda: prev.agenda.map(e => e.id === currentAgendaEventId ? updatedEvent : e)
+                }));
+            } else {
+                setAnimal(prev => ({
+                    ...prev,
+                    agenda: [updatedEvent, ...prev.agenda]
+                }));
+            }
+
+            handleCancelAgendaEventForm();
+        } catch (error) {
+            console.error('Erro ao salvar agendamento:', error);
+            alert('Erro ao salvar agendamento. Verifique se todos os campos estão preenchidos.');
+        }
+    }
+
+    function handleCancelAgendaEventForm() {
+        setAgendaEventForm({
+            data: '',
+            tipo: 'Exposição',
+            titulo: '',
+            descricao: '',
+            local: '',
+            participantes: '',
+            status: 'Agendado'
+        });
+        setIsEditingAgendaEvent(false);
+        setCurrentAgendaEventId(null);
+        setShowAgendaEventForm(false);
     }
 
     function getTypeColor(tipo) {
@@ -431,7 +573,17 @@ function PlantelProfile() {
                                     }`}
                             >
                                 <span className="material-symbols-outlined text-[18px]">medical_services</span>
-                                Saúde e Agenda
+                                Saúde
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('agenda')}
+                                className={`whitespace-nowrap py-4 px-1 border-b-2 text-sm font-medium flex items-center gap-2 ${activeTab === 'agenda'
+                                    ? 'border-primary text-primary'
+                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                                    }`}
+                            >
+                                <span className="material-symbols-outlined text-[18px]">calendar_month</span>
+                                Agenda Geral
                             </button>
                             <button
                                 onClick={() => setActiveTab('reproduction')}
@@ -462,6 +614,16 @@ function PlantelProfile() {
                             >
                                 <span className="material-symbols-outlined text-[18px]">account_tree</span>
                                 Árvore Genealógica
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('photos')}
+                                className={`whitespace-nowrap py-4 px-1 border-b-2 text-sm font-medium flex items-center gap-2 ${activeTab === 'photos'
+                                    ? 'border-primary text-primary'
+                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                                    }`}
+                            >
+                                <span className="material-symbols-outlined text-[18px]">photo_library</span>
+                                Fotos
                             </button>
                         </nav>
                     </div>
@@ -517,6 +679,92 @@ function PlantelProfile() {
                                                         </tr>
                                                     );
                                                 })}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Agenda Geral Section */}
+                            {activeTab === 'agenda' && (
+                                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                                    <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+                                        <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-primary">calendar_month</span>
+                                            Agenda Geral do Cão
+                                        </h3>
+                                        <button
+                                            onClick={() => setShowAgendaEventForm(true)}
+                                            className="px-4 py-2 bg-primary hover:bg-blue-600 text-white text-sm font-semibold rounded-lg transition-colors flex items-center gap-1.5"
+                                        >
+                                            <span className="material-symbols-outlined text-[18px]">add_event</span>
+                                            Novo Agendamento
+                                        </button>
+                                    </div>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm text-left text-slate-600">
+                                            <thead className="text-xs text-slate-700 uppercase bg-slate-50">
+                                                <tr>
+                                                    <th className="px-6 py-3">Data</th>
+                                                    <th className="px-6 py-3">Tipo</th>
+                                                    <th className="px-6 py-3">Título / Evento</th>
+                                                    <th className="px-6 py-3">Local</th>
+                                                    <th className="px-6 py-3">Status</th>
+                                                    <th className="px-6 py-3 text-right">Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {animal.agenda.map((item, index) => {
+                                                    const typeColors = {
+                                                        'Exposição': 'bg-blue-100 text-blue-800',
+                                                        'Apresentação': 'bg-pink-100 text-pink-800',
+                                                        'Treinamento': 'bg-emerald-100 text-emerald-800',
+                                                        'Visita': 'bg-amber-100 text-amber-800',
+                                                        'Outro': 'bg-slate-100 text-slate-800'
+                                                    };
+                                                    return (
+                                                        <tr key={index} className="bg-white border-b hover:bg-slate-50">
+                                                            <td className="px-6 py-4 font-medium">{item.data_formatada || item.data}</td>
+                                                            <td className="px-6 py-4">
+                                                                <span className={`${typeColors[item.tipo] || 'bg-slate-100 text-slate-800'} text-xs px-2 py-1 rounded-full font-medium`}>
+                                                                    {item.tipo}
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-6 py-4 font-semibold text-slate-900">{item.titulo}</td>
+                                                            <td className="px-6 py-4">{item.local}</td>
+                                                            <td className="px-6 py-4">
+                                                                <span className={`${getStatusColor(item.status)} font-semibold text-xs`}>
+                                                                    {item.status}
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-6 py-4 text-right">
+                                                                <div className="flex justify-end gap-2">
+                                                                    <button
+                                                                        onClick={() => handleEditAgendaEvent(item)}
+                                                                        className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                                                                        title="Editar"
+                                                                    >
+                                                                        <span className="material-symbols-outlined text-[18px]">edit</span>
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleDeleteAgendaEvent(item.id)}
+                                                                        className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                                                                        title="Excluir"
+                                                                    >
+                                                                        <span className="material-symbols-outlined text-[18px]">delete</span>
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                                {animal.agenda.length === 0 && (
+                                                    <tr>
+                                                        <td colSpan="6" className="px-6 py-10 text-center text-slate-500">
+                                                            Nenhum evento agendado para este cão.
+                                                        </td>
+                                                    </tr>
+                                                )}
                                             </tbody>
                                         </table>
                                     </div>
@@ -849,7 +1097,188 @@ function PlantelProfile() {
                                     </div>
                                 </div>
                             )}
+
+                            {/* Photos Section */}
+                            {activeTab === 'photos' && (
+                                <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+                                    <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+                                        <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-primary">photo_library</span>
+                                            Galeria de Mídias
+                                        </h3>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="file"
+                                                id="photo-upload"
+                                                className="hidden"
+                                                accept="image/*,video/*"
+                                                multiple
+                                                onChange={async (e) => {
+                                                    const files = Array.from(e.target.files);
+                                                    if (files.length === 0) return;
+
+                                                    const formData = new FormData();
+                                                    files.forEach(file => formData.append('media_files', file));
+
+                                                    try {
+                                                        setUploading(true);
+                                                        const response = await api.post(`/animals/${id}/photos`, formData);
+                                                        setAnimal(prev => ({
+                                                            ...prev,
+                                                            photos: response.data.photos
+                                                        }));
+                                                    } catch (error) {
+                                                        console.error('Erro ao fazer upload:', error);
+                                                        alert(`Erro ao fazer upload das mídias: ${error.response?.data?.error || error.message}`);
+                                                    } finally {
+                                                        setUploading(false);
+                                                    }
+                                                }}
+                                            />
+                                            <label
+                                                htmlFor="photo-upload"
+                                                className={`flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-blue-600 text-white rounded-lg font-medium text-sm transition-colors cursor-pointer ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
+                                            >
+                                                <span className="material-symbols-outlined text-[18px]">{uploading ? 'sync' : 'add_photo_alternate'}</span>
+                                                {uploading ? 'Enviando...' : 'Adicionar Mídias'}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div className="p-6">
+                                        {(!animal.photos || animal.photos.length === 0) ? (
+                                            <div className="text-center py-12 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200">
+                                                <span className="material-symbols-outlined text-4xl text-slate-300">image_not_supported</span>
+                                                <p className="mt-2 text-slate-500">Nenhuma mídia adicionada ainda.</p>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                                    {animal.photos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((photo, index) => {
+                                                        const actualIndex = (currentPage - 1) * itemsPerPage + index;
+                                                        const isVideo = photo.toLowerCase().match(/\.(mp4|webm|ogg)$/);
+
+                                                        return (
+                                                            <div
+                                                                key={actualIndex}
+                                                                className="group relative aspect-square rounded-xl overflow-hidden border border-slate-200 bg-slate-100 shadow-sm transition-all hover:shadow-md cursor-pointer"
+                                                                onClick={() => {
+                                                                    setSelectedMediaIndex(actualIndex);
+                                                                    setIsLightboxOpen(true);
+                                                                }}
+                                                            >
+                                                                {isVideo ? (
+                                                                    <div className="w-full h-full flex items-center justify-center bg-slate-200">
+                                                                        <video
+                                                                            src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${photo}`}
+                                                                            className="w-full h-full object-cover"
+                                                                        />
+                                                                        <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
+                                                                            <span className="material-symbols-outlined text-white text-4xl drop-shadow-md">play_circle</span>
+                                                                        </div>
+                                                                    </div>
+                                                                ) : (
+                                                                    <img
+                                                                        src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${photo}`}
+                                                                        alt={`Mídia ${actualIndex + 1}`}
+                                                                        className="w-full h-full object-cover"
+                                                                    />
+                                                                )}
+
+                                                                {/* Hover Overlay Actions */}
+                                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2" onClick={e => e.stopPropagation()}>
+                                                                    <div className="flex gap-2">
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                const url = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${photo}`;
+                                                                                const link = document.createElement('a');
+                                                                                link.href = url;
+                                                                                link.download = `midia-cao-${id}-${actualIndex}.${isVideo ? 'mp4' : 'jpg'}`;
+                                                                                document.body.appendChild(link);
+                                                                                link.click();
+                                                                                document.body.removeChild(link);
+                                                                            }}
+                                                                            className="p-2 bg-white/90 hover:bg-white text-slate-900 rounded-full shadow-lg transition-transform hover:scale-110"
+                                                                            title="Download"
+                                                                        >
+                                                                            <span className="material-symbols-outlined text-[20px]">download</span>
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                const url = `${window.location.protocol}//${window.location.host}${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${photo}`;
+                                                                                const text = encodeURIComponent(`Veja a mídia de ${animal.nome}: ${url}`);
+                                                                                window.open(`https://wa.me/?text=${text}`, '_blank');
+                                                                            }}
+                                                                            className="p-2 bg-white/90 hover:bg-white text-emerald-600 rounded-full shadow-lg transition-transform hover:scale-110"
+                                                                            title="Compartilhar no WhatsApp"
+                                                                        >
+                                                                            <span className="material-symbols-outlined text-[20px]">share</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <button
+                                                                        onClick={async (e) => {
+                                                                            e.stopPropagation();
+                                                                            if (confirm('Tem certeza que deseja excluir esta mídia?')) {
+                                                                                try {
+                                                                                    const response = await api.delete(`/animals/${id}/photos/${actualIndex}`);
+                                                                                    setAnimal(prev => ({
+                                                                                        ...prev,
+                                                                                        photos: response.data.photos
+                                                                                    }));
+                                                                                } catch (error) {
+                                                                                    console.error('Erro ao excluir mídia:', error);
+                                                                                    alert('Erro ao excluir a mídia.');
+                                                                                }
+                                                                            }
+                                                                        }}
+                                                                        className="absolute top-2 right-2 p-1.5 bg-red-500/80 hover:bg-red-500 text-white rounded-lg shadow-sm backdrop-blur-sm transition-colors"
+                                                                        title="Excluir"
+                                                                    >
+                                                                        <span className="material-symbols-outlined text-[18px]">delete</span>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+
+                                                {/* Pagination */}
+                                                {animal.photos.length > itemsPerPage && (
+                                                    <div className="flex justify-center items-center gap-2 mt-8">
+                                                        <button
+                                                            disabled={currentPage === 1}
+                                                            onClick={() => setCurrentPage(p => p - 1)}
+                                                            className="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-50 transition-colors"
+                                                        >
+                                                            <span className="material-symbols-outlined text-[20px]">chevron_left</span>
+                                                        </button>
+                                                        {Array.from({ length: Math.ceil(animal.photos.length / itemsPerPage) }).map((_, i) => (
+                                                            <button
+                                                                key={i}
+                                                                onClick={() => setCurrentPage(i + 1)}
+                                                                className={`size-10 rounded-lg border font-medium transition-colors ${currentPage === i + 1
+                                                                    ? 'bg-primary border-primary text-white shadow-md'
+                                                                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                                                                    }`}
+                                                            >
+                                                                {i + 1}
+                                                            </button>
+                                                        ))}
+                                                        <button
+                                                            disabled={currentPage === Math.ceil(animal.photos.length / itemsPerPage)}
+                                                            onClick={() => setCurrentPage(p => p + 1)}
+                                                            className="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-50 transition-colors"
+                                                        >
+                                                            <span className="material-symbols-outlined text-[20px]">chevron_right</span>
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
+
 
                         {/* Right Column - Empty when documents tab is not active */}
                         <div className="flex flex-col gap-6">
@@ -1016,6 +1445,220 @@ function PlantelProfile() {
                                         </button>
                                     </div>
                                 </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Agenda Event Form Modal */}
+                    {showAgendaEventForm && (
+                        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                            <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                                <div className="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-primary to-emerald-600 text-white sticky top-0 z-10">
+                                    <div className="flex items-center justify-between">
+                                        <h2 className="text-xl font-bold flex items-center gap-2">
+                                            <span className="material-symbols-outlined">{isEditingAgendaEvent ? 'edit_calendar' : 'add_event'}</span>
+                                            {isEditingAgendaEvent ? 'Editar Agendamento' : 'Novo Agendamento Geral'}
+                                        </h2>
+                                        <button onClick={handleCancelAgendaEventForm} className="text-white/80 hover:text-white transition-colors">
+                                            <span className="material-symbols-outlined">close</span>
+                                        </button>
+                                    </div>
+                                    <p className="text-sm text-white/90 mt-1">Exposições, apresentações a clientes, treinamentos, etc.</p>
+                                </div>
+
+                                <form onSubmit={handleAgendaEventSubmit} className="p-6 space-y-5">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-semibold text-slate-700 mb-2">Data do Evento *</label>
+                                            <input
+                                                type="datetime-local"
+                                                required
+                                                value={agendaEventForm.data}
+                                                onChange={(e) => handleAgendaEventFormChange('data', e.target.value)}
+                                                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-semibold text-slate-700 mb-2">Tipo *</label>
+                                            <select
+                                                required
+                                                value={agendaEventForm.tipo}
+                                                onChange={(e) => handleAgendaEventFormChange('tipo', e.target.value)}
+                                                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors bg-white"
+                                            >
+                                                <option value="Exposição">Exposição</option>
+                                                <option value="Apresentação">Apresentação a Cliente</option>
+                                                <option value="Treinamento">Treinamento</option>
+                                                <option value="Visita">Visita</option>
+                                                <option value="Outro">Outro</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">Título do Evento *</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={agendaEventForm.titulo}
+                                            onChange={(e) => handleAgendaEventFormChange('titulo', e.target.value)}
+                                            placeholder="Ex: Exposição Nacional de Pastores"
+                                            className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">Local</label>
+                                        <input
+                                            type="text"
+                                            value={agendaEventForm.local}
+                                            onChange={(e) => handleAgendaEventFormChange('local', e.target.value)}
+                                            placeholder="Ex: Parque de Exposições / Canil"
+                                            className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">Descrição / Notas</label>
+                                        <textarea
+                                            value={agendaEventForm.descricao}
+                                            onChange={(e) => handleAgendaEventFormChange('descricao', e.target.value)}
+                                            rows="3"
+                                            className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors resize-none"
+                                        />
+                                    </div>
+
+                                    <div className="flex gap-3 pt-4 border-t border-slate-200">
+                                        <button type="button" onClick={handleCancelAgendaEventForm} className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg">
+                                            Cancelar
+                                        </button>
+                                        <button type="submit" className="flex-1 px-4 py-2.5 bg-primary hover:bg-blue-600 text-white font-semibold rounded-lg flex items-center justify-center gap-2 shadow-sm">
+                                            <span className="material-symbols-outlined text-[20px]">{isEditingAgendaEvent ? 'save' : 'calendar_add_on'}</span>
+                                            {isEditingAgendaEvent ? 'Salvar Alterações' : 'Agendar Evento'}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Lightbox / Media Viewer */}
+                    {isLightboxOpen && selectedMediaIndex !== null && (
+                        <div className="fixed inset-0 bg-black/95 flex flex-col items-center justify-between z-[100] p-4 backdrop-blur-sm">
+                            {/* Toolbar */}
+                            <div className="w-full flex items-center justify-between p-4 text-white">
+                                <span className="text-sm font-medium tracking-wider">
+                                    {selectedMediaIndex + 1} / {animal.photos.length}
+                                </span>
+                                <div className="flex items-center gap-6">
+                                    <button
+                                        onClick={() => setIsZoomed(!isZoomed)}
+                                        className={`hover:text-primary transition-colors ${isZoomed ? 'text-primary' : ''}`}
+                                        title={isZoomed ? "Diminuir" : "Aumentar"}
+                                    >
+                                        <span className="material-symbols-outlined">{isZoomed ? 'zoom_out' : 'zoom_in'}</span>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            const photo = animal.photos[selectedMediaIndex];
+                                            const isVideo = photo.toLowerCase().match(/\.(mp4|webm|ogg)$/);
+                                            const url = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${photo}`;
+                                            const link = document.createElement('a');
+                                            link.href = url;
+                                            link.download = `midia-cao-${id}-${selectedMediaIndex}.${isVideo ? 'mp4' : 'jpg'}`;
+                                            document.body.appendChild(link);
+                                            link.click();
+                                            document.body.removeChild(link);
+                                        }}
+                                        className="hover:text-primary transition-colors"
+                                        title="Download"
+                                    >
+                                        <span className="material-symbols-outlined">download</span>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            const url = `${window.location.protocol}//${window.location.host}${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${animal.photos[selectedMediaIndex]}`;
+                                            const text = encodeURIComponent(`Veja esta mídia de ${animal.nome}: ${url}`);
+                                            window.open(`https://wa.me/?text=${text}`, '_blank');
+                                        }}
+                                        className="hover:text-emerald-500 transition-colors"
+                                        title="Compartilhar"
+                                    >
+                                        <span className="material-symbols-outlined">share</span>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setIsLightboxOpen(false);
+                                            setIsZoomed(false);
+                                        }}
+                                        className="text-white/80 hover:text-white transition-colors"
+                                        title="Fechar"
+                                    >
+                                        <span className="material-symbols-outlined text-3xl font-light">close</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Main Content Area */}
+                            <div className="flex-1 w-full flex items-center justify-between relative px-12 overflow-hidden">
+                                {/* Prev Button */}
+                                <button
+                                    onClick={() => setSelectedMediaIndex(prev => (prev > 0 ? prev - 1 : animal.photos.length - 1))}
+                                    className="absolute left-6 z-10 p-2 text-white/50 hover:text-white transition-all hover:translate-x-[-4px]"
+                                >
+                                    <span className="material-symbols-outlined text-6xl font-light">chevron_left</span>
+                                </button>
+
+                                {/* Center Media */}
+                                <div className="w-full h-full flex items-center justify-center p-4">
+                                    {animal.photos[selectedMediaIndex].toLowerCase().match(/\.(mp4|webm|ogg)$/) ? (
+                                        <video
+                                            key={selectedMediaIndex}
+                                            src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${animal.photos[selectedMediaIndex]}`}
+                                            controls
+                                            autoPlay
+                                            className={`max-w-full max-h-full object-contain shadow-2xl rounded-sm transition-transform duration-300 ${isZoomed ? 'scale-150 cursor-zoom-out' : 'scale-100 cursor-zoom-in'}`}
+                                            onClick={() => setIsZoomed(!isZoomed)}
+                                        />
+                                    ) : (
+                                        <img
+                                            key={selectedMediaIndex}
+                                            src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${animal.photos[selectedMediaIndex]}`}
+                                            alt="Visualização"
+                                            className={`max-w-full max-h-full object-contain shadow-2xl rounded-sm transition-transform duration-300 ${isZoomed ? 'scale-150 cursor-zoom-out' : 'scale-100 cursor-zoom-in'}`}
+                                            onClick={() => setIsZoomed(!isZoomed)}
+                                        />
+                                    )}
+                                </div>
+
+                                {/* Next Button */}
+                                <button
+                                    onClick={() => setSelectedMediaIndex(prev => (prev < animal.photos.length - 1 ? prev + 1 : 0))}
+                                    className="absolute right-6 z-10 p-2 text-white/50 hover:text-white transition-all hover:translate-x-[4px]"
+                                >
+                                    <span className="material-symbols-outlined text-6xl font-light">chevron_right</span>
+                                </button>
+                            </div>
+
+                            {/* Thumbnails Carousel */}
+                            <div className="w-full h-32 flex items-center justify-center p-4">
+                                <div className="flex gap-2 p-1 overflow-x-auto max-w-full scrollbar-hide mask-fade">
+                                    {animal.photos.map((photo, i) => (
+                                        <div
+                                            key={i}
+                                            onClick={() => setSelectedMediaIndex(i)}
+                                            className={`size-16 rounded-md overflow-hidden cursor-pointer transition-all border-2 shrink-0 ${selectedMediaIndex === i
+                                                ? 'border-primary scale-110 shadow-lg'
+                                                : 'border-white/10 opacity-40 hover:opacity-100 scale-100'
+                                                }`}
+                                        >
+                                            <img
+                                                src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${photo}`}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     )}

@@ -1,4 +1,4 @@
-const { Animal, MedicalRecord } = require('../models');
+const { Animal, MedicalRecord, AgendaEvent } = require('../models');
 const path = require('path');
 const fs = require('fs');
 
@@ -50,7 +50,10 @@ module.exports = {
     async findOne(req, res) {
         try {
             const animal = await Animal.findByPk(req.params.id, {
-                include: [{ model: MedicalRecord, as: 'medicalRecords' }]
+                include: [
+                    { model: MedicalRecord, as: 'medicalRecords' },
+                    { model: AgendaEvent, as: 'agendaEvents' }
+                ]
             });
 
             if (!animal) return res.status(404).json({ error: 'Animal not found' });
@@ -123,6 +126,66 @@ module.exports = {
             });
 
             return res.status(201).json(record);
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    },
+
+    // === Photos Gallery ===
+    async addPhoto(req, res) {
+        try {
+            const { id } = req.params;
+
+            console.log('Upload target animal ID:', id);
+            console.log('Received files:', req.files?.map(f => f.fieldname));
+
+            if (!req.files || req.files.length === 0) {
+                return res.status(400).json({ error: 'No files uploaded' });
+            }
+
+            const animal = await Animal.findByPk(id);
+            if (!animal) return res.status(404).json({ error: 'Animal not found' });
+
+            const currentPhotos = Array.isArray(animal.photos) ? animal.photos : [];
+            const newPhotos = req.files.map(file => `/uploads/${file.filename}`);
+            const updatedPhotos = [...currentPhotos, ...newPhotos];
+
+            await animal.update({ photos: updatedPhotos });
+
+            return res.status(201).json({ photos: updatedPhotos });
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    },
+
+    async deletePhoto(req, res) {
+        try {
+            const { id, photoIndex } = req.params;
+
+            const animal = await Animal.findByPk(id);
+            if (!animal) return res.status(404).json({ error: 'Animal not found' });
+
+            const photos = animal.photos || [];
+            const index = parseInt(photoIndex);
+
+            if (index < 0 || index >= photos.length) {
+                return res.status(400).json({ error: 'Invalid photo index' });
+            }
+
+            const photoPath = photos[index];
+            const fullPath = path.join(__dirname, '..', photoPath);
+
+            // Remove from filesystem
+            if (fs.existsSync(fullPath)) {
+                fs.unlinkSync(fullPath);
+            }
+
+            // Remove from database array
+            const updatedPhotos = [...photos];
+            updatedPhotos.splice(index, 1);
+            await animal.update({ photos: updatedPhotos });
+
+            return res.json({ message: 'Photo deleted successfully', photos: updatedPhotos });
         } catch (error) {
             return res.status(500).json({ error: error.message });
         }

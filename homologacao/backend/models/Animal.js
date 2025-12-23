@@ -10,8 +10,9 @@ module.exports = (sequelize, DataTypes) => {
             Animal.hasMany(models.Animal, { as: 'FilhosPai', foreignKey: 'pai_id' });
             Animal.hasMany(models.Animal, { as: 'FilhosMae', foreignKey: 'mae_id' });
 
-            // Association with Medical Records
+            // Associations with Medical Records and Agenda Events
             Animal.hasMany(models.MedicalRecord, { foreignKey: 'animal_id', as: 'medicalRecords' });
+            Animal.hasMany(models.AgendaEvent, { foreignKey: 'animal_id', as: 'agendaEvents' });
         }
     }
 
@@ -39,6 +40,11 @@ module.exports = (sequelize, DataTypes) => {
         microchip: {
             type: DataTypes.STRING,
             allowNull: true
+        },
+        photos: {
+            type: DataTypes.JSON,
+            allowNull: true,
+            defaultValue: []
         }
     }, {
         sequelize,

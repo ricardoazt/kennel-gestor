@@ -4,6 +4,7 @@ const path = require('path');
 const multer = require('multer');
 const db = require('./models');
 const AnimalController = require('./controllers/AnimalController');
+const AgendaController = require('./controllers/AgendaController');
 
 require('dotenv').config();
 
@@ -51,6 +52,14 @@ app.put('/animals/:id', AnimalController.update);
 app.delete('/animals/:id', AnimalController.delete);
 app.get('/animals/:id/lineage', AnimalController.getLineage);
 app.post('/animals/:id/medical-records', upload.single('file'), AnimalController.addMedicalRecord); // Expecting form field 'file'
+app.post('/animals/:id/photos', upload.any(), AnimalController.addPhoto);
+app.delete('/animals/:id/photos/:photoIndex', AnimalController.deletePhoto);
+
+// === Agenda Routes ===
+app.post('/agenda', AgendaController.create);
+app.get('/animals/:animal_id/agenda', AgendaController.findByAnimal);
+app.put('/agenda/:id', AgendaController.update);
+app.delete('/agenda/:id', AgendaController.delete);
 
 // Sync Database and Start Server
 db.sequelize.sync({ alter: true }).then(() => {
