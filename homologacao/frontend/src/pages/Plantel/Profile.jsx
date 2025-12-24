@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+import JSZip from 'jszip';
 
 function PlantelProfile() {
     const { id } = useParams();
@@ -14,6 +15,8 @@ function PlantelProfile() {
     const [selectedMediaIndex, setSelectedMediaIndex] = useState(null);
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [isZoomed, setIsZoomed] = useState(false);
+    const [selectedPhotos, setSelectedPhotos] = useState(new Set());
+    const [isDownloading, setIsDownloading] = useState(false);
     const [showHealthEventForm, setShowHealthEventForm] = useState(false);
     const [showAgendaEventForm, setShowAgendaEventForm] = useState(false);
     const [isEditingAgendaEvent, setIsEditingAgendaEvent] = useState(false);
@@ -39,6 +42,25 @@ function PlantelProfile() {
     useEffect(() => {
         loadData();
     }, [id]);
+
+    // Keyboard navigation for lightbox
+    useEffect(() => {
+        if (!isLightboxOpen) return;
+
+        const handleKeyDown = (e) => {
+            if (e.key === 'ArrowRight') {
+                setSelectedMediaIndex(prev => (prev < animal.photos.length - 1 ? prev + 1 : 0));
+            } else if (e.key === 'ArrowLeft') {
+                setSelectedMediaIndex(prev => (prev > 0 ? prev - 1 : animal.photos.length - 1));
+            } else if (e.key === 'Escape') {
+                setIsLightboxOpen(false);
+                setIsZoomed(false);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isLightboxOpen, animal?.photos?.length]);
 
     async function loadData() {
         try {
@@ -83,6 +105,69 @@ function PlantelProfile() {
             setAnimal(getMockAnimal(id));
         } finally {
             setLoading(false);
+        }
+    }
+
+    // Photo selection handlers
+    function togglePhotoSelection(index) {
+        setSelectedPhotos(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(index)) {
+                newSet.delete(index);
+            } else {
+                newSet.add(index);
+            }
+            return newSet;
+        });
+    }
+
+    function selectAllPhotos() {
+        const allIndices = new Set(animal.photos.map((_, i) => i));
+        setSelectedPhotos(allIndices);
+    }
+
+    function deselectAllPhotos() {
+        setSelectedPhotos(new Set());
+    }
+
+    async function downloadSelectedPhotos() {
+        if (selectedPhotos.size === 0) return;
+
+        try {
+            setIsDownloading(true);
+            const zip = new JSZip();
+            const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+            // Fetch all selected photos
+            const promises = Array.from(selectedPhotos).map(async (index) => {
+                const photo = animal.photos[index];
+                const url = `${baseUrl}${photo}`;
+                const response = await fetch(url);
+                const blob = await response.blob();
+                const extension = photo.split('.').pop();
+                const filename = `foto-${animal.nome.replace(/\s+/g, '-')}-${index + 1}.${extension}`;
+                zip.file(filename, blob);
+            });
+
+            await Promise.all(promises);
+
+            // Generate and download ZIP
+            const content = await zip.generateAsync({ type: 'blob' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(content);
+            link.download = `fotos-${animal.nome.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.zip`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+
+            // Clear selection after download
+            setSelectedPhotos(new Set());
+        } catch (error) {
+            console.error('Erro ao baixar fotos:', error);
+            alert('Erro ao baixar as fotos selecionadas. Tente novamente.');
+        } finally {
+            setIsDownloading(false);
         }
     }
 
@@ -1102,11 +1187,51 @@ function PlantelProfile() {
                             {activeTab === 'photos' && (
                                 <div className="bg-white rounded-xl shadow-sm border border-slate-200">
                                     <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-                                        <h3 className="font-bold text-slate-900 flex items-center gap-2">
-                                            <span className="material-symbols-outlined text-primary">photo_library</span>
-                                            Galeria de Mídias
-                                        </h3>
+                                        <div className="flex items-center gap-4">
+                                            <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                                                <span className="material-symbols-outlined text-primary">photo_library</span>
+                                                Galeria de Mídias
+                                            </h3>
+                                            {selectedPhotos.size > 0 && (
+                                                <div className="flex items-center gap-2">
+                                                    <span className="px-3 py-1 bg-primary/10 text-primary text-sm font-semibold rounded-full">
+                                                        {selectedPhotos.size} selecionada{selectedPhotos.size > 1 ? 's' : ''}
+                                                    </span>
+                                                    <button
+                                                        onClick={deselectAllPhotos}
+                                                        className="text-xs text-slate-500 hover:text-slate-700 underline"
+                                                    >
+                                                        Limpar
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
                                         <div className="flex gap-2">
+                                            {animal.photos && animal.photos.length > 0 && (
+                                                <>
+                                                    <button
+                                                        onClick={selectedPhotos.size === animal.photos.length ? deselectAllPhotos : selectAllPhotos}
+                                                        className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium text-sm transition-colors"
+                                                    >
+                                                        <span className="material-symbols-outlined text-[18px]">
+                                                            {selectedPhotos.size === animal.photos.length ? 'check_box' : 'check_box_outline_blank'}
+                                                        </span>
+                                                        {selectedPhotos.size === animal.photos.length ? 'Desselecionar Todas' : 'Selecionar Todas'}
+                                                    </button>
+                                                    {selectedPhotos.size > 0 && (
+                                                        <button
+                                                            onClick={downloadSelectedPhotos}
+                                                            disabled={isDownloading}
+                                                            className={`flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium text-sm transition-colors ${isDownloading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                        >
+                                                            <span className="material-symbols-outlined text-[18px]">
+                                                                {isDownloading ? 'sync' : 'download'}
+                                                            </span>
+                                                            {isDownloading ? 'Baixando...' : `Baixar ${selectedPhotos.size} Foto${selectedPhotos.size > 1 ? 's' : ''}`}
+                                                        </button>
+                                                    )}
+                                                </>
+                                            )}
                                             <input
                                                 type="file"
                                                 id="photo-upload"
@@ -1156,33 +1281,58 @@ function PlantelProfile() {
                                                     {animal.photos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((photo, index) => {
                                                         const actualIndex = (currentPage - 1) * itemsPerPage + index;
                                                         const isVideo = photo.toLowerCase().match(/\.(mp4|webm|ogg)$/);
+                                                        const isSelected = selectedPhotos.has(actualIndex);
 
                                                         return (
                                                             <div
                                                                 key={actualIndex}
-                                                                className="group relative aspect-square rounded-xl overflow-hidden border border-slate-200 bg-slate-100 shadow-sm transition-all hover:shadow-md cursor-pointer"
-                                                                onClick={() => {
-                                                                    setSelectedMediaIndex(actualIndex);
-                                                                    setIsLightboxOpen(true);
-                                                                }}
+                                                                className={`group relative aspect-square rounded-xl overflow-hidden border-2 bg-slate-100 shadow-sm transition-all hover:shadow-md cursor-pointer ${isSelected ? 'border-primary ring-2 ring-primary/30' : 'border-slate-200'
+                                                                    }`}
                                                             >
-                                                                {isVideo ? (
-                                                                    <div className="w-full h-full flex items-center justify-center bg-slate-200">
-                                                                        <video
+                                                                {/* Selection Checkbox */}
+                                                                <div
+                                                                    className="absolute top-2 left-2 z-20"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        togglePhotoSelection(actualIndex);
+                                                                    }}
+                                                                >
+                                                                    <div className={`size-6 rounded-md flex items-center justify-center transition-all ${isSelected
+                                                                        ? 'bg-primary text-white'
+                                                                        : 'bg-white/80 backdrop-blur-sm border border-slate-300 text-slate-400 opacity-0 group-hover:opacity-100'
+                                                                        }`}>
+                                                                        <span className="material-symbols-outlined text-[18px]">
+                                                                            {isSelected ? 'check' : 'check_box_outline_blank'}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* Media Content */}
+                                                                <div
+                                                                    onClick={() => {
+                                                                        setSelectedMediaIndex(actualIndex);
+                                                                        setIsLightboxOpen(true);
+                                                                    }}
+                                                                    className="w-full h-full"
+                                                                >
+                                                                    {isVideo ? (
+                                                                        <div className="w-full h-full flex items-center justify-center bg-slate-200">
+                                                                            <video
+                                                                                src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${photo}`}
+                                                                                className="w-full h-full object-cover"
+                                                                            />
+                                                                            <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
+                                                                                <span className="material-symbols-outlined text-white text-4xl drop-shadow-md">play_circle</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <img
                                                                             src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${photo}`}
+                                                                            alt={`Mídia ${actualIndex + 1}`}
                                                                             className="w-full h-full object-cover"
                                                                         />
-                                                                        <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
-                                                                            <span className="material-symbols-outlined text-white text-4xl drop-shadow-md">play_circle</span>
-                                                                        </div>
-                                                                    </div>
-                                                                ) : (
-                                                                    <img
-                                                                        src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${photo}`}
-                                                                        alt={`Mídia ${actualIndex + 1}`}
-                                                                        className="w-full h-full object-cover"
-                                                                    />
-                                                                )}
+                                                                    )}
+                                                                </div>
 
                                                                 {/* Hover Overlay Actions */}
                                                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2" onClick={e => e.stopPropagation()}>
@@ -1544,12 +1694,17 @@ function PlantelProfile() {
 
                     {/* Lightbox / Media Viewer */}
                     {isLightboxOpen && selectedMediaIndex !== null && (
-                        <div className="fixed inset-0 bg-black/95 flex flex-col items-center justify-between z-[100] p-4 backdrop-blur-sm">
+                        <div className="fixed inset-0 bg-black/98 flex flex-col items-center justify-between z-[100] p-4 backdrop-blur-sm">
                             {/* Toolbar */}
                             <div className="w-full flex items-center justify-between p-4 text-white">
-                                <span className="text-sm font-medium tracking-wider">
-                                    {selectedMediaIndex + 1} / {animal.photos.length}
-                                </span>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-sm font-medium tracking-wider">
+                                        {selectedMediaIndex + 1} / {animal.photos.length}
+                                    </span>
+                                    <span className="text-xs text-white/60 hidden md:block">
+                                        Use ← → para navegar • ESC para fechar
+                                    </span>
+                                </div>
                                 <div className="flex items-center gap-6">
                                     <button
                                         onClick={() => setIsZoomed(!isZoomed)}
