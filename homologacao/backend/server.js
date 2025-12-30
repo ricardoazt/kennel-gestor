@@ -5,6 +5,8 @@ const multer = require('multer');
 const db = require('./models');
 const AnimalController = require('./controllers/AnimalController');
 const AgendaController = require('./controllers/AgendaController');
+const mediaController = require('./controllers/mediaController');
+const campaignController = require('./controllers/campaignController');
 
 require('dotenv').config();
 
@@ -12,7 +14,10 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+	origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3001'],
+	credentials: true
+}));
 app.use(express.json());
 
 // Serve Static Uploads
@@ -60,6 +65,34 @@ app.post('/agenda', AgendaController.create);
 app.get('/animals/:animal_id/agenda', AgendaController.findByAnimal);
 app.put('/agenda/:id', AgendaController.update);
 app.delete('/agenda/:id', AgendaController.delete);
+
+// === Media Center Routes ===
+app.post('/api/media/upload', mediaController.upload.single('file'), mediaController.uploadMedia);
+app.post('/api/media/upload-multiple', mediaController.upload.array('files', 50), mediaController.uploadMultiple);
+app.get('/api/media', mediaController.getMedia);
+
+// === Media Albums Routes ===
+app.get('/api/media/albums', mediaController.getAlbums);
+app.post('/api/media/albums', mediaController.createAlbum);
+app.put('/api/media/albums/:id', mediaController.updateAlbum);
+
+app.get('/api/media/:id', mediaController.getMediaById);
+app.put('/api/media/:id', mediaController.updateMedia);
+app.delete('/api/media/:id', mediaController.deleteMedia);
+
+// === Campaign Routes ===
+app.get('/api/campaigns/templates', campaignController.getTemplates);
+app.post('/api/campaigns', campaignController.createCampaign);
+app.get('/api/campaigns', campaignController.getCampaigns);
+app.get('/api/campaigns/:id', campaignController.getCampaignById);
+app.put('/api/campaigns/:id', campaignController.updateCampaign);
+app.delete('/api/campaigns/:id', campaignController.deleteCampaign);
+app.post('/api/campaigns/:id/publish', campaignController.publishCampaign);
+app.post('/api/campaigns/:id/share-links', campaignController.generateShareLinks);
+app.post('/api/campaigns/:id/track-view', campaignController.trackView);
+
+// === Public Campaign Routes (no auth required) ===
+app.get('/p/:slug', campaignController.getPublicCampaign);
 
 // Sync Database and Start Server
 db.sequelize.sync({ alter: true }).then(() => {

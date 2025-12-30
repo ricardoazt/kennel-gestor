@@ -31,6 +31,15 @@ const Sidebar = ({ isCollapsed = false, onToggle }) => {
 		{ name: 'Plantel', icon: 'pets', path: '/plantel' },
 		{ name: 'Estúdio Pedigree', icon: 'draw', path: '/pedigree-studio' },
 		{ name: 'Ninhadas', icon: 'grid_view', path: '/ninhadas' },
+		{
+			name: 'Central de Mídia',
+			icon: 'perm_media',
+			path: '/media-center',
+			children: [
+				{ name: 'Galeria', path: '/media-center/gallery' },
+				{ name: 'Campanhas', path: '/media-center/campaigns' }
+			]
+		},
 		{ name: 'Financeiro', icon: 'payments', path: '/financeiro' },
 	];
 

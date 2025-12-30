@@ -3,7 +3,7 @@
     "username": "kennel_user",
     "password": "kennel_password",
     "database": "kennel_homolog_db",
-    "host": "db",
+    "host": "localhost",
     "dialect": "postgres"
   },
   "test": {

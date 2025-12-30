@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Upload</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Teste de Upload Isolado</h1>
+
+    <div>
+        <label>API URL:</label>
+        <input type="text" id="apiUrl" value="http://localhost:3000" style="width: 300px;">
+    </div>
+    <br>
+    <div>
+        <input type="file" id="fileInput">
+        <button onclick="uploadFile()">Upload</button>
+    </div>
+
+    <div id="status"></div>
+    <pre id="output"></pre>
+
+    <script>
+        async function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const apiUrl = document.getElementById('apiUrl').value;
+            const statusDiv = document.getElementById('status');
+            const outputPre = document.getElementById('output');
+
+            if (fileInput.files.length === 0) {
+                alert('Selecione um arquivo');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            statusDiv.innerHTML = 'Enviando...';
+            outputPre.textContent = '';
+
+            try {
+                const response = await fetch(`${apiUrl}/api/media/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    statusDiv.innerHTML = '<strong class="success">Sucesso!</strong>';
+                    outputPre.textContent = JSON.stringify(result, null, 2);
+                } else {
+                    statusDiv.innerHTML = '<strong class="error">Erro no servidor</strong>';
+                    outputPre.textContent = `Status: ${response.status}\n${JSON.stringify(result, null, 2)}`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '<strong class="error">Erro de Rede/CORS</strong>';
+                outputPre.textContent = error.toString();
+            }
+        }
+    </script>
+</body>
+
+</html>
