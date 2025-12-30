@@ -37,7 +37,7 @@ const Sidebar = ({ isCollapsed = false, onToggle }) => {
 			path: '/media-center',
 			children: [
 				{ name: 'Galeria', path: '/media-center/gallery' },
-				{ name: 'Campanhas', path: '/media-center/campaigns' }
+				{ name: 'Campanhas', path: '/media-center/campaigns', disabled: true, tag: 'Em breve' }
 			]
 		},
 		{ name: 'Financeiro', icon: 'payments', path: '/financeiro' },
@@ -114,31 +114,59 @@ const Sidebar = ({ isCollapsed = false, onToggle }) => {
 								{item.children && expandedItems[item.name] && !isCollapsed && (
 									<div className="pl-10 flex flex-col gap-1" style={{ paddingLeft: '2.5rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
 										{item.children.map((child) => (
-											<NavLink
-												key={child.name}
-												to={child.path}
-												className={({ isActive }) =>
-													`flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${isActive
-														? 'text-primary bg-primary/5'
-														: 'text-gray-600 hover:bg-gray-50 hover:text-primary'
-													}`
-												}
-												style={({ isActive }) => ({
-													display: 'flex',
-													alignItems: 'center',
-													gap: '0.75rem',
-													padding: '0.5rem 0.75rem',
-													fontSize: '0.75rem',
-													fontWeight: 500,
-													borderRadius: '0.5rem',
-													textDecoration: 'none',
-													transition: 'background-color 0.2s, color 0.2s',
-													color: isActive ? 'var(--primary-color)' : 'var(--text-gray-600)',
-													backgroundColor: isActive ? 'rgba(19, 146, 236, 0.05)' : 'transparent',
-												})}
-											>
-												{child.name}
-											</NavLink>
+											child.disabled ? (
+												<div
+													key={child.name}
+													className="flex items-center justify-between px-3 py-2 text-xs font-medium rounded-lg text-gray-400 cursor-not-allowed opacity-75"
+													style={{
+														display: 'flex',
+														alignItems: 'center',
+														justifyContent: 'space-between',
+														padding: '0.5rem 0.75rem',
+														fontSize: '0.75rem',
+														fontWeight: 500,
+														borderRadius: '0.5rem',
+														color: '#9ca3af',
+														cursor: 'not-allowed',
+														opacity: 0.75,
+													}}
+												>
+													<span className="flex items-center gap-3">
+														{child.name}
+													</span>
+													{child.tag && (
+														<span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded border border-gray-200">
+															{child.tag}
+														</span>
+													)}
+												</div>
+											) : (
+												<NavLink
+													key={child.name}
+													to={child.path}
+													className={({ isActive }) =>
+														`flex items-center gap-3 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${isActive
+															? 'text-primary bg-primary/5'
+															: 'text-gray-600 hover:bg-gray-50 hover:text-primary'
+														}`
+													}
+													style={({ isActive }) => ({
+														display: 'flex',
+														alignItems: 'center',
+														gap: '0.75rem',
+														padding: '0.5rem 0.75rem',
+														fontSize: '0.75rem',
+														fontWeight: 500,
+														borderRadius: '0.5rem',
+														textDecoration: 'none',
+														transition: 'background-color 0.2s, color 0.2s',
+														color: isActive ? 'var(--primary-color)' : 'var(--text-gray-600)',
+														backgroundColor: isActive ? 'rgba(19, 146, 236, 0.05)' : 'transparent',
+													})}
+												>
+													{child.name}
+												</NavLink>
+											)
 										))}
 									</div>
 								)}

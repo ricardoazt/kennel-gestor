@@ -136,7 +136,7 @@ function PlantelProfile() {
         try {
             setIsDownloading(true);
             const zip = new JSZip();
-            const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+            const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
             // Fetch all selected photos
             const promises = Array.from(selectedPhotos).map(async (index) => {
@@ -1318,7 +1318,7 @@ function PlantelProfile() {
                                                                     {isVideo ? (
                                                                         <div className="w-full h-full flex items-center justify-center bg-slate-200">
                                                                             <video
-                                                                                src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${photo}`}
+                                                                                src={`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${photo}`}
                                                                                 className="w-full h-full object-cover"
                                                                             />
                                                                             <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
@@ -1327,7 +1327,7 @@ function PlantelProfile() {
                                                                         </div>
                                                                     ) : (
                                                                         <img
-                                                                            src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${photo}`}
+                                                                            src={`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${photo}`}
                                                                             alt={`Mídia ${actualIndex + 1}`}
                                                                             className="w-full h-full object-cover"
                                                                         />
@@ -1339,7 +1339,7 @@ function PlantelProfile() {
                                                                     <div className="flex gap-2">
                                                                         <button
                                                                             onClick={() => {
-                                                                                const url = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${photo}`;
+                                                                                const url = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${photo}`;
                                                                                 const link = document.createElement('a');
                                                                                 link.href = url;
                                                                                 link.download = `midia-cao-${id}-${actualIndex}.${isVideo ? 'mp4' : 'jpg'}`;
@@ -1354,7 +1354,7 @@ function PlantelProfile() {
                                                                         </button>
                                                                         <button
                                                                             onClick={() => {
-                                                                                const url = `${window.location.protocol}//${window.location.host}${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${photo}`;
+                                                                                const url = `${window.location.protocol}//${window.location.host}${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${photo}`;
                                                                                 const text = encodeURIComponent(`Veja a mídia de ${animal.nome}: ${url}`);
                                                                                 window.open(`https://wa.me/?text=${text}`, '_blank');
                                                                             }}
@@ -1717,7 +1717,7 @@ function PlantelProfile() {
                                         onClick={() => {
                                             const photo = animal.photos[selectedMediaIndex];
                                             const isVideo = photo.toLowerCase().match(/\.(mp4|webm|ogg)$/);
-                                            const url = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${photo}`;
+                                            const url = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${photo}`;
                                             const link = document.createElement('a');
                                             link.href = url;
                                             link.download = `midia-cao-${id}-${selectedMediaIndex}.${isVideo ? 'mp4' : 'jpg'}`;
@@ -1732,7 +1732,7 @@ function PlantelProfile() {
                                     </button>
                                     <button
                                         onClick={() => {
-                                            const url = `${window.location.protocol}//${window.location.host}${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${animal.photos[selectedMediaIndex]}`;
+                                            const url = `${window.location.protocol}//${window.location.host}${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${animal.photos[selectedMediaIndex]}`;
                                             const text = encodeURIComponent(`Veja esta mídia de ${animal.nome}: ${url}`);
                                             window.open(`https://wa.me/?text=${text}`, '_blank');
                                         }}
@@ -1769,7 +1769,7 @@ function PlantelProfile() {
                                     {animal.photos[selectedMediaIndex].toLowerCase().match(/\.(mp4|webm|ogg)$/) ? (
                                         <video
                                             key={selectedMediaIndex}
-                                            src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${animal.photos[selectedMediaIndex]}`}
+                                            src={`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${animal.photos[selectedMediaIndex]}`}
                                             controls
                                             autoPlay
                                             className={`max-w-full max-h-full object-contain shadow-2xl rounded-sm transition-transform duration-300 ${isZoomed ? 'scale-150 cursor-zoom-out' : 'scale-100 cursor-zoom-in'}`}
@@ -1778,7 +1778,7 @@ function PlantelProfile() {
                                     ) : (
                                         <img
                                             key={selectedMediaIndex}
-                                            src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${animal.photos[selectedMediaIndex]}`}
+                                            src={`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${animal.photos[selectedMediaIndex]}`}
                                             alt="Visualização"
                                             className={`max-w-full max-h-full object-contain shadow-2xl rounded-sm transition-transform duration-300 ${isZoomed ? 'scale-150 cursor-zoom-out' : 'scale-100 cursor-zoom-in'}`}
                                             onClick={() => setIsZoomed(!isZoomed)}
@@ -1808,7 +1808,7 @@ function PlantelProfile() {
                                                 }`}
                                         >
                                             <img
-                                                src={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${photo}`}
+                                                src={`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${photo}`}
                                                 className="w-full h-full object-cover"
                                             />
                                         </div>

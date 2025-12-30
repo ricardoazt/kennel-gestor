@@ -5,6 +5,9 @@ module.exports = (sequelize, DataTypes) => {
     class AgendaEvent extends Model {
         static associate(models) {
             AgendaEvent.belongsTo(models.Animal, { foreignKey: 'animal_id', as: 'animal' });
+            if (models.User) {
+                AgendaEvent.belongsTo(models.User, { foreignKey: 'created_by', as: 'creator' });
+            }
         }
     }
 

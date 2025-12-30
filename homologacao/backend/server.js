@@ -94,12 +94,44 @@ app.post('/api/campaigns/:id/track-view', campaignController.trackView);
 // === Public Campaign Routes (no auth required) ===
 app.get('/p/:slug', campaignController.getPublicCampaign);
 
-// Sync Database and Start Server
-db.sequelize.sync({ alter: true }).then(() => {
-	console.log('Database synced');
-	app.listen(PORT, () => {
-		console.log(`Server running on port ${PORT}`);
+// Retry logic for Database Synchronization
+const startServer = async () => {
+	const dns = require('dns');
+	dns.lookup('db', (err, address, family) => {
+		if (err) console.error('DNS Lookup Error:', err);
+		else console.log('DNS Lookup for db:', address, 'Family: IPv' + family);
 	});
-}).catch(err => {
-	console.error('Failed to sync database:', err);
-});
+
+	let retries = 100;
+	while (retries) {
+		try {
+			await db.sequelize.authenticate();
+			console.log('Database connection established successfully.');
+
+			// Force User table creation first to avoid FK issues with AgendaEvents
+			if (db.User) {
+				console.log('Syncing User model...');
+				await db.User.sync({ alter: true });
+			}
+
+			await db.sequelize.sync({ alter: true });
+			console.log('Database synced');
+			app.listen(PORT, () => {
+				console.log(`Server running on port ${PORT}`);
+			});
+			break;
+		} catch (err) {
+			console.error('Failed to connect to database:', err.message);
+			retries -= 1;
+			console.log(`Retries left: ${retries}`);
+			if (retries === 0) {
+				console.error('Could not connect to database after multiple attempts. Exiting.');
+				process.exit(1);
+			}
+			// Wait 5 seconds before retrying
+			await new Promise(res => setTimeout(res, 5000));
+		}
+	}
+};
+
+startServer();
