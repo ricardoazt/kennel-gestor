@@ -21,12 +21,22 @@ const Gallery = () => {
     const [playerOpen, setPlayerOpen] = useState(false);
     const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
-    // Share State
+    // Album Modals State
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [isCreateAlbumModalOpen, setIsCreateAlbumModalOpen] = useState(false);
+    const [isAddToAlbumModalOpen, setIsAddToAlbumModalOpen] = useState(false);
+    const [isEditAlbumModalOpen, setIsEditAlbumModalOpen] = useState(false);
+
+    // Album Data State
     const [albumName, setAlbumName] = useState('');
+    const [albumDescription, setAlbumDescription] = useState('');
     const [sharedLink, setSharedLink] = useState(null);
     const [creatingAlbum, setCreatingAlbum] = useState(false);
-    const [isAlbumHidden, setIsAlbumHidden] = useState(false);
+    const [selectedAlbumToAdd, setSelectedAlbumToAdd] = useState('');
+    const [editingAlbum, setEditingAlbum] = useState(null);
+    const [selectedMediaForAlbum, setSelectedMediaForAlbum] = useState(new Set());
+    const [availableMedia, setAvailableMedia] = useState([]);
+    const [showHiddenAlbums, setShowHiddenAlbums] = useState(false);
 
     useEffect(() => {
         const urlFilter = searchParams.get('filter');
@@ -37,13 +47,14 @@ const Gallery = () => {
 
     useEffect(() => {
         loadMedia();
-    }, [filter]);
+    }, [filter, showHiddenAlbums]);
 
     const loadMedia = async () => {
         try {
             setLoading(true);
             if (filter === 'albums') {
-                const response = await getAlbums();
+                const albumFilters = showHiddenAlbums ? { include_hidden: 'true' } : {};
+                const response = await getAlbums(albumFilters);
                 setAlbums(response || []);
             } else {
                 const filters = filter !== 'all' ? { file_type: filter } : {};
@@ -226,7 +237,7 @@ const Gallery = () => {
                 name: albumName,
                 description: 'Álbum criado via compartilhamento da galeria',
                 cover_image_id: Array.from(selectedItems)[0], // Use first item as cover
-                is_hidden: isAlbumHidden
+                is_hidden: true // SEMPRE oculto
             });
 
             const album = albumResponse.album;
@@ -251,6 +262,120 @@ const Gallery = () => {
     const copyToClipboard = () => {
         navigator.clipboard.writeText(sharedLink);
         alert('Link copiado!');
+    };
+
+    // --- Create Album Logic ---
+    const handleCreateAlbum = () => {
+        setAlbumName(`Novo Álbum - ${new Date().toLocaleDateString()}`);
+        setAlbumDescription('');
+        setIsCreateAlbumModalOpen(true);
+    };
+
+    const confirmCreateAlbum = async () => {
+        if (!albumName.trim()) return;
+
+        setCreatingAlbum(true);
+        try {
+            const albumResponse = await createAlbum({
+                name: albumName,
+                description: albumDescription,
+                cover_image_id: Array.from(selectedItems)[0],
+                is_hidden: false // Álbum normal (visível)
+            });
+
+            const album = albumResponse.album;
+            await addMediaToAlbum(album.id, Array.from(selectedItems));
+
+            setIsCreateAlbumModalOpen(false);
+            setSelectedItems(new Set());
+            alert('Álbum criado com sucesso!');
+
+            if (filter === 'albums') {
+                await loadMedia();
+            }
+        } catch (error) {
+            console.error('Error creating album:', error);
+            alert('Erro ao criar álbum');
+        } finally {
+            setCreatingAlbum(false);
+        }
+    };
+
+    // --- Add to Album Logic ---
+    const handleAddToAlbum = async () => {
+        // Load albums if not loaded
+        if (albums.length === 0) {
+            const response = await getAlbums();
+            setAlbums(response || []);
+        }
+        setSelectedAlbumToAdd('');
+        setIsAddToAlbumModalOpen(true);
+    };
+
+    const confirmAddToAlbum = async () => {
+        if (!selectedAlbumToAdd) return;
+
+        try {
+            await addMediaToAlbum(selectedAlbumToAdd, Array.from(selectedItems));
+            setIsAddToAlbumModalOpen(false);
+            setSelectedItems(new Set());
+            alert('Fotos adicionadas ao álbum!');
+        } catch (error) {
+            console.error('Error adding to album:', error);
+            alert('Erro ao adicionar fotos ao álbum');
+        }
+    };
+
+    // --- Edit Album Logic ---
+    const handleEditAlbum = async (album) => {
+        setEditingAlbum(album);
+        setSelectedMediaForAlbum(new Set());
+
+        // Load all media not in this album
+        try {
+            const response = await getMedia({});
+            const albumMediaIds = new Set(album.mediaFiles?.map(m => m.id) || []);
+            const available = response.media.filter(m => !albumMediaIds.has(m.id));
+            setAvailableMedia(available);
+            setIsEditAlbumModalOpen(true);
+        } catch (error) {
+            console.error('Error loading media for edit:', error);
+            alert('Erro ao carregar mídias disponíveis');
+        }
+    };
+
+    const toggleMediaSelection = (id) => {
+        const newSelection = new Set(selectedMediaForAlbum);
+        if (newSelection.has(id)) {
+            newSelection.delete(id);
+        } else {
+            newSelection.add(id);
+        }
+        setSelectedMediaForAlbum(newSelection);
+    };
+
+    const confirmAddPhotosToAlbum = async () => {
+        if (selectedMediaForAlbum.size === 0) return;
+
+        try {
+            await addMediaToAlbum(editingAlbum.id, Array.from(selectedMediaForAlbum));
+            setIsEditAlbumModalOpen(false);
+            alert(`${selectedMediaForAlbum.size} fotos adicionadas ao álbum!`);
+
+            // Reload albums to show updated count
+            if (filter === 'albums') {
+                await loadMedia();
+            }
+        } catch (error) {
+            console.error('Error adding photos to album:', error);
+            alert('Erro ao adicionar fotos ao álbum');
+        }
+    };
+
+    const copyAlbumLink = (album) => {
+        const link = `${window.location.origin}/album/${album.share_token}`;
+        navigator.clipboard.writeText(link);
+        alert('Link do álbum copiado!');
     };
 
     return (
@@ -334,6 +459,20 @@ const Gallery = () => {
                         Álbuns
                     </button>
                 </div>
+                {filter === 'albums' && (
+                    <div className="mt-4 flex items-center gap-2 px-2">
+                        <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-600 hover:text-gray-900 select-none">
+                            <input
+                                type="checkbox"
+                                checked={showHiddenAlbums}
+                                onChange={(e) => setShowHiddenAlbums(e.target.checked)}
+                                className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                            />
+                            <span className="material-symbols-outlined text-base">visibility_off</span>
+                            Mostrar Álbuns Ocultos
+                        </label>
+                    </div>
+                )}
                 {selectedAlbum && (
                     <div className="mt-4 flex items-center gap-2 text-sm text-gray-600">
                         <span className="material-symbols-outlined text-base">folder_open</span>
@@ -392,7 +531,11 @@ const Gallery = () => {
                                             Ver fotos
                                         </span>
                                     </div>
-                                    {album.is_public && (
+                                    {album.is_hidden ? (
+                                        <div className="absolute top-2 right-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                                            OCULTO
+                                        </div>
+                                    ) : album.is_public && (
                                         <div className="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
                                             PÚBLICO
                                         </div>
@@ -405,29 +548,43 @@ const Gallery = () => {
                                             <span className="material-symbols-outlined text-sm">image</span>
                                             {album.mediaFiles?.length || 0} itens
                                         </span>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                console.log('Album delete clicked');
-                                                handleDeleteAlbum(album.id);
-                                            }}
-                                            className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50 relative z-50"
-                                            title="Excluir álbum"
-                                        >
-                                            <span className="material-symbols-outlined text-lg">delete</span>
-                                        </button>
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                const link = `${window.location.origin}/album/${album.share_token}`;
-                                                navigator.clipboard.writeText(link);
-                                                alert('Link do álbum copiado!');
-                                            }}
-                                            className="text-blue-600 hover:text-blue-800 p-1 rounded-full hover:bg-blue-50"
-                                            title="Copiar link público"
-                                        >
-                                            <span className="material-symbols-outlined text-lg">share</span>
-                                        </button>
+                                        <div className="flex gap-1">
+                                            {/* Botão Editar */}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleEditAlbum(album);
+                                                }}
+                                                className="text-blue-600 hover:text-blue-800 p-1 rounded-full hover:bg-blue-50"
+                                                title="Adicionar fotos"
+                                            >
+                                                <span className="material-symbols-outlined text-lg">edit</span>
+                                            </button>
+
+                                            {/* Botão Compartilhar */}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    copyAlbumLink(album);
+                                                }}
+                                                className="text-blue-600 hover:text-blue-800 p-1 rounded-full hover:bg-blue-50"
+                                                title="Copiar link"
+                                            >
+                                                <span className="material-symbols-outlined text-lg">share</span>
+                                            </button>
+
+                                            {/* Botão Excluir */}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteAlbum(album.id);
+                                                }}
+                                                className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50"
+                                                title="Excluir álbum"
+                                            >
+                                                <span className="material-symbols-outlined text-lg">delete</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -540,30 +697,53 @@ const Gallery = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
+                        {/* Criar Álbum Normal */}
                         <button
-                            onClick={handleDownloadZip}
-                            className="p-2 hover:bg-gray-800 rounded-full transition-colors tooltip flex flex-col items-center gap-1 group"
+                            onClick={handleCreateAlbum}
+                            className="p-2 hover:bg-gray-800 rounded-full transition-colors relative group"
+                            title="Criar Álbum"
                         >
-                            <span className="material-symbols-outlined">download</span>
-                            <span className="text-[10px] hidden group-hover:block absolute -top-8 bg-black px-2 py-1 rounded">Baixar ZIP</span>
+                            <span className="material-symbols-outlined">create_new_folder</span>
+                            <span className="text-[10px] hidden group-hover:block absolute -top-8 bg-black px-2 py-1 rounded whitespace-nowrap">Criar Álbum</span>
                         </button>
 
+                        {/* Adicionar a Álbum Existente */}
                         <button
-                            className="p-2 hover:bg-gray-800 rounded-full transition-colors tooltip flex flex-col items-center gap-1 group"
+                            onClick={handleAddToAlbum}
+                            className="p-2 hover:bg-gray-800 rounded-full transition-colors relative group"
+                            title="Adicionar a Álbum"
+                        >
+                            <span className="material-symbols-outlined">add_photo_alternate</span>
+                            <span className="text-[10px] hidden group-hover:block absolute -top-8 bg-black px-2 py-1 rounded whitespace-nowrap">Adicionar a Álbum</span>
+                        </button>
+
+                        {/* Compartilhar (Criar Oculto) */}
+                        <button
+                            className="p-2 hover:bg-gray-800 rounded-full transition-colors relative group"
                             onClick={handleShare}
                         >
                             <span className="material-symbols-outlined">share</span>
-                            <span className="text-[10px] hidden group-hover:block absolute -top-8 bg-black px-2 py-1 rounded">Compartilhar</span>
+                            <span className="text-[10px] hidden group-hover:block absolute -top-8 bg-black px-2 py-1 rounded whitespace-nowrap">Criar Link</span>
                         </button>
 
                         <div className="w-px h-8 bg-gray-700 mx-2"></div>
 
+                        {/* Download ZIP */}
+                        <button
+                            onClick={handleDownloadZip}
+                            className="p-2 hover:bg-gray-800 rounded-full transition-colors relative group"
+                        >
+                            <span className="material-symbols-outlined">download</span>
+                            <span className="text-[10px] hidden group-hover:block absolute -top-8 bg-black px-2 py-1 rounded whitespace-nowrap">Baixar ZIP</span>
+                        </button>
+
+                        {/* Excluir */}
                         <button
                             onClick={handleBulkDelete}
-                            className="p-2 hover:bg-red-900/50 text-red-400 rounded-full transition-colors flex flex-col items-center gap-1 group"
+                            className="p-2 hover:bg-red-900/50 text-red-400 rounded-full transition-colors relative group"
                         >
                             <span className="material-symbols-outlined">delete</span>
-                            <span className="text-[10px] hidden group-hover:block absolute -top-8 bg-black px-2 py-1 rounded">Excluir</span>
+                            <span className="text-[10px] hidden group-hover:block absolute -top-8 bg-black px-2 py-1 rounded whitespace-nowrap">Excluir</span>
                         </button>
                     </div>
 
@@ -649,8 +829,14 @@ const Gallery = () => {
 
                         {!sharedLink ? (
                             <div className="space-y-4">
+                                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 flex items-start gap-2">
+                                    <span className="material-symbols-outlined text-orange-600 text-sm">info</span>
+                                    <p className="text-xs text-orange-800">
+                                        Este álbum ficará oculto na galeria e só será acessível via link compartilhável.
+                                    </p>
+                                </div>
                                 <p className="text-sm text-gray-600">
-                                    Isso criará um novo álbum público com os {selectedItems.size} itens selecionados.
+                                    Criar link compartilhável com {selectedItems.size} itens selecionados.
                                 </p>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Nome do Álbum</label>
@@ -659,39 +845,15 @@ const Gallery = () => {
                                         value={albumName}
                                         onChange={(e) => setAlbumName(e.target.value)}
                                         className="w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder="Ex: Ninhada A - 1 mês"
+                                        placeholder="Ex: Link para Cliente XYZ"
                                     />
                                 </div>
-                                <div className="space-y-3">
-                                    <label className="block text-sm font-medium text-gray-700">Visibilidade do Álbum</label>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <button
-                                            type="button"
-                                            onClick={() => setIsAlbumHidden(false)}
-                                            className={`flex flex-col items-center p-3 rounded-lg border-2 transition-all ${!isAlbumHidden ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}
-                                        >
-                                            <span className="material-symbols-outlined text-blue-600 mb-1">folder_special</span>
-                                            <span className="text-xs font-bold text-gray-900">Manter na Galeria</span>
-                                            <span className="text-[10px] text-gray-500 text-center mt-1">Visível na aba de álbuns</span>
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setIsAlbumHidden(true)}
-                                            className={`flex flex-col items-center p-3 rounded-lg border-2 transition-all ${isAlbumHidden ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}`}
-                                        >
-                                            <span className="material-symbols-outlined text-orange-600 mb-1">link</span>
-                                            <span className="text-xs font-bold text-gray-900">Apenas Link</span>
-                                            <span className="text-[10px] text-gray-500 text-center mt-1">Oculto na galeria</span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className="flex justify-end gap-3 mt-6">
-                                    <button
-                                        onClick={() => setIsShareModalOpen(false)}
-                                        className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
-                                    >
-                                        Cancelar
-                                    </button>
+                                <div className="flex justify-end gap-3 mt-6">\n                                    <button
+                                    onClick={() => setIsShareModalOpen(false)}
+                                    className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+                                >
+                                    Cancelar
+                                </button>
                                     <button
                                         onClick={confirmShare}
                                         disabled={creatingAlbum || !albumName.trim()}
@@ -740,6 +902,189 @@ const Gallery = () => {
                                     </button>
                                 </div>
                             </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Create Album Modal */}
+            {isCreateAlbumModalOpen && (
+                <div className="fixed inset-0 z-[80] bg-black/50 flex items-center justify-center animate-fade-in">
+                    <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md m-4">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-bold text-gray-900">Criar Álbum</h3>
+                            <button
+                                onClick={() => setIsCreateAlbumModalOpen(false)}
+                                className="text-gray-400 hover:text-gray-600"
+                            >
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <p className="text-sm text-gray-600">
+                                Criar um álbum com {selectedItems.size} fotos selecionadas.
+                            </p>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Nome do Álbum</label>
+                                <input
+                                    type="text"
+                                    value={albumName}
+                                    onChange={(e) => setAlbumName(e.target.value)}
+                                    className="w-full rounded-lg border-gray-300"
+                                    placeholder="Ex: Ninhada A - 1 mês"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Descrição (opcional)</label>
+                                <textarea
+                                    value={albumDescription}
+                                    onChange={(e) => setAlbumDescription(e.target.value)}
+                                    className="w-full rounded-lg border-gray-300"
+                                    rows="3"
+                                    placeholder="Descrição do álbum..."
+                                />
+                            </div>
+
+                            <div className="flex justify-end gap-3 mt-6">
+                                <button
+                                    onClick={() => setIsCreateAlbumModalOpen(false)}
+                                    className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={confirmCreateAlbum}
+                                    disabled={creatingAlbum || !albumName.trim()}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+                                >
+                                    {creatingAlbum && <span className="animate-spin material-symbols-outlined text-sm">progress_activity</span>}
+                                    Criar Álbum
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Add to Album Modal */}
+            {isAddToAlbumModalOpen && (
+                <div className="fixed inset-0 z-[80] bg-black/50 flex items-center justify-center animate-fade-in">
+                    <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md m-4">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-bold text-gray-900">Adicionar a Álbum</h3>
+                            <button
+                                onClick={() => setIsAddToAlbumModalOpen(false)}
+                                className="text-gray-400 hover:text-gray-600"
+                            >
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <p className="text-sm text-gray-600">
+                                Adicionar {selectedItems.size} fotos a um álbum existente.
+                            </p>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Selecione o Álbum</label>
+                                <select
+                                    value={selectedAlbumToAdd}
+                                    onChange={(e) => setSelectedAlbumToAdd(e.target.value)}
+                                    className="w-full rounded-lg border-gray-300"
+                                >
+                                    <option value="">Escolha um álbum...</option>
+                                    {albums.filter(a => !a.is_hidden).map(album => (
+                                        <option key={album.id} value={album.id}>
+                                            {album.name} ({album.mediaFiles?.length || 0} fotos)
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="flex justify-end gap-3 mt-6">
+                                <button
+                                    onClick={() => setIsAddToAlbumModalOpen(false)}
+                                    className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={confirmAddToAlbum}
+                                    disabled={!selectedAlbumToAdd}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                >
+                                    Adicionar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit Album Modal */}
+            {isEditAlbumModalOpen && (
+                <div className="fixed inset-0 z-[80] bg-black/50 flex items-center justify-center animate-fade-in">
+                    <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl m-4 max-h-[80vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-bold text-gray-900">
+                                Editar: {editingAlbum?.name}
+                            </h3>
+                            <button
+                                onClick={() => setIsEditAlbumModalOpen(false)}
+                                className="text-gray-400 hover:text-gray-600"
+                            >
+                                <span className="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+
+                        <p className="text-sm text-gray-600 mb-4">
+                            Selecione fotos para adicionar ao álbum (atual: {editingAlbum?.mediaFiles?.length || 0} fotos)
+                        </p>
+
+                        {availableMedia.length === 0 ? (
+                            <p className="text-sm text-gray-500 text-center py-8">
+                                Todas as fotos já estão neste álbum.
+                            </p>
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-4 gap-2 mb-4">
+                                    {availableMedia.map(item => (
+                                        <div
+                                            key={item.id}
+                                            onClick={() => toggleMediaSelection(item.id)}
+                                            className={`aspect-square cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${selectedMediaForAlbum.has(item.id) ? 'border-blue-500 ring-2 ring-blue-300' : 'border-gray-200 hover:border-blue-300'
+                                                }`}
+                                        >
+                                            <img
+                                                src={getThumbnailUrl(item)}
+                                                alt={item.original_name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="flex justify-between items-center pt-4 border-t">
+                                    <span className="text-sm text-gray-600">
+                                        {selectedMediaForAlbum.size} fotos selecionadas
+                                    </span>
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={() => setIsEditAlbumModalOpen(false)}
+                                            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+                                        >
+                                            Cancelar
+                                        </button>
+                                        <button
+                                            onClick={confirmAddPhotosToAlbum}
+                                            disabled={selectedMediaForAlbum.size === 0}
+                                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                        >
+                                            Adicionar Fotos
+                                        </button>
+                                    </div>
+                                </div>
+                            </>
                         )}
                     </div>
                 </div>

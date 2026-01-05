@@ -57,8 +57,8 @@ export const createAlbum = async (data) => {
     return response.data;
 };
 
-export const getAlbums = async () => {
-    const response = await api.get('/api/media/albums');
+export const getAlbums = async (filters = {}) => {
+    const response = await api.get('/api/media/albums', { params: filters });
     return response.data;
 };
 
