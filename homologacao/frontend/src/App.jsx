@@ -10,11 +10,13 @@ import MediaCenter from './pages/MediaCenter';
 import Gallery from './pages/MediaCenter/Gallery';
 import CampaignList from './pages/MediaCenter/CampaignList';
 import CampaignBuilder from './pages/MediaCenter/CampaignBuilder';
+import SharedAlbum from './pages/SharedAlbum';
 
 function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/album/:token" element={<SharedAlbum />} />
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="cadastros/reservas" element={<Reservations />} />

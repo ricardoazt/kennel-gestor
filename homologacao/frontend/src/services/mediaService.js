@@ -67,6 +67,21 @@ export const updateAlbum = async (id, data) => {
     return response.data;
 };
 
+export const addMediaToAlbum = async (albumId, mediaIds) => {
+    const response = await api.post(`/api/media/albums/${albumId}/media`, { mediaIds });
+    return response.data;
+};
+
+export const deleteAlbum = async (id) => {
+    const response = await api.delete(`/api/media/albums/${id}`);
+    return response.data;
+};
+
+export const getPublicAlbum = async (token) => {
+    const response = await api.get(`/api/public/albums/${token}`);
+    return response.data;
+};
+
 export default {
     uploadMedia,
     uploadMultiple,
@@ -76,5 +91,8 @@ export default {
     deleteMedia,
     createAlbum,
     getAlbums,
-    updateAlbum
+    getAlbums,
+    updateAlbum,
+    addMediaToAlbum,
+    getPublicAlbum
 };

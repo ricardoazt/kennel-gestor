@@ -15,10 +15,11 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({
-	origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3001'],
+	origin: '*',
 	credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: '1gb' }));
+app.use(express.urlencoded({ limit: '1gb', extended: true }));
 
 // Serve Static Uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -75,6 +76,9 @@ app.get('/api/media', mediaController.getMedia);
 app.get('/api/media/albums', mediaController.getAlbums);
 app.post('/api/media/albums', mediaController.createAlbum);
 app.put('/api/media/albums/:id', mediaController.updateAlbum);
+app.post('/api/media/albums/:id/media', mediaController.addMediaToAlbum);
+app.delete('/api/media/albums/:id', mediaController.deleteAlbum);
+app.get('/api/public/albums/:token', mediaController.getPublicAlbum);
 
 app.get('/api/media/:id', mediaController.getMediaById);
 app.put('/api/media/:id', mediaController.updateMedia);

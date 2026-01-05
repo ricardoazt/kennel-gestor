@@ -13,6 +13,13 @@ const MediaCenter = () => {
             path: '/media-center/gallery'
         },
         {
+            title: 'Álbuns',
+            description: 'Organize e compartilhe coleções de fotos',
+            icon: 'folder_special',
+            color: 'bg-orange-500',
+            path: '/media-center/gallery?filter=albums'
+        },
+        {
             title: 'Campanhas',
             description: 'Crie e gerencie campanhas de divulgação',
             icon: 'campaign',

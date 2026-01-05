@@ -4,8 +4,62 @@
  */
 
 const sharp = require('sharp');
+const ffmpeg = require('fluent-ffmpeg');
 const path = require('path');
 const fs = require('fs').promises;
+
+/**
+ * Generate thumbnail for a video
+ * @param {string} inputPath - Path to original video
+ * @param {string} outputPath - Path to save thumbnail
+ * @param {number} size - Thumbnail size (default: 300)
+ * @returns {Promise<object>} - Thumbnail metadata
+ */
+async function generateVideoThumbnail(inputPath, outputPath, size = 300) {
+    const tempPath = `${outputPath}.temp.jpg`;
+
+    return new Promise((resolve, reject) => {
+        const outputDir = path.dirname(tempPath);
+        const outputFilename = path.basename(tempPath);
+
+        ffmpeg(inputPath)
+            .screenshots({
+                timestamps: ['00:00:01'], // Take screenshot at 1 second
+                filename: outputFilename,
+                folder: outputDir,
+                size: '720x?' // Extract at a decent resolution first
+            })
+            .on('end', async () => {
+                try {
+                    // Use sharp to create a square, centered crop
+                    const metadata = await sharp(tempPath)
+                        .resize(size, size, {
+                            fit: 'cover',
+                            position: 'center'
+                        })
+                        .jpeg({ quality: 80 })
+                        .toFile(outputPath);
+
+                    // Clean up temp file
+                    await fs.unlink(tempPath);
+
+                    resolve({
+                        width: metadata.width,
+                        height: metadata.height,
+                        size: (await fs.stat(outputPath)).size
+                    });
+                } catch (error) {
+                    // Try to clean up temp file even on error
+                    try { await fs.unlink(tempPath); } catch (e) { }
+                    reject(error);
+                }
+            })
+            .on('error', (err) => {
+                console.error('Error generating video thumbnail:', err);
+                reject(err);
+            });
+    });
+}
 
 /**
  * Generate thumbnail for an image
@@ -191,6 +245,7 @@ async function createOGImage(backgroundPath, title, outputPath) {
 
 module.exports = {
     generateThumbnail,
+    generateVideoThumbnail,
     generateSocialMediaVariants,
     optimizeImage,
     getImageMetadata,

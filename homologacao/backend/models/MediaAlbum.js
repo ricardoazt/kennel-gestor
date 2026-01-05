@@ -37,6 +37,22 @@ module.exports = (sequelize, DataTypes) => {
         },
         created_by: {
             type: DataTypes.INTEGER
+        },
+        share_token: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            allowNull: true,
+            unique: true
+        },
+        is_public: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: true,
+            allowNull: false
+        },
+        is_hidden: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+            allowNull: false
         }
     }, {
         sequelize,

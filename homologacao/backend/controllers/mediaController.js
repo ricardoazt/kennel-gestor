@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs').promises;
-const { generateThumbnail, getImageMetadata, optimizeImage } = require('../utils/imageProcessor');
+const { generateThumbnail, generateVideoThumbnail, getImageMetadata, optimizeImage } = require('../utils/imageProcessor');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -39,7 +39,7 @@ const upload = multer({
     storage,
     fileFilter,
     limits: {
-        fileSize: 100 * 1024 * 1024 // 100MB limit
+        fileSize: 1024 * 1024 * 1024 // 1GB limit
     }
 });
 
@@ -73,6 +73,16 @@ const uploadMedia = async (req, res) => {
                 thumbnailPath = thumbnailFilename;
             } catch (error) {
                 console.error('Error processing image:', error);
+            }
+        } else if (fileType === 'video') {
+            try {
+                // Generate video thumbnail
+                const thumbnailFilename = `thumb-${file.filename}.jpg`;
+                const thumbnailFullPath = path.join(path.dirname(file.path), thumbnailFilename);
+                await generateVideoThumbnail(file.path, thumbnailFullPath);
+                thumbnailPath = thumbnailFilename;
+            } catch (error) {
+                console.error('Error processing video thumbnail:', error);
             }
         }
 
@@ -132,6 +142,15 @@ const uploadMultiple = async (req, res) => {
                     thumbnailPath = thumbnailFilename;
                 } catch (error) {
                     console.error('Error processing image:', error);
+                }
+            } else if (fileType === 'video') {
+                try {
+                    const thumbnailFilename = `thumb-${file.filename}.jpg`;
+                    const thumbnailFullPath = path.join(path.dirname(file.path), thumbnailFilename);
+                    await generateVideoThumbnail(file.path, thumbnailFullPath);
+                    thumbnailPath = thumbnailFilename;
+                } catch (error) {
+                    console.error('Error processing video thumbnail:', error);
                 }
             }
 
@@ -273,11 +292,18 @@ const updateMedia = async (req, res) => {
 const deleteMedia = async (req, res) => {
     try {
         const { id } = req.params;
+        console.log('DELETE MEDIA REQUEST - ID:', id);
 
         const media = await MediaFile.findByPk(id);
         if (!media) {
             return res.status(404).json({ error: 'Media file not found' });
         }
+
+        // Nullify cover_image_id in albums if this media is the cover
+        await MediaAlbum.update(
+            { cover_image_id: null },
+            { where: { cover_image_id: id } }
+        );
 
         // Delete physical files
         try {
@@ -305,7 +331,7 @@ const deleteMedia = async (req, res) => {
  */
 const createAlbum = async (req, res) => {
     try {
-        const { name, description, cover_image_id } = req.body;
+        const { name, description, cover_image_id, is_hidden } = req.body;
 
         if (!name) {
             return res.status(400).json({ error: 'Album name is required' });
@@ -315,6 +341,7 @@ const createAlbum = async (req, res) => {
             name,
             description,
             cover_image_id,
+            is_hidden: is_hidden || false,
             created_by: req.user?.id || null
         });
 
@@ -333,7 +360,15 @@ const createAlbum = async (req, res) => {
  */
 const getAlbums = async (req, res) => {
     try {
+        const { include_hidden } = req.query;
+        const where = {};
+
+        if (include_hidden !== 'true') {
+            where.is_hidden = false;
+        }
+
         const albums = await MediaAlbum.findAll({
+            where,
             include: [
                 { model: MediaFile, as: 'coverImage' },
                 { model: MediaFile, as: 'mediaFiles' },
@@ -378,6 +413,92 @@ const updateAlbum = async (req, res) => {
     }
 };
 
+/**
+ * Get public album by share token
+ */
+const getPublicAlbum = async (req, res) => {
+    try {
+        const { token } = req.params;
+
+        const album = await MediaAlbum.findOne({
+            where: { share_token: token, is_public: true },
+            include: [
+                { model: MediaFile, as: 'coverImage' },
+                { model: MediaFile, as: 'mediaFiles' },
+                { model: User, as: 'creator', attributes: ['name'] }
+            ]
+        });
+
+        if (!album) {
+            return res.status(404).json({ error: 'Album not found or not public' });
+        }
+
+        res.json(album);
+    } catch (error) {
+        console.error('Get public album error:', error);
+        res.status(500).json({ error: 'Failed to fetch public album', details: error.message });
+    }
+};
+
+/**
+ * Delete album
+ */
+const deleteAlbum = async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log('DELETE ALBUM REQUEST - ID:', id);
+
+        const album = await MediaAlbum.findByPk(id);
+        if (!album) {
+            return res.status(404).json({ error: 'Album not found' });
+        }
+
+        // Delete the album record
+        // Note: MediaFiles.album_id will be set to NULL automatically if configured in migration
+        // or we can do it manually here to be safe
+        await MediaFile.update(
+            { album_id: null },
+            { where: { album_id: id } }
+        );
+
+        await album.destroy();
+
+        res.json({ message: 'Album deleted successfully' });
+    } catch (error) {
+        console.error('Delete album error:', error);
+        res.status(500).json({ error: 'Failed to delete album', details: error.message });
+    }
+};
+
+/**
+ * Add media to album
+ */
+const addMediaToAlbum = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { mediaIds } = req.body;
+
+        const album = await MediaAlbum.findByPk(id);
+        if (!album) {
+            return res.status(404).json({ error: 'Album not found' });
+        }
+
+        if (!mediaIds || !Array.isArray(mediaIds)) {
+            return res.status(400).json({ error: 'mediaIds array is required' });
+        }
+
+        await MediaFile.update(
+            { album_id: id },
+            { where: { id: mediaIds } }
+        );
+
+        res.json({ message: 'Media added to album successfully' });
+    } catch (error) {
+        console.error('Add media to album error:', error);
+        res.status(500).json({ error: 'Failed to add media to album', details: error.message });
+    }
+};
+
 module.exports = {
     upload,
     uploadMedia,
@@ -388,5 +509,8 @@ module.exports = {
     deleteMedia,
     createAlbum,
     getAlbums,
-    updateAlbum
+    updateAlbum,
+    deleteAlbum,
+    getPublicAlbum,
+    addMediaToAlbum
 };
