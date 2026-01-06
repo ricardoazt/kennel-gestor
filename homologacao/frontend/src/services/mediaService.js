@@ -77,8 +77,23 @@ export const deleteAlbum = async (id) => {
     return response.data;
 };
 
+export const removeMediaFromAlbum = async (albumId, mediaId) => {
+    const response = await api.delete(`/api/media/albums/${albumId}/media/${mediaId}`);
+    return response.data;
+};
+
 export const getPublicAlbum = async (token) => {
     const response = await api.get(`/api/public/albums/${token}`);
+    return response.data;
+};
+
+export const getAlbumById = async (id) => {
+    const response = await api.get(`/api/media/albums/${id}/details`);
+    return response.data;
+};
+
+export const toggleLinkStatus = async (id, is_link_active) => {
+    const response = await api.put(`/api/media/albums/${id}/toggle-link`, { is_link_active });
     return response.data;
 };
 
@@ -94,5 +109,9 @@ export default {
     getAlbums,
     updateAlbum,
     addMediaToAlbum,
-    getPublicAlbum
+    removeMediaFromAlbum,
+    deleteAlbum,
+    getPublicAlbum,
+    getAlbumById,
+    toggleLinkStatus
 };

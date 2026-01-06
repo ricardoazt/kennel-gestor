@@ -4,7 +4,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 const Sidebar = ({ isCollapsed = false, onToggle }) => {
 	const location = useLocation();
 	const [expandedItems, setExpandedItems] = useState({
-		'Cadastros': true
+		'CRM': true
 	});
 
 	const toggleExpand = (name) => {
@@ -19,10 +19,11 @@ const Sidebar = ({ isCollapsed = false, onToggle }) => {
 	const navItems = [
 		{ name: 'Dashboard', icon: 'dashboard', path: '/' },
 		{
-			name: 'Cadastros',
+			name: 'CRM',
 			icon: 'folder_shared',
-			path: '/cadastros',
+			path: '/crm',
 			children: [
+				{ name: 'Funil de Vendas', path: '/crm/funil-vendas' },
 				{ name: 'Reservas', path: '/cadastros/reservas' },
 				{ name: 'Clientes', path: '/cadastros/clientes' }
 			]
@@ -99,7 +100,7 @@ const Sidebar = ({ isCollapsed = false, onToggle }) => {
 									title={isCollapsed ? item.name : ''}
 								>
 									<div className="flex items-center gap-3" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-										<span className={`material-symbols-outlined ${item.name === 'Cadastros' ? 'fill-1' : ''}`}>
+										<span className={`material-symbols-outlined ${item.name === 'CRM' ? 'fill-1' : ''}`}>
 											{item.icon}
 										</span>
 										{!isCollapsed && item.name}

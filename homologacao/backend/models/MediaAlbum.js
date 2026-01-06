@@ -53,6 +53,16 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             defaultValue: false,
             allowNull: false
+        },
+        access_count: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
+            allowNull: false
+        },
+        is_link_active: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: true,
+            allowNull: false
         }
     }, {
         sequelize,

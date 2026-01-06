@@ -77,7 +77,10 @@ app.get('/api/media/albums', mediaController.getAlbums);
 app.post('/api/media/albums', mediaController.createAlbum);
 app.put('/api/media/albums/:id', mediaController.updateAlbum);
 app.post('/api/media/albums/:id/media', mediaController.addMediaToAlbum);
+app.delete('/api/media/albums/:albumId/media/:mediaId', mediaController.removeMediaFromAlbum); // Remove media from album
 app.delete('/api/media/albums/:id', mediaController.deleteAlbum);
+app.get('/api/media/albums/:id/details', mediaController.getAlbumById); // Get album details by ID
+app.put('/api/media/albums/:id/toggle-link', mediaController.toggleLinkStatus); // Toggle link active status
 app.get('/api/public/albums/:token', mediaController.getPublicAlbum);
 
 app.get('/api/media/:id', mediaController.getMediaById);

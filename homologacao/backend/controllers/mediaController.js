@@ -421,7 +421,11 @@ const getPublicAlbum = async (req, res) => {
         const { token } = req.params;
 
         const album = await MediaAlbum.findOne({
-            where: { share_token: token, is_public: true },
+            where: {
+                share_token: token,
+                is_public: true,
+                is_link_active: true // Verificar se link está ativo
+            },
             include: [
                 { model: MediaFile, as: 'coverImage' },
                 { model: MediaFile, as: 'mediaFiles' },
@@ -430,8 +434,11 @@ const getPublicAlbum = async (req, res) => {
         });
 
         if (!album) {
-            return res.status(404).json({ error: 'Album not found or not public' });
+            return res.status(404).json({ error: 'Album not found, not public, or link inactive' });
         }
+
+        // Incrementar contador de acessos
+        await album.increment('access_count');
 
         res.json(album);
     } catch (error) {
@@ -499,6 +506,104 @@ const addMediaToAlbum = async (req, res) => {
     }
 };
 
+/**
+ * Remove media from album (without deleting the file)
+ */
+const removeMediaFromAlbum = async (req, res) => {
+    try {
+        const { albumId, mediaId } = req.params;
+        console.log('REMOVE MEDIA FROM ALBUM - Album ID:', albumId, 'Media ID:', mediaId);
+
+        const media = await MediaFile.findByPk(mediaId);
+        if (!media) {
+            return res.status(404).json({ error: 'Media file not found' });
+        }
+
+        // Verify that the media belongs to the specified album
+        if (media.album_id !== parseInt(albumId)) {
+            return res.status(400).json({ error: 'Media does not belong to this album' });
+        }
+
+        // Remove from album by setting album_id to null
+        await media.update({ album_id: null });
+
+        // Check if album is now empty
+        const remainingMedia = await MediaFile.count({
+            where: { album_id: albumId }
+        });
+
+        let albumDeleted = false;
+        if (remainingMedia === 0) {
+            // Delete the album if it's empty
+            const album = await MediaAlbum.findByPk(albumId);
+            if (album) {
+                await album.destroy();
+                albumDeleted = true;
+                console.log('Album deleted automatically because it became empty');
+            }
+        }
+
+        res.json({
+            message: 'Media removed from album successfully',
+            albumDeleted: albumDeleted
+        });
+    } catch (error) {
+        console.error('Remove media from album error:', error);
+        res.status(500).json({ error: 'Failed to remove media from album', details: error.message });
+    }
+};
+
+/**
+ * Get album by ID with full details
+ */
+const getAlbumById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const album = await MediaAlbum.findByPk(id, {
+            include: [
+                { model: MediaFile, as: 'coverImage' },
+                { model: MediaFile, as: 'mediaFiles' },
+                { model: User, as: 'creator', attributes: ['id', 'name', 'email'] }
+            ]
+        });
+
+        if (!album) {
+            return res.status(404).json({ error: 'Album not found' });
+        }
+
+        res.json(album);
+    } catch (error) {
+        console.error('Get album by ID error:', error);
+        res.status(500).json({ error: 'Failed to fetch album', details: error.message });
+    }
+};
+
+/**
+ * Toggle link active status
+ */
+const toggleLinkStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { is_link_active } = req.body;
+
+        const album = await MediaAlbum.findByPk(id);
+        if (!album) {
+            return res.status(404).json({ error: 'Album not found' });
+        }
+
+        await album.update({ is_link_active });
+
+        res.json({
+            message: 'Link status updated successfully',
+            album
+        });
+    } catch (error) {
+        console.error('Toggle link status error:', error);
+        res.status(500).json({ error: 'Failed to update link status', details: error.message });
+    }
+};
+
 module.exports = {
     upload,
     uploadMedia,
@@ -512,5 +617,8 @@ module.exports = {
     updateAlbum,
     deleteAlbum,
     getPublicAlbum,
-    addMediaToAlbum
+    addMediaToAlbum,
+    removeMediaFromAlbum,
+    getAlbumById,
+    toggleLinkStatus
 };

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { getMedia, uploadMedia, deleteMedia, createAlbum, addMediaToAlbum, getAlbums, deleteAlbum } from '../../services/mediaService';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { getMedia, uploadMedia, deleteMedia, createAlbum, addMediaToAlbum, getAlbums, deleteAlbum, removeMediaFromAlbum } from '../../services/mediaService';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
 const Gallery = () => {
     const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
     const [media, setMedia] = useState([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
@@ -91,21 +92,46 @@ const Gallery = () => {
 
     const handleDelete = async (id) => {
         console.log('Frontend: handleDelete called for ID:', id);
-        // Debug alert to confirm click is registered
-        alert('Iniciando exclusão...');
 
-        if (!window.confirm('Tem certeza que deseja excluir esta mídia?')) return;
+        // Check if we're viewing an album
+        if (selectedAlbum) {
+            // Remove from album (don't delete permanently)
+            if (!window.confirm('Tem certeza que deseja remover esta mídia do álbum? A mídia continuará disponível na galeria geral.')) return;
 
-        try {
-            const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-            console.log('Frontend: Sending DELETE to:', `${baseUrl}/api/media/${id}`);
-            const result = await deleteMedia(id);
-            console.log('Frontend: deleteMedia result:', result);
-            await loadMedia();
-        } catch (error) {
-            console.error('Error deleting media:', error);
-            console.error('Error details:', error.response?.data || error.message);
-            alert(`Erro ao excluir mídia: ${error.response?.data?.error || error.message}`);
+            try {
+                const result = await removeMediaFromAlbum(selectedAlbum.id, id);
+                console.log('Frontend: removeMediaFromAlbum result:', result);
+
+                // Check if album was auto-deleted
+                if (result.albumDeleted) {
+                    alert('Mídia removida! O álbum foi excluído automaticamente por estar vazio.');
+                    // Return to albums view
+                    setSelectedAlbum(null);
+                    setFilter('albums');
+                    setSearchParams({ filter: 'albums' });
+                }
+
+                await loadMedia();
+            } catch (error) {
+                console.error('Error removing media from album:', error);
+                console.error('Error details:', error.response?.data || error.message);
+                alert(`Erro ao remover mídia do álbum: ${error.response?.data?.error || error.message}`);
+            }
+        } else {
+            // Permanently delete media
+            if (!window.confirm('Tem certeza que deseja excluir esta mídia permanentemente? Esta ação não pode ser desfeita.')) return;
+
+            try {
+                const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+                console.log('Frontend: Sending DELETE to:', `${baseUrl}/api/media/${id}`);
+                const result = await deleteMedia(id);
+                console.log('Frontend: deleteMedia result:', result);
+                await loadMedia();
+            } catch (error) {
+                console.error('Error deleting media:', error);
+                console.error('Error details:', error.response?.data || error.message);
+                alert(`Erro ao excluir mídia: ${error.response?.data?.error || error.message}`);
+            }
         }
     };
 
@@ -288,11 +314,9 @@ const Gallery = () => {
 
             setIsCreateAlbumModalOpen(false);
             setSelectedItems(new Set());
-            alert('Álbum criado com sucesso!');
 
-            if (filter === 'albums') {
-                await loadMedia();
-            }
+            // Redirecionar para página de detalhes do álbum
+            navigate(`/media-center/album/${album.id}`);
         } catch (error) {
             console.error('Error creating album:', error);
             alert('Erro ao criar álbum');
@@ -508,10 +532,7 @@ const Gallery = () => {
                             <div
                                 key={album.id}
                                 className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden group cursor-pointer border border-gray-100"
-                                onClick={() => {
-                                    setSelectedAlbum(album);
-                                    setFilter('all');
-                                }}
+                                onClick={() => navigate(`/media-center/album/${album.id}`)}
                             >
                                 <div className="aspect-[4/3] bg-gray-100 relative">
                                     {album.coverImage ? (

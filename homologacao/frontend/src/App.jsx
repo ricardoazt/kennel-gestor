@@ -8,9 +8,11 @@ import PlantelProfile from './pages/Plantel/Profile';
 import PedigreeStudio from './pages/PedigreeStudio';
 import MediaCenter from './pages/MediaCenter';
 import Gallery from './pages/MediaCenter/Gallery';
+import AlbumDetails from './pages/MediaCenter/AlbumDetails';
 import CampaignList from './pages/MediaCenter/CampaignList';
 import CampaignBuilder from './pages/MediaCenter/CampaignBuilder';
 import SharedAlbum from './pages/SharedAlbum';
+import FunilVendas from './pages/CRM/FunilVendas';
 
 function App() {
   return (
@@ -19,6 +21,7 @@ function App() {
         <Route path="/album/:token" element={<SharedAlbum />} />
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Dashboard />} />
+          <Route path="crm/funil-vendas" element={<FunilVendas />} />
           <Route path="cadastros/reservas" element={<Reservations />} />
 
           {/* Plantel Module */}
@@ -31,6 +34,7 @@ function App() {
           {/* Media Center Module */}
           <Route path="media-center" element={<MediaCenter />} />
           <Route path="media-center/gallery" element={<Gallery />} />
+          <Route path="media-center/album/:id" element={<AlbumDetails />} />
           <Route path="media-center/campaigns" element={<CampaignList />} />
           <Route path="media-center/campaigns/new" element={<CampaignBuilder />} />
           <Route path="media-center/campaigns/edit/:id" element={<CampaignBuilder />} />
