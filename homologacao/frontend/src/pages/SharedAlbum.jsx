@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getPublicAlbum } from '../services/mediaService';
+import MediaViewer from '../components/MediaViewer';
 
 const SharedAlbum = () => {
     const { token } = useParams();
@@ -51,15 +52,13 @@ const SharedAlbum = () => {
         setPlayerOpen(false);
     };
 
-    const nextMedia = (e) => {
-        e.stopPropagation();
+    const nextMedia = () => {
         if (album && album.mediaFiles) {
             setCurrentMediaIndex((prev) => (prev + 1) % album.mediaFiles.length);
         }
     };
 
-    const prevMedia = (e) => {
-        e.stopPropagation();
+    const prevMedia = () => {
         if (album && album.mediaFiles) {
             setCurrentMediaIndex((prev) => (prev - 1 + album.mediaFiles.length) % album.mediaFiles.length);
         }
@@ -133,61 +132,14 @@ const SharedAlbum = () => {
             </main>
 
             {/* Lightbox Player */}
-            {playerOpen && album.mediaFiles && album.mediaFiles[currentMediaIndex] && (
-                <div
-                    className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center animate-fade-in"
-                    onClick={closePlayer}
-                >
-                    <button
-                        onClick={closePlayer}
-                        className="absolute top-4 right-4 text-white p-2 hover:bg-white/10 rounded-full z-[70]"
-                    >
-                        <span className="material-symbols-outlined text-3xl">close</span>
-                    </button>
-
-                    <button
-                        onClick={prevMedia}
-                        className="absolute left-4 text-white p-4 hover:bg-white/10 rounded-full z-[70] hidden md:block"
-                    >
-                        <span className="material-symbols-outlined text-4xl">chevron_left</span>
-                    </button>
-
-                    <div
-                        className="max-w-[90vw] max-h-[85vh] relative flex flex-col items-center"
-                        onClick={e => e.stopPropagation()}
-                    >
-                        {album.mediaFiles[currentMediaIndex].file_type === 'image' ? (
-                            <img
-                                src={getMediaUrl(album.mediaFiles[currentMediaIndex])}
-                                alt={album.mediaFiles[currentMediaIndex].original_name}
-                                className="max-w-full max-h-[80vh] object-contain shadow-2xl"
-                            />
-                        ) : (
-                            <div className="w-[80vw] h-[80vh] bg-black flex items-center justify-center">
-                                <video
-                                    src={getMediaUrl(album.mediaFiles[currentMediaIndex])}
-                                    controls
-                                    autoPlay
-                                    className="w-full h-full object-contain"
-                                />
-                            </div>
-                        )}
-                        <div className="mt-4 text-white text-center">
-                            <h3 className="text-lg font-medium">{album.mediaFiles[currentMediaIndex].original_name}</h3>
-                            <p className="text-sm text-gray-400">
-                                {currentMediaIndex + 1} de {album.mediaFiles.length}
-                            </p>
-                        </div>
-                    </div>
-
-                    <button
-                        onClick={nextMedia}
-                        className="absolute right-4 text-white p-4 hover:bg-white/10 rounded-full z-[70] hidden md:block"
-                    >
-                        <span className="material-symbols-outlined text-4xl">chevron_right</span>
-                    </button>
-                </div>
-            )}
+            <MediaViewer
+                isOpen={playerOpen}
+                mediaItems={album?.mediaFiles || []}
+                currentIndex={currentMediaIndex}
+                onClose={closePlayer}
+                onNext={nextMedia}
+                onPrev={prevMedia}
+            />
         </div>
     );
 };

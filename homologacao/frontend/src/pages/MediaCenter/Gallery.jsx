@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { getMedia, uploadMedia, deleteMedia, createAlbum, addMediaToAlbum, getAlbums, deleteAlbum, removeMediaFromAlbum } from '../../services/mediaService';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import MediaViewer from '../../components/MediaViewer';
 
 const Gallery = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -236,13 +237,11 @@ const Gallery = () => {
         setPlayerOpen(false);
     };
 
-    const nextMedia = (e) => {
-        e.stopPropagation();
+    const nextMedia = () => {
         setCurrentMediaIndex((prev) => (prev + 1) % media.length);
     };
 
-    const prevMedia = (e) => {
-        e.stopPropagation();
+    const prevMedia = () => {
         setCurrentMediaIndex((prev) => (prev - 1 + media.length) % media.length);
     };
 
@@ -778,61 +777,14 @@ const Gallery = () => {
             )}
 
             {/* Floating Player Modal */}
-            {playerOpen && media[currentMediaIndex] && (
-                <div
-                    className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center animate-fade-in"
-                    onClick={closePlayer}
-                >
-                    <button
-                        onClick={closePlayer}
-                        className="absolute top-4 right-4 text-white p-2 hover:bg-white/10 rounded-full z-[70]"
-                    >
-                        <span className="material-symbols-outlined text-3xl">close</span>
-                    </button>
-
-                    <button
-                        onClick={prevMedia}
-                        className="absolute left-4 text-white p-4 hover:bg-white/10 rounded-full z-[70] hidden md:block"
-                    >
-                        <span className="material-symbols-outlined text-4xl">chevron_left</span>
-                    </button>
-
-                    <div
-                        className="max-w-[90vw] max-h-[85vh] relative flex flex-col items-center"
-                        onClick={e => e.stopPropagation()}
-                    >
-                        {media[currentMediaIndex].file_type === 'image' ? (
-                            <img
-                                src={getMediaUrl(media[currentMediaIndex])}
-                                alt={media[currentMediaIndex].original_name}
-                                className="max-w-full max-h-[80vh] object-contain shadow-2xl"
-                            />
-                        ) : (
-                            <div className="w-[80vw] h-[80vh] bg-black flex items-center justify-center">
-                                <video
-                                    src={getMediaUrl(media[currentMediaIndex])}
-                                    controls
-                                    autoPlay
-                                    className="w-full h-full object-contain"
-                                />
-                            </div>
-                        )}
-                        <div className="mt-4 text-white text-center">
-                            <h3 className="text-lg font-medium">{media[currentMediaIndex].original_name}</h3>
-                            <p className="text-sm text-gray-400">
-                                {currentMediaIndex + 1} de {media.length}
-                            </p>
-                        </div>
-                    </div>
-
-                    <button
-                        onClick={nextMedia}
-                        className="absolute right-4 text-white p-4 hover:bg-white/10 rounded-full z-[70] hidden md:block"
-                    >
-                        <span className="material-symbols-outlined text-4xl">chevron_right</span>
-                    </button>
-                </div>
-            )}
+            <MediaViewer
+                isOpen={playerOpen}
+                mediaItems={media}
+                currentIndex={currentMediaIndex}
+                onClose={closePlayer}
+                onNext={nextMedia}
+                onPrev={prevMedia}
+            />
 
             {/* Share Modal */}
             {isShareModalOpen && (

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getAlbumById, toggleLinkStatus, uploadMultiple, addMediaToAlbum, getMedia } from '../../services/mediaService';
+import MediaViewer from '../../components/MediaViewer';
 
 const AlbumDetails = () => {
     const { id } = useParams();
@@ -9,6 +10,10 @@ const AlbumDetails = () => {
     const [loading, setLoading] = useState(true);
     const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
     const [uploading, setUploading] = useState(false);
+
+    // Player State
+    const [playerOpen, setPlayerOpen] = useState(false);
+    const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
 
     useEffect(() => {
         loadAlbum();
@@ -76,6 +81,26 @@ const AlbumDetails = () => {
             return `${baseUrl}/uploads/media/${item.thumbnail_path}`;
         }
         return `${baseUrl}/uploads/media/${item.filename}`;
+    };
+
+    // Player control functions
+    const openPlayer = (index) => {
+        setCurrentMediaIndex(index);
+        setPlayerOpen(true);
+    };
+
+    const closePlayer = () => {
+        setPlayerOpen(false);
+    };
+
+    const nextMedia = () => {
+        if (!album?.mediaFiles) return;
+        setCurrentMediaIndex((prev) => (prev + 1) % album.mediaFiles.length);
+    };
+
+    const prevMedia = () => {
+        if (!album?.mediaFiles) return;
+        setCurrentMediaIndex((prev) => (prev - 1 + album.mediaFiles.length) % album.mediaFiles.length);
     };
 
     if (loading) {
@@ -158,8 +183,12 @@ const AlbumDetails = () => {
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Fotos do Álbum</h2>
                 {album.mediaFiles && album.mediaFiles.length > 0 ? (
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                        {album.mediaFiles.map(item => (
-                            <div key={item.id} className="aspect-square bg-gray-100 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition-all">
+                        {album.mediaFiles.map((item, index) => (
+                            <div
+                                key={item.id}
+                                className="aspect-square bg-gray-100 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition-all cursor-pointer"
+                                onClick={() => openPlayer(index)}
+                            >
                                 {item.file_type === 'image' ? (
                                     <img
                                         src={getThumbnailUrl(item)}
@@ -265,6 +294,16 @@ const AlbumDetails = () => {
                     </div>
                 </div>
             )}
+
+            {/* Media Player Modal */}
+            <MediaViewer
+                isOpen={playerOpen}
+                mediaItems={album?.mediaFiles || []}
+                currentIndex={currentMediaIndex}
+                onClose={closePlayer}
+                onNext={nextMedia}
+                onPrev={prevMedia}
+            />
         </div>
     );
 };
