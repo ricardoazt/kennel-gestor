@@ -3,7 +3,9 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { getMedia, uploadMedia, deleteMedia, createAlbum, addMediaToAlbum, getAlbums, deleteAlbum, removeMediaFromAlbum } from '../../services/mediaService';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import MediaViewer from '../../components/MediaViewer';
+import { Fancybox } from "@fancyapps/ui";
+import "@fancyapps/ui/dist/fancybox/fancybox.css";
+import './GalleryMasonry.css';
 
 const Gallery = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -19,9 +21,7 @@ const Gallery = () => {
     const [selectedItems, setSelectedItems] = useState(new Set());
     const [isSelectionMode, setIsSelectionMode] = useState(false);
 
-    // Player State
-    const [playerOpen, setPlayerOpen] = useState(false);
-    const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+    // Fancybox initialization removed - Player State no longer needed
 
     // Album Modals State
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -50,6 +50,32 @@ const Gallery = () => {
     useEffect(() => {
         loadMedia();
     }, [filter, showHiddenAlbums]);
+
+    // Initialize Fancybox
+    useEffect(() => {
+        Fancybox.bind("[data-fancybox='gallery']", {
+            Thumbs: {
+                autoStart: true,
+            },
+            Toolbar: {
+                display: {
+                    left: ["infobar"],
+                    middle: [],
+                    right: ["slideshow", "zoom", "fullscreen", "thumbs", "close"],
+                },
+            },
+            on: {
+                init: (fancybox) => {
+                    console.log('Fancybox initialized');
+                },
+            },
+        });
+
+        return () => {
+            Fancybox.unbind("[data-fancybox='gallery']");
+            Fancybox.close();
+        };
+    }, [media]);
 
     const loadMedia = async () => {
         try {
@@ -227,23 +253,7 @@ const Gallery = () => {
         }
     };
 
-    // --- Player Logic ---
-    const openPlayer = (index) => {
-        setCurrentMediaIndex(index);
-        setPlayerOpen(true);
-    };
-
-    const closePlayer = () => {
-        setPlayerOpen(false);
-    };
-
-    const nextMedia = () => {
-        setCurrentMediaIndex((prev) => (prev + 1) % media.length);
-    };
-
-    const prevMedia = () => {
-        setCurrentMediaIndex((prev) => (prev - 1 + media.length) % media.length);
-    };
+    // Player logic removed - using Fancybox instead
 
     // --- Share Logic ---
     const handleShare = () => {
@@ -628,83 +638,91 @@ const Gallery = () => {
                     </label>
                 </div>
             ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {media.map((item, index) => (
-                        <div
-                            key={item.id}
-                            className={`bg-white rounded-lg shadow overflow-hidden group relative transition-all ${selectedItems.has(item.id) ? 'ring-4 ring-blue-500 ring-offset-2' : ''}`}
-                        >
-                            {/* Checkbox Overlay */}
-                            <div className={`absolute top-2 left-2 z-10 ${selectedItems.has(item.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity`}>
+                <div className="gallery-masonry-wrapper">
+                    <div className="gallery-masonry">
+                        {media.map((item, index) => (
+                            <div
+                                key={item.id}
+                                className={`gallery-masonry-item ${selectedItems.has(item.id) ? 'selected' : ''}`}
+                            >
+                                {/* Selection Checkbox */}
                                 <input
                                     type="checkbox"
                                     checked={selectedItems.has(item.id)}
                                     onChange={(e) => {
-                                        e.stopPropagation();
                                         toggleSelection(item.id);
                                     }}
-                                    className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer shadow-sm"
+                                    className="selection-checkbox"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                    }}
                                 />
-                            </div>
 
-                            {/* Media Preview */}
-                            <div
-                                className="aspect-square bg-gray-100 relative cursor-pointer"
-                                onClick={() => openPlayer(index)}
-                            >
+                                {/* Media Content with Fancybox */}
                                 {item.file_type === 'image' ? (
-                                    <img
-                                        src={getThumbnailUrl(item)}
-                                        alt={item.original_name}
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center relative">
+                                    <a
+                                        href={getMediaUrl(item)}
+                                        data-fancybox="gallery"
+                                        data-caption={item.original_name}
+                                    >
                                         <img
-                                            src={item.thumbnail_path ? getThumbnailUrl(item) : ''}
-                                            className="absolute inset-0 w-full h-full object-cover opacity-50"
+                                            src={getThumbnailUrl(item)}
+                                            alt={item.original_name}
                                         />
-                                        <span className="material-symbols-outlined text-6xl text-gray-600 relative z-10">play_circle</span>
-                                        <span className="absolute bottom-2 right-2 text-xs font-medium text-white bg-black/50 px-1.5 py-0.5 rounded">VIDEO</span>
-                                    </div>
+                                    </a>
+                                ) : (
+                                    <a
+                                        href={getMediaUrl(item)}
+                                        data-fancybox="gallery"
+                                        data-caption={item.original_name}
+                                    >
+                                        <div className="video-thumbnail-container">
+                                            <img
+                                                src={item.thumbnail_path ? getThumbnailUrl(item) : ''}
+                                                alt={item.original_name}
+                                            />
+                                            <span className="material-symbols-outlined video-play-icon">play_circle</span>
+                                            <span className="video-badge">VIDEO</span>
+                                        </div>
+                                    </a>
                                 )}
 
-                                {/* Hover actions */}
-                                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 z-50">
+                                {/* Hover Actions */}
+                                <div className="hover-actions">
                                     <a
                                         href={getMediaUrl(item)}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         onClick={(e) => e.stopPropagation()}
-                                        className="p-1.5 bg-black/50 hover:bg-black/70 text-white rounded-lg backdrop-blur-sm"
+                                        className="hover-action-btn"
                                         title="Abrir em nova aba"
                                     >
-                                        <span className="material-symbols-outlined text-sm">open_in_new</span>
+                                        <span className="material-symbols-outlined">open_in_new</span>
                                     </a>
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            console.log('Media delete clicked');
                                             handleDelete(item.id);
                                         }}
-                                        className="p-1.5 bg-red-500/50 hover:bg-red-500 text-white rounded-lg backdrop-blur-sm"
+                                        className="hover-action-btn delete-btn"
                                         title="Excluir"
                                     >
-                                        <span className="material-symbols-outlined text-sm">delete</span>
+                                        <span className="material-symbols-outlined">delete</span>
                                     </button>
                                 </div>
-                            </div>
 
-                            {/* Info */}
-                            <div className="p-3">
-                                <p className="text-sm font-medium text-gray-900 truncate" title={item.original_name}>{item.original_name}</p>
-                                <p className="text-xs text-gray-500 mt-1 flex justify-between">
-                                    <span>{item.file_type === 'image' ? 'IMG' : 'VID'}</span>
-                                    <span>{item.file_size && `${(item.file_size / 1024 / 1024).toFixed(2)} MB`}</span>
-                                </p>
+                                {/* Info Overlay */}
+                                <div className="item-info">
+                                    <div className="item-name">{item.original_name}</div>
+                                    <div className="item-meta">
+                                        <span>{item.file_type === 'image' ? 'IMG' : 'VID'}</span>
+                                        <span>{item.file_size && `${(item.file_size / 1024 / 1024).toFixed(2)} MB`}</span>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             )}
 
@@ -776,15 +794,7 @@ const Gallery = () => {
                 </div>
             )}
 
-            {/* Floating Player Modal */}
-            <MediaViewer
-                isOpen={playerOpen}
-                mediaItems={media}
-                currentIndex={currentMediaIndex}
-                onClose={closePlayer}
-                onNext={nextMedia}
-                onPrev={prevMedia}
-            />
+            {/* MediaViewer removed - using Fancybox */}
 
             {/* Share Modal */}
             {isShareModalOpen && (
