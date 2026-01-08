@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getAlbumById, toggleLinkStatus, uploadMultiple, addMediaToAlbum, getMedia } from '../../services/mediaService';
+import { getAlbumById, uploadMultiple, addMediaToAlbum, getMedia, removeMediaFromAlbum } from '../../services/mediaService';
 import MediaViewer from '../../components/MediaViewer';
+import ShareLinkManager from '../../components/ShareLinkManager';
 import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import '../../styles/fancybox-custom.css';
@@ -12,7 +13,7 @@ const AlbumDetails = () => {
     const navigate = useNavigate();
     const [album, setAlbum] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+    const [isShareManagerOpen, setIsShareManagerOpen] = useState(false);
     const [uploading, setUploading] = useState(false);
 
     // Player State
@@ -91,23 +92,6 @@ const AlbumDetails = () => {
         }
     };
 
-    const handleToggleLink = async () => {
-        try {
-            await toggleLinkStatus(id, !album.is_link_active);
-            await loadAlbum();
-            alert(`Link ${!album.is_link_active ? 'ativado' : 'desativado'} com sucesso!`);
-        } catch (error) {
-            console.error('Error toggling link:', error);
-            alert('Erro ao alterar status do link');
-        }
-    };
-
-    const copyLink = () => {
-        const link = `${window.location.origin}/album/${album.share_token}`;
-        navigator.clipboard.writeText(link);
-        alert('Link copiado!');
-    };
-
     const handleAddPhotos = async (files) => {
         if (!files || files.length === 0) return;
 
@@ -130,6 +114,28 @@ const AlbumDetails = () => {
             alert('Erro ao adicionar fotos');
         } finally {
             setUploading(false);
+        }
+    };
+
+    const handleRemoveFromAlbum = async (mediaId) => {
+        if (!confirm('Deseja remover esta mídia do álbum? A mídia não será excluída permanentemente e continuará disponível na galeria principal.')) {
+            return;
+        }
+
+        try {
+            const response = await removeMediaFromAlbum(id, mediaId);
+
+            // Check if album was deleted because it became empty
+            if (response.albumDeleted) {
+                alert('Álbum foi excluído automaticamente pois ficou vazio.');
+                navigate('/media-center/gallery?filter=albums');
+            } else {
+                alert('Mídia removida do álbum com sucesso!');
+                await loadAlbum();
+            }
+        } catch (error) {
+            console.error('Error removing media from album:', error);
+            alert('Erro ao remover mídia do álbum');
         }
     };
 
@@ -209,11 +215,11 @@ const AlbumDetails = () => {
                 {/* Action Bar */}
                 <div className="flex gap-3 mt-6 pt-6 border-t">
                     <button
-                        onClick={() => setIsLinkModalOpen(true)}
+                        onClick={() => setIsShareManagerOpen(true)}
                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
                     >
                         <span className="material-symbols-outlined text-sm">link</span>
-                        Gerenciar Link
+                        Gerenciar Links
                     </button>
                     <label className={`px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 cursor-pointer flex items-center gap-2 ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
                         <span className="material-symbols-outlined text-sm">add_photo_alternate</span>
@@ -227,13 +233,6 @@ const AlbumDetails = () => {
                             disabled={uploading}
                         />
                     </label>
-                    <button
-                        onClick={copyLink}
-                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-2"
-                    >
-                        <span className="material-symbols-outlined text-sm">content_copy</span>
-                        Copiar Link
-                    </button>
                 </div>
             </div>
 
@@ -247,13 +246,44 @@ const AlbumDetails = () => {
                                 <div
                                     key={item.id}
                                     className="gallery-masonry-item"
+                                    style={{ position: 'relative' }}
                                 >
+                                    {/* Remove Button */}
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            handleRemoveFromAlbum(item.id);
+                                        }}
+                                        className="absolute top-2 right-2 z-10 bg-red-600 text-white p-2 rounded-full shadow-lg hover:bg-red-700 transition-all opacity-0 hover:opacity-100 group-hover:opacity-100"
+                                        style={{
+                                            transition: 'opacity 0.2s',
+                                        }}
+                                        onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                                        onMouseLeave={(e) => {
+                                            if (!e.currentTarget.matches(':hover')) {
+                                                e.currentTarget.style.opacity = '0';
+                                            }
+                                        }}
+                                        title="Remover do álbum"
+                                    >
+                                        <span className="material-symbols-outlined text-sm">close</span>
+                                    </button>
+
                                     {/* Media Content with Fancybox */}
                                     {item.file_type === 'image' ? (
                                         <a
                                             href={`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/uploads/media/${item.filename}`}
                                             data-fancybox="album-gallery"
                                             data-caption={item.original_name}
+                                            onMouseEnter={(e) => {
+                                                const btn = e.currentTarget.parentElement.querySelector('button');
+                                                if (btn) btn.style.opacity = '1';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                const btn = e.currentTarget.parentElement.querySelector('button');
+                                                if (btn && !btn.matches(':hover')) btn.style.opacity = '0';
+                                            }}
                                         >
                                             <img
                                                 src={getThumbnailUrl(item)}
@@ -265,6 +295,14 @@ const AlbumDetails = () => {
                                             href={`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/uploads/media/${item.filename}`}
                                             data-fancybox="album-gallery"
                                             data-caption={item.original_name}
+                                            onMouseEnter={(e) => {
+                                                const btn = e.currentTarget.parentElement.querySelector('button');
+                                                if (btn) btn.style.opacity = '1';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                const btn = e.currentTarget.parentElement.querySelector('button');
+                                                if (btn && !btn.matches(':hover')) btn.style.opacity = '0';
+                                            }}
                                         >
                                             <div className="video-thumbnail-container">
                                                 <img
@@ -285,85 +323,12 @@ const AlbumDetails = () => {
                 )}
             </div>
 
-            {/* Link Management Modal */}
-            {isLinkModalOpen && (
-                <div className="fixed inset-0 z-[80] bg-black/50 flex items-center justify-center">
-                    <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg m-4">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-bold text-gray-900">Gerenciar Link de Compartilhamento</h3>
-                            <button
-                                onClick={() => setIsLinkModalOpen(false)}
-                                className="text-gray-400 hover:text-gray-600"
-                            >
-                                <span className="material-symbols-outlined">close</span>
-                            </button>
-                        </div>
-
-                        <div className="space-y-4">
-                            {/* Link URL */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Link de Compartilhamento</label>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="text"
-                                        readOnly
-                                        value={`${window.location.origin}/album/${album.share_token}`}
-                                        className="w-full rounded-lg border-gray-300 bg-gray-50 text-gray-600"
-                                    />
-                                    <button
-                                        onClick={copyLink}
-                                        className="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg border border-gray-300"
-                                        title="Copiar"
-                                    >
-                                        <span className="material-symbols-outlined">content_copy</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Analytics */}
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm font-medium text-gray-700">Total de Acessos</p>
-                                        <p className="text-3xl font-bold text-blue-600">{album.access_count || 0}</p>
-                                    </div>
-                                    <span className="material-symbols-outlined text-4xl text-blue-600">visibility</span>
-                                </div>
-                            </div>
-
-                            {/* Toggle Active Status */}
-                            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                <div>
-                                    <p className="font-medium text-gray-900">Status do Link</p>
-                                    <p className="text-sm text-gray-600">
-                                        {album.is_link_active ? 'Link ativo e acessível' : 'Link desativado'}
-                                    </p>
-                                </div>
-                                <button
-                                    onClick={handleToggleLink}
-                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${album.is_link_active ? 'bg-blue-600' : 'bg-gray-300'
-                                        }`}
-                                >
-                                    <span
-                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${album.is_link_active ? 'translate-x-6' : 'translate-x-1'
-                                            }`}
-                                    />
-                                </button>
-                            </div>
-
-                            {/* Warning when inactive */}
-                            {!album.is_link_active && (
-                                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 flex items-start gap-2">
-                                    <span className="material-symbols-outlined text-orange-600 text-sm">info</span>
-                                    <p className="text-xs text-orange-800">
-                                        Quando o link está desativado, ninguém consegue acessar este álbum através do link compartilhado.
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* Share Link Manager Modal */}
+            <ShareLinkManager
+                albumId={id}
+                isOpen={isShareManagerOpen}
+                onClose={() => setIsShareManagerOpen(false)}
+            />
 
             {/* Media Player Modal */}
             <MediaViewer

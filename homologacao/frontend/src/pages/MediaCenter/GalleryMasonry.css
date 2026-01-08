@@ -94,14 +94,42 @@
     top: 8px;
     left: 8px;
     z-index: 10;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     cursor: pointer;
     opacity: 0;
     transition: opacity 0.2s ease;
-    accent-color: #3b82f6;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     background: white;
+    border: 2px solid white;
     border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    outline: none;
+}
+
+/* Checkmark */
+.gallery-masonry-item .selection-checkbox::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    transition: transform 0.2s ease;
+}
+
+/* Checked state */
+.gallery-masonry-item .selection-checkbox:checked {
+    background: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.gallery-masonry-item .selection-checkbox:checked::after {
+    transform: translate(-50%, -50%) scale(1);
 }
 
 .gallery-masonry-item:hover .selection-checkbox,

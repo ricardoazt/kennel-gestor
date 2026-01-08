@@ -21,6 +21,12 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'created_by',
                 as: 'creator'
             });
+
+            // Album has many share links
+            MediaAlbum.hasMany(models.ShareLink, {
+                foreignKey: 'album_id',
+                as: 'shareLinks'
+            });
         }
     }
 

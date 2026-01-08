@@ -7,6 +7,7 @@ const AnimalController = require('./controllers/AnimalController');
 const AgendaController = require('./controllers/AgendaController');
 const mediaController = require('./controllers/mediaController');
 const campaignController = require('./controllers/campaignController');
+const ShareLinkController = require('./controllers/ShareLinkController');
 
 require('dotenv').config();
 
@@ -80,8 +81,13 @@ app.post('/api/media/albums/:id/media', mediaController.addMediaToAlbum);
 app.delete('/api/media/albums/:albumId/media/:mediaId', mediaController.removeMediaFromAlbum); // Remove media from album
 app.delete('/api/media/albums/:id', mediaController.deleteAlbum);
 app.get('/api/media/albums/:id/details', mediaController.getAlbumById); // Get album details by ID
-app.put('/api/media/albums/:id/toggle-link', mediaController.toggleLinkStatus); // Toggle link active status
-app.get('/api/public/albums/:token', mediaController.getPublicAlbum);
+
+// === Share Links Routes ===
+app.post('/api/albums/:albumId/share-links', ShareLinkController.createShareLink); // Create new share link
+app.get('/api/albums/:albumId/share-links', ShareLinkController.getShareLinks); // Get all links for album
+app.put('/api/share-links/:id/toggle', ShareLinkController.toggleShareLink); // Activate/deactivate link
+app.delete('/api/share-links/:id', ShareLinkController.deleteShareLink); // Delete link
+app.get('/api/public/albums/:token', ShareLinkController.getPublicAlbumByToken); // Public access via share link
 
 app.get('/api/media/:id', mediaController.getMediaById);
 app.put('/api/media/:id', mediaController.updateMedia);

@@ -112,6 +112,27 @@ export const toggleLinkStatus = async (id, is_link_active) => {
     return response.data;
 };
 
+// Share Links
+export const createShareLink = async (albumId, data) => {
+    const response = await api.post(`/api/albums/${albumId}/share-links`, data);
+    return response.data;
+};
+
+export const getShareLinks = async (albumId) => {
+    const response = await api.get(`/api/albums/${albumId}/share-links`);
+    return response.data;
+};
+
+export const toggleShareLink = async (linkId, is_active) => {
+    const response = await api.put(`/api/share-links/${linkId}/toggle`, { is_active });
+    return response.data;
+};
+
+export const deleteShareLink = async (linkId) => {
+    const response = await api.delete(`/api/share-links/${linkId}`);
+    return response.data;
+};
+
 export default {
     uploadMedia,
     uploadMultiple,
@@ -128,5 +149,9 @@ export default {
     deleteAlbum,
     getPublicAlbum,
     getAlbumById,
-    toggleLinkStatus
+    toggleLinkStatus,
+    createShareLink,
+    getShareLinks,
+    toggleShareLink,
+    deleteShareLink
 };

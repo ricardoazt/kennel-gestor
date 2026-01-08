@@ -752,13 +752,10 @@ const Gallery = () => {
                                     type="checkbox"
                                     checked={selectedItems.has(item.id)}
                                     onChange={(e) => {
+                                        e.stopPropagation();
                                         toggleSelection(item.id);
                                     }}
                                     className="selection-checkbox"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                    }}
                                 />
 
                                 {/* Media Content with Fancybox */}
