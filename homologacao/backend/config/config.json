@@ -1,0 +1,24 @@
+{
+  "development": {
+    "use_env_variable": "DATABASE_URL",
+    "username": "kennel_user",
+    "password": "kennel_password",
+    "database": "kennel_homolog_db",
+    "host": "db",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "kennel_user",
+    "password": "kennel_password",
+    "database": "kennel_test_db",
+    "host": "db",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "kennel_user",
+    "password": "kennel_password",
+    "database": "kennel_prod_db",
+    "host": "db",
+    "dialect": "postgres"
+  }
+}

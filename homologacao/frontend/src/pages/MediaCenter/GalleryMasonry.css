@@ -1,0 +1,321 @@
+/* Gallery Masonry Layout - Inspired by Caninos do Vale */
+
+/* Masonry Container */
+.gallery-masonry-wrapper {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    margin-top: 24px;
+}
+
+.gallery-masonry {
+    column-count: 3;
+    column-gap: 16px;
+}
+
+.gallery-masonry-item {
+    break-inside: avoid;
+    margin-bottom: 16px;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    overflow: visible;
+    border-radius: 8px;
+    transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.gallery-masonry-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Image Styles */
+.gallery-masonry-item img {
+    border: none;
+    width: 100%;
+    height: auto;
+    display: block;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.gallery-masonry-item:hover img {
+    transform: scale(1.01);
+    filter: brightness(1.05);
+}
+
+/* Video Thumbnail Styles */
+.gallery-masonry-item .video-thumbnail-container {
+    position: relative;
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.gallery-masonry-item .video-thumbnail-container img {
+    border: none;
+    border-radius: 8px;
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.gallery-masonry-item .video-thumbnail-container .video-play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 64px;
+    pointer-events: none;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+    opacity: 0.9;
+}
+
+.gallery-masonry-item .video-thumbnail-container .video-badge {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Selection Checkbox */
+.gallery-masonry-item .selection-checkbox {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 10;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    accent-color: #3b82f6;
+    background: white;
+    border-radius: 4px;
+}
+
+.gallery-masonry-item:hover .selection-checkbox,
+.gallery-masonry-item .selection-checkbox:checked {
+    opacity: 1;
+}
+
+/* Selected State */
+.gallery-masonry-item.selected {
+    outline: 4px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.gallery-masonry-item.selected .selection-checkbox {
+    opacity: 1;
+}
+
+/* Hover Actions */
+.gallery-masonry-item .hover-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.gallery-masonry-item:hover .hover-actions {
+    opacity: 1;
+}
+
+.gallery-masonry-item .hover-action-btn {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.gallery-masonry-item .hover-action-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+    transform: scale(1.1);
+}
+
+.gallery-masonry-item .hover-action-btn.delete-btn:hover {
+    background: rgba(239, 68, 68, 0.9);
+}
+
+.gallery-masonry-item .hover-action-btn .material-symbols-outlined {
+    font-size: 16px;
+}
+
+/* Info Overlay (Bottom) */
+.gallery-masonry-item .item-info {
+    position: absolute;
+    bottom: 0;
+    left: 2px;
+    right: 2px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    color: white;
+    padding: 12px 8px 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.gallery-masonry-item:hover .item-info {
+    opacity: 1;
+}
+
+.gallery-masonry-item .item-info .item-name {
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+
+.gallery-masonry-item .item-info .item-meta {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 900px) {
+    .gallery-masonry {
+        column-count: 2;
+        column-gap: 12px;
+    }
+
+    .gallery-masonry-item {
+        margin-bottom: 12px;
+    }
+}
+
+@media (max-width: 600px) {
+    .gallery-masonry {
+        column-count: 1;
+        column-gap: 0;
+    }
+
+    .gallery-masonry-item {
+        margin-bottom: 16px;
+    }
+
+    .gallery-masonry-item .video-thumbnail-container .video-play-icon {
+        font-size: 48px;
+    }
+}
+
+/* Loading State */
+.gallery-masonry-item.loading {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Improved Animation for items */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Staggered animation for each item */
+.gallery-masonry-item {
+    animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+}
+
+.gallery-masonry-item:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.gallery-masonry-item:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.gallery-masonry-item:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.gallery-masonry-item:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.gallery-masonry-item:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+.gallery-masonry-item:nth-child(6) {
+    animation-delay: 0.3s;
+}
+
+.gallery-masonry-item:nth-child(7) {
+    animation-delay: 0.35s;
+}
+
+.gallery-masonry-item:nth-child(8) {
+    animation-delay: 0.4s;
+}
+
+.gallery-masonry-item:nth-child(9) {
+    animation-delay: 0.45s;
+}
+
+.gallery-masonry-item:nth-child(10) {
+    animation-delay: 0.5s;
+}
+
+.gallery-masonry-item:nth-child(11) {
+    animation-delay: 0.55s;
+}
+
+.gallery-masonry-item:nth-child(12) {
+    animation-delay: 0.6s;
+}
+
+/* For items beyond 12, use a lighter delay */
+.gallery-masonry-item:nth-child(n+13) {
+    animation-delay: 0.65s;
+}
+
+/* Smooth transitions */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Additional smooth transitions for wrapper */
+.gallery-masonry-wrapper {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

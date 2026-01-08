@@ -1,0 +1,163 @@
+/* Fancybox Custom Styles */
+
+/* Add top margin to the main image container */
+.fancybox__container .fancybox__viewport {
+    padding-top: 60px !important;
+}
+
+/* Hide thumbnails when toggled off */
+.fancybox__thumbs.is-hidden {
+    display: none !important;
+}
+
+/* Thumbnail carousel styling */
+.fancybox__thumbs {
+    background: rgba(0, 0, 0, 0.9) !important;
+    padding: 12px 0 !important;
+}
+
+/* Thumbnail container - prevent distortion */
+.fancybox__thumb {
+    border: 3px solid transparent !important;
+    border-radius: 6px !important;
+    transition: all 0.3s ease !important;
+    opacity: 0.6 !important;
+    overflow: hidden !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    /* Force proper sizing */
+    height: 80px !important;
+    width: auto !important;
+    max-width: 120px !important;
+    min-width: 60px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Thumbnail images - prevent squashing with cover */
+.fancybox__thumb img {
+    object-fit: cover !important;
+    object-position: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 80px !important;
+}
+
+/* Thumbnail hover effect */
+.fancybox__thumb:hover {
+    opacity: 0.9 !important;
+    transform: scale(1.05) !important;
+}
+
+/* Active thumbnail with blue border */
+.fancybox__thumb.is-nav-selected {
+    border-color: #3b82f6 !important;
+    opacity: 1 !important;
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.6) !important;
+    transform: scale(1.1) !important;
+}
+
+/* Smooth slide transition for carousel */
+.fancybox__carousel {
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+/* Slide animation for images */
+.fancybox__slide {
+    transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+/* Thumbnail scroll animation */
+.fancybox__thumbs .carousel__track {
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+/* Smooth scrolling for thumbnail container */
+.fancybox__thumbs .carousel {
+    scroll-behavior: smooth !important;
+}
+
+/* Center active thumbnail when scrolling */
+.fancybox__thumbs .carousel__viewport {
+    scroll-snap-type: x proximity !important;
+}
+
+.fancybox__thumb {
+    scroll-snap-align: center !important;
+}
+
+/* Better spacing for toolbar */
+.fancybox__toolbar {
+    padding: 12px 20px !important;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent) !important;
+}
+
+/* Image counter styling */
+.fancybox__infobar {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #fff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Navigation arrows */
+.fancybox__nav button {
+    background: rgba(0, 0, 0, 0.5) !important;
+    border-radius: 50% !important;
+    width: 48px !important;
+    height: 48px !important;
+    transition: all 0.3s ease !important;
+}
+
+.fancybox__nav button:hover {
+    background: rgba(59, 130, 246, 0.8) !important;
+    transform: scale(1.1) !important;
+}
+
+/* Fade in/out animations */
+.fancybox-fadeIn {
+    animation: fancyboxFadeIn 0.3s ease-in-out;
+}
+
+.fancybox-fadeOut {
+    animation: fancyboxFadeOut 0.3s ease-in-out;
+}
+
+@keyframes fancyboxFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fancyboxFadeOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .fancybox__container .fancybox__viewport {
+        padding-top: 40px !important;
+    }
+
+    .fancybox__thumbs {
+        padding: 8px 0 !important;
+    }
+
+    .fancybox__thumb {
+        border-width: 2px !important;
+    }
+}

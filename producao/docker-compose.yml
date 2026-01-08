@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: kennel_prod_db
+    environment:
+      POSTGRES_USER: kennel_user
+      POSTGRES_PASSWORD: kennel_password
+      POSTGRES_DB: kennel_prod_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: kennel_prod_backend
+    ports:
+      - "3002:3000"
+    environment:
+      - DATABASE_URL=postgres://kennel_user:kennel_password@db:5432/kennel_prod_db
+      - PORT=3000
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  frontend:
+    build: ./frontend
+    container_name: kennel_prod_frontend
+    ports:
+      - "5174:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:3002
+
+volumes:
+  pgdata_prod:

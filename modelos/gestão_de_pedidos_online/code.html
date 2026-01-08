@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gestão de Pedidos Online - Kennel Gestor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102216",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1c3326",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for better desktop experience */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111813] dark:text-gray-100 font-display transition-colors duration-200">
+<div class="flex h-screen w-full overflow-hidden">
+<!-- Side Navigation -->
+<div class="w-64 flex-shrink-0 flex flex-col justify-between bg-surface-light dark:bg-surface-dark border-r border-[#dbe6df] dark:border-[#2d4a3e] p-4 transition-colors duration-200">
+<div class="flex flex-col gap-6">
+<!-- Branding -->
+<div class="flex gap-3 items-center px-2">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-10 w-10 border border-primary" data-alt="Kennel Gestor Logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBiR8dLicP7oCdUhn8OaSltkB804B4pdeeEHgrgP7CujR8hNNYrYh5S4jspxObO3kL6kIIw3lOq3_zXLtfIMkGtVZ0tdNCdxs_5_wsiCTleN_rRH-gAdgeLYzNJvAw0PojG-5TjQjb8rg8zCiWsvySDkH2qXBeZIFf6__B2t3cesGv--sk6C8ICIr7hcIqgereF2sPhr-RuHVDKxOgmIobDjyxKaMQj4jEZcAlQkvqlksZRwIZYWSCIPobmAQPSv8L7TQOdNVVM_tcb");'></div>
+<div class="flex flex-col">
+<h1 class="text-base font-bold leading-normal dark:text-white">Kennel Gestor</h1>
+<p class="text-[#61896f] dark:text-[#8baaa0] text-sm font-normal leading-normal">Administração</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f4f2] dark:hover:bg-[#254232] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#61896f] dark:text-[#8baaa0] group-hover:text-[#111813] dark:group-hover:text-white">dashboard</span>
+<p class="text-[#61896f] dark:text-[#8baaa0] group-hover:text-[#111813] dark:group-hover:text-white text-sm font-medium">Painel</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f4f2] dark:hover:bg-[#254232] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#61896f] dark:text-[#8baaa0] group-hover:text-[#111813] dark:group-hover:text-white">pets</span>
+<p class="text-[#61896f] dark:text-[#8baaa0] group-hover:text-[#111813] dark:group-hover:text-white text-sm font-medium">Animais</p>
+</a>
+<!-- Active Module -->
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 dark:bg-primary/20 text-[#111813] dark:text-white" href="#">
+<span class="material-symbols-outlined text-primary dark:text-primary">shopping_bag</span>
+<p class="text-sm font-medium">Vendas &amp; E-commerce</p>
+</a>
+<!-- Submenu -->
+<div class="pl-10 flex flex-col gap-1 mt-1">
+<a class="text-sm py-1.5 text-[#61896f] dark:text-[#8baaa0] hover:text-[#111813] dark:hover:text-white transition-colors" href="#">PDV (Caixa)</a>
+<a class="text-sm py-1.5 text-[#61896f] dark:text-[#8baaa0] hover:text-[#111813] dark:hover:text-white transition-colors" href="#">Inventário</a>
+<a class="text-sm py-1.5 font-semibold text-[#111813] dark:text-white flex items-center gap-2" href="#">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                Pedidos Online
+                            </a>
+</div>
+</div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f4f2] dark:hover:bg-[#254232] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#61896f] dark:text-[#8baaa0] group-hover:text-[#111813] dark:group-hover:text-white">payments</span>
+<p class="text-[#61896f] dark:text-[#8baaa0] group-hover:text-[#111813] dark:group-hover:text-white text-sm font-medium">Finanças</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f4f2] dark:hover:bg-[#254232] transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#61896f] dark:text-[#8baaa0] group-hover:text-[#111813] dark:group-hover:text-white">settings</span>
+<p class="text-[#61896f] dark:text-[#8baaa0] group-hover:text-[#111813] dark:group-hover:text-white text-sm font-medium">Configurações</p>
+</a>
+</div>
+</div>
+<!-- User Profile -->
+<div class="flex items-center gap-3 px-3 py-3 border-t border-[#dbe6df] dark:border-[#2d4a3e] mt-auto">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-9 w-9" data-alt="User Avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCsuoAbe41pz9jB-rEqFo9VaN2Jk_ro3Am9hl8zMr5J6CtybbCHPn2FEvr3tjo6UKLN3vIQzLItNj-UK97h6opW-IUiH43gWgu1DzOijH5hG6Gi6BwdrpMAmweR5P5vrwHsjHX069PJ95Y2wNcI0XOzNLHDV8-VrgGPze-51CPnL4HxHP_-kwPXLhG87NdTqcNexgrZtpgUV56qrTFJZe66C5_Z8dZww8H_xlfY4OpQI1vU_bREq_Qe6VKE9HWzVtANz9BHAmMKmwt8");'></div>
+<div class="flex flex-col overflow-hidden">
+<p class="text-sm font-medium truncate dark:text-white">Ricardo Santos</p>
+<p class="text-xs text-[#61896f] dark:text-[#8baaa0] truncate">Gerente</p>
+</div>
+</div>
+</div>
+<!-- Main Content -->
+<div class="flex-1 flex flex-col h-full overflow-hidden relative">
+<!-- Header Area -->
+<header class="bg-surface-light dark:bg-surface-dark border-b border-[#dbe6df] dark:border-[#2d4a3e] px-8 py-5 flex-shrink-0">
+<div class="max-w-7xl mx-auto w-full">
+<!-- Breadcrumbs -->
+<div class="flex items-center gap-2 mb-3 text-sm">
+<a class="text-[#61896f] dark:text-[#8baaa0] hover:text-primary transition-colors font-medium" href="#">Vendas</a>
+<span class="text-[#61896f] dark:text-[#8baaa0] material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-[#111813] dark:text-white font-medium">Gestão de Pedidos</span>
+</div>
+<div class="flex flex-wrap justify-between items-end gap-4">
+<div class="flex flex-col gap-1">
+<h2 class="text-[#111813] dark:text-white text-3xl font-black tracking-tight">Pedidos Online</h2>
+<p class="text-[#61896f] dark:text-[#8baaa0] text-base">Gerencie, processe e envie os pedidos da sua loja virtual.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-light dark:bg-[#2d4a3e] border border-[#dbe6df] dark:border-[#405c50] text-[#111813] dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-[#365446] transition-colors font-medium text-sm shadow-sm">
+<span class="material-symbols-outlined text-[20px]">download</span>
+                                Exportar Relatório
+                            </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-[#102216] rounded-lg hover:bg-[#10d450] transition-colors font-semibold text-sm shadow-md">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                                Criar Pedido Manual
+                            </button>
+</div>
+</div>
+</div>
+</header>
+<!-- Scrollable Content -->
+<main class="flex-1 overflow-y-auto p-8">
+<div class="max-w-7xl mx-auto w-full flex flex-col gap-8">
+<!-- Stats Section -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl border border-[#dbe6df] dark:border-[#2d4a3e] shadow-sm flex flex-col gap-3 group hover:border-primary/50 transition-colors">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg text-yellow-700 dark:text-yellow-400">
+<span class="material-symbols-outlined">pending_actions</span>
+</div>
+<span class="text-xs font-semibold bg-[#e6f8ec] dark:bg-[#1c3829] text-[#078829] dark:text-primary px-2 py-1 rounded-full">+2 novos</span>
+</div>
+<div>
+<p class="text-[#61896f] dark:text-[#8baaa0] text-sm font-medium">Pedidos Pendentes</p>
+<p class="text-[#111813] dark:text-white text-2xl font-bold mt-1">12</p>
+</div>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl border border-[#dbe6df] dark:border-[#2d4a3e] shadow-sm flex flex-col gap-3 group hover:border-primary/50 transition-colors">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-700 dark:text-blue-400">
+<span class="material-symbols-outlined">attach_money</span>
+</div>
+<span class="text-xs font-semibold bg-[#e6f8ec] dark:bg-[#1c3829] text-[#078829] dark:text-primary px-2 py-1 rounded-full">+15% vs ontem</span>
+</div>
+<div>
+<p class="text-[#61896f] dark:text-[#8baaa0] text-sm font-medium">Receita Hoje</p>
+<p class="text-[#111813] dark:text-white text-2xl font-bold mt-1">R$ 1.450,00</p>
+</div>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-5 rounded-xl border border-[#dbe6df] dark:border-[#2d4a3e] shadow-sm flex flex-col gap-3 group hover:border-primary/50 transition-colors">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-primary/20 rounded-lg text-primary dark:text-primary">
+<span class="material-symbols-outlined">star</span>
+</div>
+</div>
+<div>
+<p class="text-[#61896f] dark:text-[#8baaa0] text-sm font-medium">Produto Mais Vendido</p>
+<p class="text-[#111813] dark:text-white text-lg font-bold mt-1 truncate">Ração Premium 15kg</p>
+<p class="text-xs text-[#61896f] dark:text-[#8baaa0] mt-1">28 unidades vendidas esta semana</p>
+</div>
+</div>
+</div>
+<!-- Filters & Search -->
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-[#dbe6df] dark:border-[#2d4a3e] shadow-sm flex flex-wrap gap-4 items-end">
+<div class="flex-1 min-w-[200px]">
+<label class="block text-sm font-medium text-[#111813] dark:text-gray-200 mb-1.5">Buscar Pedido</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#61896f] text-[20px]">search</span>
+<input class="w-full bg-white dark:bg-[#102216] border border-[#dbe6df] dark:border-[#405c50] text-[#111813] dark:text-white text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-primary block pl-10 p-2.5 placeholder:text-[#61896f]/70" placeholder="ID #, Nome do Cliente ou Email" type="text"/>
+</div>
+</div>
+<div class="w-full sm:w-48">
+<label class="block text-sm font-medium text-[#111813] dark:text-gray-200 mb-1.5">Status</label>
+<select class="w-full bg-white dark:bg-[#102216] border border-[#dbe6df] dark:border-[#405c50] text-[#111813] dark:text-white text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-primary block p-2.5">
+<option>Todos os Status</option>
+<option>Pendente</option>
+<option>Separando</option>
+<option>Enviado</option>
+<option>Concluído</option>
+</select>
+</div>
+<div class="w-full sm:w-48">
+<label class="block text-sm font-medium text-[#111813] dark:text-gray-200 mb-1.5">Data</label>
+<select class="w-full bg-white dark:bg-[#102216] border border-[#dbe6df] dark:border-[#405c50] text-[#111813] dark:text-white text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-primary block p-2.5">
+<option>Hoje</option>
+<option>Últimos 7 dias</option>
+<option>Este Mês</option>
+</select>
+</div>
+<button class="px-4 py-2.5 bg-background-light dark:bg-[#2d4a3e] text-[#111813] dark:text-white hover:bg-gray-200 dark:hover:bg-[#365446] rounded-lg font-medium text-sm transition-colors border border-transparent dark:border-[#405c50]">
+                            Limpar Filtros
+                        </button>
+</div>
+<!-- Orders Table -->
+<div class="bg-surface-light dark:bg-surface-dark border border-[#dbe6df] dark:border-[#2d4a3e] rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm text-[#111813] dark:text-gray-300">
+<thead class="bg-[#f8faf9] dark:bg-[#152b1e] border-b border-[#dbe6df] dark:border-[#2d4a3e] uppercase text-xs font-semibold text-[#61896f] dark:text-[#8baaa0]">
+<tr>
+<th class="p-4 w-4" scope="col">
+<div class="flex items-center">
+<input class="w-4 h-4 text-primary bg-white border-[#dbe6df] rounded focus:ring-primary dark:bg-[#102216] dark:border-[#405c50]" type="checkbox"/>
+</div>
+</th>
+<th class="px-6 py-4" scope="col">ID Pedido</th>
+<th class="px-6 py-4" scope="col">Data</th>
+<th class="px-6 py-4" scope="col">Cliente</th>
+<th class="px-6 py-4" scope="col">Status</th>
+<th class="px-6 py-4" scope="col">Total</th>
+<th class="px-6 py-4" scope="col">Envio</th>
+<th class="px-6 py-4 text-right" scope="col">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#dbe6df] dark:divide-[#2d4a3e]">
+<!-- Row 1: Pending -->
+<tr class="hover:bg-[#f8faf9] dark:hover:bg-[#152b1e] transition-colors group">
+<td class="p-4 w-4">
+<div class="flex items-center">
+<input class="w-4 h-4 text-primary bg-white border-[#dbe6df] rounded focus:ring-primary dark:bg-[#102216] dark:border-[#405c50]" type="checkbox"/>
+</div>
+</td>
+<td class="px-6 py-4 font-medium text-[#111813] dark:text-white">#KG-2401</td>
+<td class="px-6 py-4">24 Out 2023 <span class="text-xs text-[#61896f] block">14:30</span></td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 bg-cover bg-center" data-alt="Avatar Maria" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC6M_ftrZZewTE41UW01lLSUbIopsHk0dL2XuJFEUVbFhMHJNfQ2NH8pepoldYLxzlloA4OOPtwL1RVDzQUoOrZTgN__ZXqDvUAb4mXypBOp-dB5GhaAOkLMHvgd1bJfr7FWjeCBUH7f6wszq1Yq682AilZFrABLLFi_ozl-tYu-VURgb2m6PJEGmDcK6FW9Fp_o8ncKuBWYNwsgff5K9lG1_bnr9Tv-Ez0ZEhVmBWz9-9EXTBAC4LfPdkCogwzpL8TsjgSFcW4kTPU");'></div>
+<div>
+<p class="font-medium text-[#111813] dark:text-white">Maria Silva</p>
+<p class="text-xs text-[#61896f]">maria@email.com</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+<span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
+                                                Pendente
+                                            </span>
+</td>
+<td class="px-6 py-4 font-medium">R$ 185,90</td>
+<td class="px-6 py-4">
+<div class="flex flex-col max-w-[180px]">
+<span class="truncate" title="Rua das Flores, 123">Rua das Flores, 123</span>
+<span class="text-xs text-[#61896f]">São Paulo, SP</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-[#61896f] hover:text-primary hover:bg-[#f0f4f2] dark:hover:bg-[#254232] rounded-lg transition-colors" title="Gerar Etiqueta">
+<span class="material-symbols-outlined text-[20px]">local_shipping</span>
+</button>
+<button class="p-2 text-[#61896f] hover:text-[#111813] dark:hover:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#254232] rounded-lg transition-colors" title="Editar">
+<span class="material-symbols-outlined text-[20px]">edit_note</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2: Picking -->
+<tr class="hover:bg-[#f8faf9] dark:hover:bg-[#152b1e] transition-colors group">
+<td class="p-4 w-4">
+<div class="flex items-center">
+<input class="w-4 h-4 text-primary bg-white border-[#dbe6df] rounded focus:ring-primary dark:bg-[#102216] dark:border-[#405c50]" type="checkbox"/>
+</div>
+</td>
+<td class="px-6 py-4 font-medium text-[#111813] dark:text-white">#KG-2398</td>
+<td class="px-6 py-4">24 Out 2023 <span class="text-xs text-[#61896f] block">10:15</span></td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">JO</div>
+<div>
+<p class="font-medium text-[#111813] dark:text-white">João Oliveira</p>
+<p class="text-xs text-[#61896f]">joao.o@email.com</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                                                Separando
+                                            </span>
+</td>
+<td class="px-6 py-4 font-medium">R$ 320,00</td>
+<td class="px-6 py-4">
+<div class="flex flex-col max-w-[180px]">
+<span class="truncate" title="Av. Paulista, 1000 - Apto 42">Av. Paulista, 1000</span>
+<span class="text-xs text-[#61896f]">São Paulo, SP</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-[#61896f] hover:text-primary hover:bg-[#f0f4f2] dark:hover:bg-[#254232] rounded-lg transition-colors" title="Gerar Etiqueta">
+<span class="material-symbols-outlined text-[20px]">local_shipping</span>
+</button>
+<button class="p-2 text-[#61896f] hover:text-[#111813] dark:hover:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#254232] rounded-lg transition-colors" title="Editar">
+<span class="material-symbols-outlined text-[20px]">edit_note</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3: Shipped -->
+<tr class="hover:bg-[#f8faf9] dark:hover:bg-[#152b1e] transition-colors group">
+<td class="p-4 w-4">
+<div class="flex items-center">
+<input class="w-4 h-4 text-primary bg-white border-[#dbe6df] rounded focus:ring-primary dark:bg-[#102216] dark:border-[#405c50]" type="checkbox"/>
+</div>
+</td>
+<td class="px-6 py-4 font-medium text-[#111813] dark:text-white">#KG-2395</td>
+<td class="px-6 py-4">23 Out 2023 <span class="text-xs text-[#61896f] block">18:45</span></td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs">AC</div>
+<div>
+<p class="font-medium text-[#111813] dark:text-white">Ana Costa</p>
+<p class="text-xs text-[#61896f]">ana.c@email.com</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">
+<span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                                                Enviado
+                                            </span>
+</td>
+<td class="px-6 py-4 font-medium">R$ 89,90</td>
+<td class="px-6 py-4">
+<div class="flex flex-col gap-1 max-w-[180px]">
+<div class="flex items-center gap-1 text-xs text-primary font-medium">
+<span class="material-symbols-outlined text-[14px]">local_shipping</span>
+                                                    TR-8842910BR
+                                                </div>
+<span class="text-xs text-[#61896f]">Rio de Janeiro, RJ</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-[#61896f] hover:text-primary hover:bg-[#f0f4f2] dark:hover:bg-[#254232] rounded-lg transition-colors" title="Rastrear">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+</button>
+<button class="p-2 text-[#61896f] hover:text-[#111813] dark:hover:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#254232] rounded-lg transition-colors" title="Ver Detalhes">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4: Completed -->
+<tr class="hover:bg-[#f8faf9] dark:hover:bg-[#152b1e] transition-colors group">
+<td class="p-4 w-4">
+<div class="flex items-center">
+<input class="w-4 h-4 text-primary bg-white border-[#dbe6df] rounded focus:ring-primary dark:bg-[#102216] dark:border-[#405c50]" type="checkbox"/>
+</div>
+</td>
+<td class="px-6 py-4 font-medium text-[#111813] dark:text-white">#KG-2390</td>
+<td class="px-6 py-4">22 Out 2023 <span class="text-xs text-[#61896f] block">09:12</span></td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 bg-cover bg-center" data-alt="Avatar Carlos" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB4eEbBWXWS8J_X15YK__DGvl639AMliksSDNcWcz-SR78Q5_RSsW3iBlpW-H_TXjT43-LX0jvHSGmXkTAmqVO0yz2loYVxgz8TYuPtv7Qmt42ME9ri9VU40HIZFIYqpzO4ipCfhx2Cf9zCPNPjYfCWsMdgfL7Cm2sKPKLHqTo1GNPyNiG140LKAOIV9EDxcnQJaX3yIMXt5L_DMJb33ErK9e8X5ei94gj0v8XA9tFPo2ozh0mQYenWVopoR53DnrmGcAKSL-dpS-Eq");'></div>
+<div>
+<p class="font-medium text-[#111813] dark:text-white">Carlos Mendes</p>
+<p class="text-xs text-[#61896f]">carlos.m@email.com</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                                Concluído
+                                            </span>
+</td>
+<td class="px-6 py-4 font-medium">R$ 450,00</td>
+<td class="px-6 py-4">
+<div class="flex flex-col gap-1 max-w-[180px]">
+<span class="text-xs text-[#61896f]">Entregue 23/10</span>
+<span class="text-xs text-[#61896f]">Curitiba, PR</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-[#61896f] hover:text-[#111813] dark:hover:text-white hover:bg-[#f0f4f2] dark:hover:bg-[#254232] rounded-lg transition-colors" title="Ver Detalhes">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="bg-surface-light dark:bg-surface-dark px-6 py-4 border-t border-[#dbe6df] dark:border-[#2d4a3e] flex items-center justify-between">
+<span class="text-sm text-[#61896f] dark:text-[#8baaa0]">
+                                Mostrando <span class="font-medium text-[#111813] dark:text-white">1</span> a <span class="font-medium text-[#111813] dark:text-white">4</span> de <span class="font-medium text-[#111813] dark:text-white">12</span> resultados
+                            </span>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 text-sm border border-[#dbe6df] dark:border-[#405c50] rounded-lg text-[#61896f] hover:bg-gray-50 dark:hover:bg-[#254232] disabled:opacity-50" disabled="">
+                                    Anterior
+                                </button>
+<button class="px-3 py-1.5 text-sm border border-[#dbe6df] dark:border-[#405c50] rounded-lg text-[#111813] dark:text-white hover:bg-gray-50 dark:hover:bg-[#254232]">
+                                    Próximo
+                                </button>
+</div>
+</div>
+</div>
+<!-- Mini Analytics Section -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
+<!-- Sales Chart Placeholder -->
+<div class="bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-[#dbe6df] dark:border-[#2d4a3e] shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-lg font-bold text-[#111813] dark:text-white">Volume de Vendas (Últimos 7 dias)</h3>
+<button class="text-[#61896f] hover:text-primary text-sm font-medium">Ver Relatório Completo</button>
+</div>
+<div class="flex items-end justify-between h-40 gap-2 px-2">
+<div class="w-full bg-primary/10 rounded-t-lg h-[40%] relative group">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">R$400</div>
+</div>
+<div class="w-full bg-primary/20 rounded-t-lg h-[65%] relative group">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">R$650</div>
+</div>
+<div class="w-full bg-primary/30 rounded-t-lg h-[50%] relative group">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">R$500</div>
+</div>
+<div class="w-full bg-primary/20 rounded-t-lg h-[80%] relative group">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">R$800</div>
+</div>
+<div class="w-full bg-primary/40 rounded-t-lg h-[60%] relative group">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">R$600</div>
+</div>
+<div class="w-full bg-primary rounded-t-lg h-[90%] relative group">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">R$900</div>
+</div>
+<div class="w-full bg-primary/50 rounded-t-lg h-[75%] relative group">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">R$750</div>
+</div>
+</div>
+<div class="flex justify-between mt-2 text-xs text-[#61896f]">
+<span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span>
+</div>
+</div>
+<!-- Recent Activity / Notifications -->
+<div class="bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-[#dbe6df] dark:border-[#2d4a3e] shadow-sm flex flex-col">
+<h3 class="text-lg font-bold text-[#111813] dark:text-white mb-4">Atividade Recente</h3>
+<div class="flex flex-col gap-4">
+<div class="flex gap-3 items-start">
+<div class="h-8 w-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<div class="flex flex-col">
+<p class="text-sm text-[#111813] dark:text-white">Pedido <span class="font-medium">#KG-2390</span> entregue com sucesso.</p>
+<span class="text-xs text-[#61896f]">Há 2 horas</span>
+</div>
+</div>
+<div class="flex gap-3 items-start">
+<div class="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[16px]">inventory_2</span>
+</div>
+<div class="flex flex-col">
+<p class="text-sm text-[#111813] dark:text-white">Estoque baixo para <span class="font-medium">Shampoo Anti-pulgas</span>.</p>
+<span class="text-xs text-[#61896f]">Há 5 horas</span>
+</div>
+</div>
+<div class="flex gap-3 items-start">
+<div class="h-8 w-8 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[16px]">person_add</span>
+</div>
+<div class="flex flex-col">
+<p class="text-sm text-[#111813] dark:text-white">Novo cliente cadastrado: <span class="font-medium">Roberto Lima</span>.</p>
+<span class="text-xs text-[#61896f]">Há 1 dia</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

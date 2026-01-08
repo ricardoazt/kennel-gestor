@@ -1,0 +1,279 @@
+/* Media Viewer Overlay */
+.media-viewer-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background-color: rgba(0, 0, 0, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    /* Ensure it's above everything */
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+}
+
+.media-viewer-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Close Button */
+.media-viewer-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 100001;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.media-viewer-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.media-viewer-close .material-symbols-outlined {
+    font-size: 28px;
+}
+
+/* Navigation Buttons */
+.media-viewer-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100001;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+    opacity: 0.7;
+}
+
+.media-viewer-nav:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.media-viewer-nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.media-viewer-prev {
+    left: 2rem;
+}
+
+.media-viewer-next {
+    right: 2rem;
+}
+
+.media-viewer-nav .material-symbols-outlined {
+    font-size: 36px;
+}
+
+/* Hide navigation on small screens */
+@media (max-width: 768px) {
+    .media-viewer-nav {
+        display: none;
+    }
+}
+
+/* Media Container */
+.media-viewer-container {
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    animation: zoomIn 0.3s ease-out;
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Media Content with Slide Animation */
+.media-viewer-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Slide Animations */
+.media-viewer-content.animating.left {
+    animation: slideOutLeft 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.media-viewer-content.animating.right {
+    animation: slideOutRight 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideOutLeft {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(-100px);
+        opacity: 0;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(100px);
+        opacity: 0;
+    }
+}
+
+/* Slide In Animation (for new content) */
+.media-viewer-content:not(.animating):not(.first-render) {
+    animation: slideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* No animation on first render */
+.media-viewer-content.first-render {
+    animation: none;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(0);
+        opacity: 0.5;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Image Styles */
+.media-viewer-image {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+}
+
+/* Video Styles */
+.media-viewer-video {
+    width: 80vw;
+    height: 80vh;
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    background-color: black;
+    border-radius: 4px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* Media Info */
+.media-viewer-info {
+    margin-top: 1.5rem;
+    text-align: center;
+    color: white;
+    animation: fadeInUp 0.4s ease-out 0.1s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.media-viewer-title {
+    font-size: 1.125rem;
+    font-weight: 500;
+    margin: 0;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.media-viewer-counter {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Loading state */
+.media-viewer-content.loading {
+    opacity: 0.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .media-viewer-container {
+        max-width: 95vw;
+        max-height: 95vh;
+    }
+
+    .media-viewer-image,
+    .media-viewer-video {
+        max-height: 70vh;
+    }
+
+    .media-viewer-close {
+        width: 40px;
+        height: 40px;
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+
+    .media-viewer-close .material-symbols-outlined {
+        font-size: 24px;
+    }
+}

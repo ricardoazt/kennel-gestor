@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Agenda de Cruzas - Kennel Gestor</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "primary-dark": "#0f7bc2",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101a22",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Hide scrollbar for clean UI in some containers if needed */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white">
+<div class="relative flex h-screen w-full overflow-hidden">
+<!-- SideNavBar -->
+<aside class="flex w-64 flex-col border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 transition-all duration-300">
+<div class="flex h-full flex-col justify-between p-4">
+<div class="flex flex-col gap-6">
+<!-- Brand -->
+<div class="flex items-center gap-3 px-2">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 shadow-sm" data-alt="Kennel Gestor Logo showing a stylized dog silhouette" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5LRRJg-JKdHDXauX6gWRY1t2JDiGhYmWUB3_Fw_DSNQt4UNWoaSSrqomDNK4Q1LagMipN_QJmKuznjTI7dNBNefJV2VHuF9VOt6I-_JqvbT21Xgx8UQ48SLo_1fwgDxO4kv6y0cXuwfjEVGLz1rUW2UrxKE3zmvpzMkLRHd2ojIaiNBGwJDD59S2VQyVmETxzj6AQ16j_CFvgarPjboOiO2UkJrO1qshMgxMF772tOkwbptHRFR7aE7Vg6VLzy0Lr1mMSIMfprQ6E");'></div>
+<div class="flex flex-col">
+<h1 class="text-slate-900 dark:text-white text-base font-bold leading-normal">Kennel Gestor</h1>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-normal leading-normal">Gerenciamento Pro</p>
+</div>
+</div>
+<!-- Navigation -->
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">dashboard</span>
+<p class="text-sm font-medium leading-normal">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">pets</span>
+<p class="text-sm font-medium leading-normal">Cães</p>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400" href="#">
+<span class="material-symbols-outlined fill-current">favorite</span>
+<p class="text-sm font-bold leading-normal">Reprodução</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">monitor_heart</span>
+<p class="text-sm font-medium leading-normal">Saúde</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">payments</span>
+<p class="text-sm font-medium leading-normal">Finanças</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">settings</span>
+<p class="text-sm font-medium leading-normal">Configurações</p>
+</a>
+</nav>
+</div>
+<!-- User Profile (Bottom) -->
+<div class="flex items-center gap-3 px-3 py-2 mt-auto border-t border-slate-100 dark:border-slate-800 pt-4">
+<div class="size-8 rounded-full bg-slate-200 overflow-hidden" data-alt="User avatar placeholder showing a generic silhouette">
+<img alt="Admin User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAa8lytV8VzhKCLp0FARutUn1-oA-RbwpGJMJD8CbA9WfV_jZgaYxKuBo1hwyH3vm0LmSOL8BnmTPJFiAGLbBHKM7m8DmuDnlPo4dvwTy_5yCVTkqMNQdIh3lvnk7dqEun93ry6HWegJIztvrhzny3PcdKM6vTYu4p-wgn8lfsEBQ4lRXammEbNu9-72YFTvteWr8hHgUeAUr7GMiUoaM7ccKt7podF6oGRRGvoBEExlBiN6MWNnEKEsD1PNpSCqQDXcyC0kjQpoNuV"/>
+</div>
+<div class="flex flex-col">
+<p class="text-sm font-medium text-slate-900 dark:text-white">Admin</p>
+<p class="text-xs text-slate-500">admin@kennel.com</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col h-full overflow-y-auto bg-background-light dark:bg-background-dark">
+<div class="layout-container flex h-full grow flex-col">
+<div class="w-full max-w-[1400px] mx-auto p-6 md:p-8 flex flex-col gap-6">
+<!-- Breadcrumbs -->
+<div class="flex flex-wrap gap-2 items-center text-sm">
+<a class="text-slate-500 hover:text-primary transition-colors font-medium" href="#">Módulo Reprodução</a>
+<span class="text-slate-400 material-symbols-outlined text-base">chevron_right</span>
+<span class="text-slate-900 dark:text-white font-medium">Agenda de Cruzas</span>
+</div>
+<!-- Page Heading -->
+<div class="flex flex-wrap justify-between items-end gap-4">
+<div class="flex flex-col gap-1">
+<h2 class="text-slate-900 dark:text-white text-3xl font-black tracking-tight">Agenda de Cruzas &amp; Previsão</h2>
+<p class="text-slate-500 dark:text-slate-400 text-base font-normal max-w-2xl">Gerencie o calendário de cios, coberturas e previsões de parto em um só lugar.</p>
+</div>
+<button class="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white shadow-lg shadow-blue-500/30 transition-all rounded-lg h-10 px-6 font-bold text-sm tracking-wide">
+<span class="material-symbols-outlined text-lg">add</span>
+<span>Registrar Nova Cobertura</span>
+</button>
+</div>
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="flex flex-col gap-2 rounded-xl p-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
+<div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-primary">pregnant_woman</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Gestantes Ativas</p>
+<div class="flex items-end gap-2">
+<p class="text-slate-900 dark:text-white text-3xl font-bold">12</p>
+<span class="text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded text-xs font-bold mb-1">+2 esta semana</span>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
+<div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-purple-500">pets</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Nascimentos este Mês</p>
+<p class="text-slate-900 dark:text-white text-3xl font-bold">4</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden group hover:border-primary/50 transition-colors">
+<div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-rose-500">favorite</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Fêmeas no Cio</p>
+<div class="flex items-end gap-2">
+<p class="text-slate-900 dark:text-white text-3xl font-bold">3</p>
+<span class="text-rose-600 bg-rose-100 dark:bg-rose-900/30 px-1.5 py-0.5 rounded text-xs font-bold mb-1">+1 hoje</span>
+</div>
+</div>
+</div>
+<!-- Main Grid Area: Calendar + Details -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-6 h-full min-h-[600px]">
+<!-- Left: Calendar Area -->
+<div class="xl:col-span-8 flex flex-col bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+<!-- Calendar Toolbar -->
+<div class="flex flex-wrap items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 gap-4">
+<div class="flex items-center gap-4">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Novembro 2023</h3>
+<div class="flex items-center rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700">
+<button class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-l-lg transition-colors">
+<span class="material-symbols-outlined text-slate-500 text-xl">chevron_left</span>
+</button>
+<button class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-r-lg transition-colors">
+<span class="material-symbols-outlined text-slate-500 text-xl">chevron_right</span>
+</button>
+</div>
+<button class="text-sm font-medium text-primary hover:text-primary-dark">Hoje</button>
+</div>
+<!-- Filter Chips -->
+<div class="flex gap-2 flex-wrap">
+<button class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">Todos</button>
+<button class="px-3 py-1.5 rounded-full bg-rose-50 text-rose-700 dark:bg-rose-900/20 dark:text-rose-300 text-xs font-semibold border border-rose-100 dark:border-rose-800 hover:bg-rose-100 transition-colors flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-rose-500"></span> Cios
+                                    </button>
+<button class="px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 text-xs font-semibold border border-blue-100 dark:border-blue-800 hover:bg-blue-100 transition-colors flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Coberturas
+                                    </button>
+<button class="px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300 text-xs font-semibold border border-emerald-100 dark:border-emerald-800 hover:bg-emerald-100 transition-colors flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Partos
+                                    </button>
+</div>
+</div>
+<!-- Calendar Grid -->
+<div class="flex-1 overflow-auto">
+<div class="grid grid-cols-7 border-b border-slate-200 dark:border-slate-700">
+<div class="py-3 text-center text-xs font-semibold text-slate-500 uppercase">Dom</div>
+<div class="py-3 text-center text-xs font-semibold text-slate-500 uppercase">Seg</div>
+<div class="py-3 text-center text-xs font-semibold text-slate-500 uppercase">Ter</div>
+<div class="py-3 text-center text-xs font-semibold text-slate-500 uppercase">Qua</div>
+<div class="py-3 text-center text-xs font-semibold text-slate-500 uppercase">Qui</div>
+<div class="py-3 text-center text-xs font-semibold text-slate-500 uppercase">Sex</div>
+<div class="py-3 text-center text-xs font-semibold text-slate-500 uppercase">Sáb</div>
+</div>
+<div class="grid grid-cols-7 auto-rows-fr h-full min-h-[600px]">
+<!-- Previous Month Days -->
+<div class="border-b border-r border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 p-2 min-h-[100px]">
+<span class="text-slate-400 text-sm">29</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 p-2 min-h-[100px]">
+<span class="text-slate-400 text-sm">30</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 p-2 min-h-[100px]">
+<span class="text-slate-400 text-sm">31</span>
+</div>
+<!-- Current Month Days -->
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">1</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">2</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">3</span>
+<!-- Event: Heat -->
+<div class="mt-1 flex items-center gap-1 p-1.5 rounded bg-rose-100 border-l-2 border-rose-500 cursor-pointer hover:bg-rose-200 transition-colors">
+<span class="material-symbols-outlined text-[10px] text-rose-700">favorite</span>
+<span class="text-[10px] font-bold text-rose-800 truncate">Cio: Mel</span>
+</div>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">4</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">5</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">6</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">7</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">8</span>
+<!-- Event: Mating -->
+<div class="mt-1 flex items-center gap-1 p-1.5 rounded bg-blue-100 border-l-2 border-primary cursor-pointer hover:bg-blue-200 transition-colors">
+<span class="material-symbols-outlined text-[10px] text-blue-700">male</span>
+<span class="text-[10px] font-bold text-blue-800 truncate">Cob: Thor x Luna</span>
+</div>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">9</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">10</span>
+<!-- Event: Mating -->
+<div class="mt-1 flex items-center gap-1 p-1.5 rounded bg-blue-100 border-l-2 border-primary cursor-pointer hover:bg-blue-200 transition-colors">
+<span class="material-symbols-outlined text-[10px] text-blue-700">male</span>
+<span class="text-[10px] font-bold text-blue-800 truncate">Reforço: Thor x Luna</span>
+</div>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">11</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">12</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">13</span>
+</div>
+<!-- TODAY -->
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] bg-blue-50/30 dark:bg-blue-900/10 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors group relative">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-sm font-bold shadow-sm">14</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">15</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">16</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">17</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">18</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">19</span>
+<!-- Event: Birth -->
+<div class="mt-1 flex items-center gap-1 p-1.5 rounded bg-emerald-100 border-l-2 border-emerald-500 cursor-pointer hover:bg-emerald-200 transition-colors">
+<span class="material-symbols-outlined text-[10px] text-emerald-700">pets</span>
+<span class="text-[10px] font-bold text-emerald-800 truncate">Parto: Bella</span>
+</div>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">20</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">21</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">22</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">23</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">24</span>
+<div class="mt-1 flex items-center gap-1 p-1.5 rounded bg-slate-100 border-l-2 border-slate-500 cursor-pointer hover:bg-slate-200 transition-colors">
+<span class="material-symbols-outlined text-[10px] text-slate-700">calendar_month</span>
+<span class="text-[10px] font-bold text-slate-800 truncate">Prev: Parto Luna</span>
+</div>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">25</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">26</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">27</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">28</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">29</span>
+</div>
+<div class="border-b border-r border-slate-100 dark:border-slate-700 p-2 min-h-[100px] hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+<span class="text-slate-700 dark:text-slate-300 text-sm font-medium">30</span>
+</div>
+<!-- Next Month Days -->
+<div class="border-b border-r border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 p-2 min-h-[100px]">
+<span class="text-slate-400 text-sm">1</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Upcoming Panel -->
+<div class="xl:col-span-4 flex flex-col gap-6">
+<!-- Section: Upcoming Births -->
+<div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-5">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-500">egg_alt</span>
+                                        Próximos Partos
+                                    </h3>
+<button class="text-xs font-semibold text-primary hover:underline">Ver Todos</button>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Item 1 -->
+<div class="flex items-start gap-3 p-3 rounded-lg bg-background-light dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700">
+<div class="bg-cover bg-center rounded-lg w-12 h-12 shrink-0" data-alt="Golden Retriever dog portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCyv6ONtmDM88LDcrwLlZbc-bhidHvAt4sCOerZ0snYye031vYd4ixJDVDL06r5p3kiZz6pvVL1mbX5ZzhFIvJxcgzj00axoTvueqquqxPo3Zyp6RyaWyZJejL2wFjrzm2whju5DTyW6-VBK4tFXQzgHWFQ5ISVG6-zQZVe_7GUWO5gsQxy86DccTBpu2ZnUDO_SQUDnE0Eud4EdCQInbEfzDHb4dw9FxQP9VKEPYmMtkOV3npf6Qpk_LwsPSDnxIULLL-vPrfXRL80");'>
+</div>
+<div class="flex flex-col flex-1">
+<div class="flex justify-between items-start">
+<p class="text-sm font-bold text-slate-900 dark:text-white">Bella</p>
+<span class="text-xs font-bold text-emerald-600 bg-emerald-100 dark:bg-emerald-900/40 px-2 py-0.5 rounded-full">5 dias</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Pai: Max (Golden)</p>
+<div class="mt-2 w-full bg-slate-200 dark:bg-slate-600 rounded-full h-1.5">
+<div class="bg-emerald-500 h-1.5 rounded-full" style="width: 90%"></div>
+</div>
+<p class="text-[10px] text-right text-slate-400 mt-1">Gestação: 58/63 dias</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex items-start gap-3 p-3 rounded-lg bg-background-light dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700">
+<div class="bg-cover bg-center rounded-lg w-12 h-12 shrink-0" data-alt="French Bulldog portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDyXUWvgODahuyPAq5Pxayt9VDdZpUyM59FmRXbaBm9jxB3rDev-tNcdSucPr09d8YvfsjutE-39OkBIgI3S0Bdtuow4gba4SqwdRUJpCU2OXbM5RUrHYmoYysZXl5osGUSn92gLZW1APbFWinmhRIA96sAo9JVprKM6pApMEW7bOA3T5Tm79W54PGP9jqHABvCZHnwg9i_hqsgIF820fKm1EIFZGw08s_Z7MICCU3801wKY0ZDlA9udwV9tW8-PpmPFIjy6mdovaay");'>
+</div>
+<div class="flex flex-col flex-1">
+<div class="flex justify-between items-start">
+<p class="text-sm font-bold text-slate-900 dark:text-white">Luna</p>
+<span class="text-xs font-bold text-emerald-600 bg-emerald-100 dark:bg-emerald-900/40 px-2 py-0.5 rounded-full">24 Nov</span>
+</div>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Pai: Thor (Bulldog)</p>
+<div class="mt-2 w-full bg-slate-200 dark:bg-slate-600 rounded-full h-1.5">
+<div class="bg-emerald-500 h-1.5 rounded-full" style="width: 45%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Section: Predicted Heats -->
+<div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-5">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-rose-500">favorite</span>
+                                        Próximos Cios
+                                    </h3>
+</div>
+<div class="flex flex-col gap-0 divide-y divide-slate-100 dark:divide-slate-700">
+<div class="flex items-center gap-3 py-3">
+<div class="bg-rose-50 text-rose-600 rounded-full p-1.5">
+<span class="material-symbols-outlined text-sm">calendar_month</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-medium text-slate-900 dark:text-white">Daisy</p>
+<p class="text-xs text-slate-500">Previsto: 15 Dez</p>
+</div>
+<button class="text-slate-400 hover:text-rose-500 material-symbols-outlined text-lg">edit_calendar</button>
+</div>
+<div class="flex items-center gap-3 py-3">
+<div class="bg-rose-50 text-rose-600 rounded-full p-1.5">
+<span class="material-symbols-outlined text-sm">calendar_month</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-medium text-slate-900 dark:text-white">Kiara</p>
+<p class="text-xs text-slate-500">Previsto: 28 Dez</p>
+</div>
+<button class="text-slate-400 hover:text-rose-500 material-symbols-outlined text-lg">edit_calendar</button>
+</div>
+</div>
+</div>
+<!-- Quick Action Card -->
+<div class="bg-gradient-to-br from-primary to-primary-dark rounded-xl p-5 text-white shadow-lg shadow-blue-500/30">
+<h3 class="font-bold text-lg mb-2">Novo Ciclo?</h3>
+<p class="text-blue-100 text-sm mb-4">Registre o início do cio para que o sistema calcule a melhor data de cobertura.</p>
+<button class="w-full bg-white text-primary py-2 rounded-lg font-bold text-sm hover:bg-blue-50 transition-colors">
+                                    Registrar Início de Cio
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
