@@ -23,8 +23,9 @@ const createShareLink = async (req, res) => {
             expires_at: expires_at || null
         });
 
-        // Generate full URL
-        const fullUrl = `${req.protocol}://${req.get('host')}/album/${shareLink.token}`;
+        // Generate full URL using frontend URL
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const fullUrl = `${frontendUrl}/album/${shareLink.token}`;
 
         res.status(201).json({
             message: 'Share link created successfully',
@@ -57,11 +58,12 @@ const getShareLinks = async (req, res) => {
         });
 
         // Add computed properties
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
         const linksWithStatus = shareLinks.map(link => ({
             ...link.toJSON(),
             is_expired: link.isExpired(),
             is_valid: link.isValid(),
-            url: `${req.protocol}://${req.get('host')}/album/${link.token}`
+            url: `${frontendUrl}/album/${link.token}`
         }));
 
         res.json({ links: linksWithStatus });

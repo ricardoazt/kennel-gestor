@@ -23,6 +23,7 @@ services:
       - DATABASE_URL=postgres://kennel_user:kennel_password@db:5432/kennel_homolog_db
       - PORT=3000
       - TZ=America/Sao_Paulo
+      - FRONTEND_URL=http://localhost:5173
     depends_on:
       - db
     volumes:

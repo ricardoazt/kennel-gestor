@@ -7,6 +7,7 @@ import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import '../../styles/fancybox-custom.css';
 import UploadProgress from '../../components/UploadProgress';
+import ShareLinkManager from '../../components/ShareLinkManager';
 import './GalleryMasonry.css';
 
 const Gallery = () => {
@@ -45,6 +46,7 @@ const Gallery = () => {
     const [selectedMediaForAlbum, setSelectedMediaForAlbum] = useState(new Set());
     const [availableMedia, setAvailableMedia] = useState([]);
     const [showHiddenAlbums, setShowHiddenAlbums] = useState(false);
+    const [managingShareLinksAlbum, setManagingShareLinksAlbum] = useState(null);
 
     useEffect(() => {
         const urlFilter = searchParams.get('filter');
@@ -507,10 +509,8 @@ const Gallery = () => {
         }
     };
 
-    const copyAlbumLink = (album) => {
-        const link = `${window.location.origin}/album/${album.share_token}`;
-        navigator.clipboard.writeText(link);
-        alert('Link do álbum copiado!');
+    const openShareLinkManager = (album) => {
+        setManagingShareLinksAlbum(album);
     };
 
     return (
@@ -697,10 +697,10 @@ const Gallery = () => {
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    copyAlbumLink(album);
+                                                    openShareLinkManager(album);
                                                 }}
                                                 className="text-blue-600 hover:text-blue-800 p-1 rounded-full hover:bg-blue-50"
-                                                title="Copiar link"
+                                                title="Gerenciar links de compartilhamento"
                                             >
                                                 <span className="material-symbols-outlined text-lg">share</span>
                                             </button>
@@ -1178,6 +1178,15 @@ const Gallery = () => {
                     uploadQueue={uploadQueue}
                     onCancel={handleCancelUpload}
                     onClose={handleCloseUploadProgress}
+                />
+            )}
+
+            {/* Share Link Manager Modal */}
+            {managingShareLinksAlbum && (
+                <ShareLinkManager
+                    albumId={managingShareLinksAlbum.id}
+                    isOpen={!!managingShareLinksAlbum}
+                    onClose={() => setManagingShareLinksAlbum(null)}
                 />
             )}
         </div>
