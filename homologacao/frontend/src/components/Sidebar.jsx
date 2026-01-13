@@ -4,7 +4,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 const Sidebar = ({ isCollapsed = false, onToggle }) => {
 	const location = useLocation();
 	const [expandedItems, setExpandedItems] = useState({
-		'CRM': true
+		'Comercial': true
 	});
 
 	const toggleExpand = (name) => {
@@ -19,29 +19,77 @@ const Sidebar = ({ isCollapsed = false, onToggle }) => {
 	const navItems = [
 		{ name: 'Dashboard', icon: 'dashboard', path: '/' },
 		{
-			name: 'CRM',
-			icon: 'folder_shared',
-			path: '/crm',
+			name: 'Comercial',
+			icon: 'handshake',
+			path: '/comercial',
 			children: [
 				{ name: 'Funil de Vendas', path: '/crm/funil-vendas' },
 				{ name: 'Reservas', path: '/cadastros/reservas' },
-				{ name: 'Clientes', path: '/cadastros/clientes' }
+				{ name: 'Clientes', path: '/cadastros/clientes', disabled: true, tag: 'Em breve' },
+				{ name: 'Contratos', path: '/comercial/contratos' }
 			]
 		},
-		{ name: 'Vendas', icon: 'shopping_cart', path: '/vendas' },
-		{ name: 'Plantel', icon: 'pets', path: '/plantel' },
-		{ name: 'Estúdio Pedigree', icon: 'draw', path: '/pedigree-studio' },
+		{
+			name: 'Plantel',
+			icon: 'pets',
+			path: '/plantel',
+			children: [
+				{ name: 'Todos os Cães', path: '/plantel' },
+				{ name: 'Pedigrees', path: '/pedigree-studio' }
+			]
+		},
+		{
+			name: 'Reprodução',
+			icon: 'science',
+			path: '/reproducao',
+			children: [
+				{ name: 'Calendário de Cios', path: '/reproducao/calendario-cios' },
+				{ name: 'Planejador de Cruzas', path: '/reproducao/planejador-cruzas' },
+				{ name: 'Gestação', path: '/reproducao/gestacao' }
+			]
+		},
 		{ name: 'Ninhadas', icon: 'grid_view', path: '/ninhadas' },
 		{
-			name: 'Central de Mídia',
-			icon: 'perm_media',
-			path: '/media-center',
+			name: 'Saúde',
+			icon: 'health_and_safety',
+			path: '/saude',
 			children: [
-				{ name: 'Galeria', path: '/media-center/gallery' },
-				{ name: 'Campanhas', path: '/media-center/campaigns', disabled: true, tag: 'Em breve' }
+				{ name: 'Protocolos Padrão', path: '/saude/protocolos' },
+				{ name: 'Agenda Sanitária', path: '/saude/agenda' },
+				{ name: 'Histórico Clínico', path: '/saude/historico' }
 			]
 		},
-		{ name: 'Financeiro', icon: 'payments', path: '/financeiro' },
+		{
+			name: 'Financeiro',
+			icon: 'payments',
+			path: '/financeiro',
+			children: [
+				{ name: 'Fluxo de Caixa', path: '/financeiro/fluxo-caixa' },
+				{ name: 'Análise por Cão', path: '/financeiro/analise-cao' },
+				{ name: 'Estoque', path: '/financeiro/estoque' },
+				{ name: 'Compras', path: '/financeiro/compras' }
+			]
+		},
+		{
+			name: 'Loja e Mídias',
+			icon: 'storefront',
+			path: '/loja',
+			children: [
+				{ name: 'Catálogo', path: '/loja/catalogo' },
+				{ name: 'Pedidos', path: '/loja/pedidos' },
+				{ name: 'Galeria de Mídias', path: '/media-center/gallery' }
+			]
+		},
+		{
+			name: 'Configurações',
+			icon: 'settings',
+			path: '/configuracoes',
+			children: [
+				{ name: 'Usuários', path: '/configuracoes/usuarios' },
+				{ name: 'Modelos', path: '/configuracoes/modelos' },
+				{ name: 'Integrações', path: '/configuracoes/integracoes' }
+			]
+		}
 	];
 
 	return (
