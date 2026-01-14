@@ -8,6 +8,10 @@ const AgendaController = require('./controllers/AgendaController');
 const mediaController = require('./controllers/mediaController');
 const campaignController = require('./controllers/campaignController');
 const ShareLinkController = require('./controllers/ShareLinkController');
+const ReservationController = require('./controllers/ReservationController');
+const LitterController = require('./controllers/LitterController');
+const PuppyController = require('./controllers/PuppyController');
+const ClientController = require('./controllers/ClientController');
 
 require('dotenv').config();
 
@@ -106,6 +110,40 @@ app.post('/api/campaigns/:id/track-view', campaignController.trackView);
 
 // === Public Campaign Routes (no auth required) ===
 app.get('/p/:slug', campaignController.getPublicCampaign);
+
+// === Reservation Routes ===
+app.post('/api/reservations', ReservationController.create);
+app.get('/api/reservations', ReservationController.findAll);
+app.get('/api/reservations/:id', ReservationController.findOne);
+app.put('/api/reservations/:id', ReservationController.update);
+app.put('/api/reservations/:id/status', ReservationController.updateStatus);
+app.get('/api/reservations/litter/:litterId', ReservationController.getByLitter);
+app.get('/api/reservations/expiring', ReservationController.getExpiring);
+app.post('/api/reservations/cancel-expired', ReservationController.cancelExpired);
+
+// === Availability Check ===
+app.get('/api/litters/:litterId/availability', ReservationController.checkAvailability);
+
+// === Litter Management ===
+app.post('/api/litters', LitterController.create);
+app.get('/api/litters', LitterController.findAll);
+app.get('/api/litters/:id', LitterController.findOne);
+app.put('/api/litters/:id', LitterController.update);
+app.delete('/api/litters/:id', LitterController.delete);
+
+// === Puppy Management ===
+app.post('/api/puppies', PuppyController.create);
+app.get('/api/puppies', PuppyController.findAll);
+app.get('/api/puppies/:id', PuppyController.findOne);
+app.put('/api/puppies/:id', PuppyController.update);
+app.delete('/api/puppies/:id', PuppyController.delete);
+
+// === Client Management (CRM) ===
+app.post('/api/clients', ClientController.create);
+app.get('/api/clients', ClientController.findAll);
+app.get('/api/clients/:id', ClientController.findOne);
+app.put('/api/clients/:id', ClientController.update);
+app.delete('/api/clients/:id', ClientController.delete);
 
 // Retry logic for Database Synchronization
 const startServer = async () => {
