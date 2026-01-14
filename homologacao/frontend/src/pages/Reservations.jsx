@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReservationModal from '../components/ReservationModal';
 import {
 	getReservations,
 	getLitters,
@@ -10,6 +11,7 @@ const Dashboard = () => {
 	const [reservations, setReservations] = useState([]);
 	const [litters, setLitters] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [filters, setFilters] = useState({
 		status: '',
 		litter_id: '',
@@ -110,7 +112,7 @@ const Dashboard = () => {
 					<h1 className="text-3xl font-bold text-gray-900">Cadastro de Reservas</h1>
 					<p className="text-gray-500 mt-1">Gerencie reservas com compromisso financeiro.</p>
 				</div>
-				<button className="btn-primary">
+				<button className="btn-primary" onClick={() => setIsModalOpen(true)}>
 					<span className="material-symbols-outlined">add</span>
 					<span>Nova Reserva</span>
 				</button>
@@ -339,6 +341,15 @@ const Dashboard = () => {
 					</table>
 				</div>
 			</div>
+
+			{/* Modal de Nova Reserva */}
+			<ReservationModal
+				isOpen={isModalOpen}
+				onClose={() => setIsModalOpen(false)}
+				onSuccess={() => {
+					loadData(); // Recarregar dados após criar reserva
+				}}
+			/>
 		</div>
 	);
 };
