@@ -61,8 +61,7 @@ const LitterForm = () => {
                     puppyService.create({
                         litter_id: litter.id,
                         gender: 'Macho',
-                        name: `Filhote ${i}`,
-                        birth_date: formData.birth_date
+                        name: `Filhote ${i}`
                     })
                 );
             }
@@ -73,8 +72,7 @@ const LitterForm = () => {
                     puppyService.create({
                         litter_id: litter.id,
                         gender: 'Femea',
-                        name: `Filhote ${formData.total_males + i}`,
-                        birth_date: formData.birth_date
+                        name: `Filhote ${formData.total_males + i}`
                     })
                 );
             }

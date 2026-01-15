@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true,
             validate: {
-                isIn: [['male', 'female', 'Macho', 'Fêmea']]
+                isIn: [['male', 'female', 'Macho', 'Fêmea', 'Femea']]
             }
         },
         color: {
