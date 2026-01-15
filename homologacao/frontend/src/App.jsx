@@ -29,6 +29,9 @@ import Pedidos from './pages/Loja/Pedidos';
 import Usuarios from './pages/Configuracoes/Usuarios';
 import Modelos from './pages/Configuracoes/Modelos';
 import Integracoes from './pages/Configuracoes/Integracoes';
+import LitterList from './pages/Ninhadas/List';
+import LitterForm from './pages/Ninhadas/Form';
+import LitterDetail from './pages/Ninhadas/Detail';
 
 function App() {
   return (
@@ -56,7 +59,9 @@ function App() {
           <Route path="reproducao/gestacao" element={<Gestacao />} />
 
           {/* Ninhadas Module */}
-          <Route path="ninhadas" element={<div>Ninhadas Module</div>} />
+          <Route path="ninhadas" element={<LitterList />} />
+          <Route path="ninhadas/nova" element={<LitterForm />} />
+          <Route path="ninhadas/:id" element={<LitterDetail />} />
 
           {/* Saúde Module */}
           <Route path="saude/protocolos" element={<Protocolos />} />

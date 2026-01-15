@@ -12,6 +12,7 @@ const ReservationController = require('./controllers/ReservationController');
 const LitterController = require('./controllers/LitterController');
 const PuppyController = require('./controllers/PuppyController');
 const ClientController = require('./controllers/ClientController');
+const PregnancyController = require('./controllers/PregnancyController');
 
 require('dotenv').config();
 
@@ -144,6 +145,14 @@ app.get('/api/clients', ClientController.findAll);
 app.get('/api/clients/:id', ClientController.findOne);
 app.put('/api/clients/:id', ClientController.update);
 app.delete('/api/clients/:id', ClientController.delete);
+
+// === Pregnancy Management ===
+app.post('/api/pregnancies', PregnancyController.create);
+app.get('/api/pregnancies', PregnancyController.findAll);
+app.get('/api/pregnancies/:id', PregnancyController.findOne);
+app.put('/api/pregnancies/:id', PregnancyController.update);
+app.put('/api/pregnancies/:id/status', PregnancyController.updateStatus);
+app.delete('/api/pregnancies/:id', PregnancyController.delete);
 
 // Retry logic for Database Synchronization
 const startServer = async () => {
