@@ -9,10 +9,18 @@ module.exports = (sequelize, DataTypes) => {
             Litter.belongsTo(models.Animal, { as: 'Mother', foreignKey: 'mother_id' });
 
             // Association with Puppies
-            Litter.hasMany(models.Puppy, { foreignKey: 'litter_id', as: 'puppies' });
+            Litter.hasMany(models.Puppy, {
+                foreignKey: 'litter_id',
+                as: 'puppies',
+                onDelete: 'CASCADE'
+            });
 
             // Association with Reservations
-            Litter.hasMany(models.Reservation, { foreignKey: 'litter_id', as: 'reservations' });
+            Litter.hasMany(models.Reservation, {
+                foreignKey: 'litter_id',
+                as: 'reservations',
+                onDelete: 'CASCADE'
+            });
         }
     }
 

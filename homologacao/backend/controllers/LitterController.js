@@ -71,10 +71,26 @@ class LitterController {
     async delete(req, res) {
         try {
             const { id } = req.params;
-            const litter = await db.Litter.findByPk(id);
+            const litter = await db.Litter.findByPk(id, {
+                include: [
+                    { model: db.Reservation, as: 'reservations' }
+                ]
+            });
 
             if (!litter) {
                 return res.status(404).json({ error: 'Ninhada não encontrada' });
+            }
+
+            // Check if there are active reservations
+            const activeReservations = litter.reservations?.filter(r =>
+                ['awaiting_deposit', 'confirmed', 'contract_pending', 'active'].includes(r.status)
+            );
+
+            if (activeReservations && activeReservations.length > 0) {
+                return res.status(400).json({
+                    error: 'Não é possível excluir esta ninhada pois existem reservas ativas. Por favor, cancele as reservas primeiro.',
+                    activeReservationsCount: activeReservations.length
+                });
             }
 
             await litter.destroy();
