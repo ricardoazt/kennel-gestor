@@ -1,9 +1,33 @@
 const db = require('../models');
+const qrCodeService = require('../utils/qrCodeService');
+const crypto = require('crypto');
+
+/**
+ * Generate unique code for puppy
+ */
+function generateUniqueCode() {
+    const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const random = crypto.randomBytes(2).toString('hex').toUpperCase();
+    return `${date}-${random}`;
+}
 
 class PuppyController {
     async create(req, res) {
         try {
-            const puppy = await db.Puppy.create(req.body);
+            // Generate unique code
+            const uniqueCode = generateUniqueCode();
+
+            // Generate QR code
+            const qrUrl = qrCodeService.generatePuppyProfileURL(uniqueCode);
+            const qrCodeData = await qrCodeService.generateQRCode(qrUrl);
+
+            const puppyData = {
+                ...req.body,
+                unique_code: uniqueCode,
+                qr_code_data: qrCodeData
+            };
+
+            const puppy = await db.Puppy.create(puppyData);
             res.status(201).json(puppy);
         } catch (error) {
             console.error('Erro ao criar filhote:', error);
@@ -83,6 +107,103 @@ class PuppyController {
             res.json({ message: 'Filhote deletado com sucesso' });
         } catch (error) {
             console.error('Erro ao deletar filhote:', error);
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    async findByCode(req, res) {
+        try {
+            const { code } = req.params;
+            const puppy = await db.Puppy.findOne({
+                where: { unique_code: code },
+                include: [
+                    {
+                        model: db.Litter,
+                        as: 'litter',
+                        include: [
+                            { model: db.Animal, as: 'Father' },
+                            { model: db.Animal, as: 'Mother' }
+                        ]
+                    },
+                    { model: db.Reservation, as: 'reservation' }
+                ]
+            });
+
+            if (!puppy) {
+                return res.status(404).json({ error: 'Filhote não encontrado' });
+            }
+
+            res.json(puppy);
+        } catch (error) {
+            console.error('Erro ao buscar filhote por código:', error);
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    async addWeightEntry(req, res) {
+        try {
+            const { id } = req.params;
+            const { weight, date } = req.body;
+
+            if (!weight || !date) {
+                return res.status(400).json({ error: 'Peso e data são obrigatórios' });
+            }
+
+            const puppy = await db.Puppy.findByPk(id);
+            if (!puppy) {
+                return res.status(404).json({ error: 'Filhote não encontrado' });
+            }
+
+            const weightHistory = puppy.weight_history || [];
+            weightHistory.push({ weight: parseFloat(weight), date, recorded_at: new Date() });
+
+            // Sort by date
+            weightHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            await puppy.update({ weight_history: weightHistory });
+            res.json(puppy);
+        } catch (error) {
+            console.error('Erro ao adicionar pesagem:', error);
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    async getWeightHistory(req, res) {
+        try {
+            const { id } = req.params;
+            const puppy = await db.Puppy.findByPk(id);
+
+            if (!puppy) {
+                return res.status(404).json({ error: 'Filhote não encontrado' });
+            }
+
+            res.json(puppy.weight_history || []);
+        } catch (error) {
+            console.error('Erro ao buscar histórico de pesagem:', error);
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    async regenerateQRCode(req, res) {
+        try {
+            const { id } = req.params;
+            const puppy = await db.Puppy.findByPk(id);
+
+            if (!puppy) {
+                return res.status(404).json({ error: 'Filhote não encontrado' });
+            }
+
+            if (!puppy.unique_code) {
+                return res.status(400).json({ error: 'Filhote não possui código único' });
+            }
+
+            const qrUrl = qrCodeService.generatePuppyProfileURL(puppy.unique_code);
+            const qrCodeData = await qrCodeService.generateQRCode(qrUrl);
+
+            await puppy.update({ qr_code_data: qrCodeData });
+            res.json({ qr_code_data: qrCodeData });
+        } catch (error) {
+            console.error('Erro ao gerar QR code:', error);
             res.status(500).json({ error: error.message });
         }
     }

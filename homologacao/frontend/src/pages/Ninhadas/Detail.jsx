@@ -35,8 +35,7 @@ const LitterDetail = () => {
     };
 
     const handlePuppyClick = (puppy) => {
-        setSelectedPuppy(puppy);
-        setShowPuppyModal(true);
+        navigate(`/filhotes/${puppy.id}`);
     };
 
     const handlePuppyUpdate = async (puppyId, data) => {
@@ -48,6 +47,11 @@ const LitterDetail = () => {
             console.error('Error updating puppy:', error);
             alert('Erro ao atualizar filhote');
         }
+    };
+
+    const handleDownloadPDF = () => {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+        window.open(`${apiUrl}/api/litters/${id}/pdf`, '_blank');
     };
 
     const calculateAge = (birthDate) => {
@@ -90,6 +94,13 @@ const LitterDetail = () => {
                     </div>
                     <p className="text-gray-600 ml-12">{age} • {puppies.length} filhote{puppies.length !== 1 ? 's' : ''}</p>
                 </div>
+                <button
+                    onClick={handleDownloadPDF}
+                    className="btn-primary flex items-center gap-2"
+                >
+                    <span className="material-symbols-outlined">picture_as_pdf</span>
+                    Gerar PDF da Ninhada
+                </button>
             </div>
 
             {/* Parent info card */}
@@ -168,20 +179,25 @@ const LitterDetail = () => {
                                 </div>
                                 {puppy.status && (
                                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${puppy.status === 'available' ? 'bg-green-100 text-green-700' :
-                                            puppy.status === 'reserved' ? 'bg-yellow-100 text-yellow-700' :
-                                                'bg-gray-100 text-gray-700'
+                                        puppy.status === 'reserved' ? 'bg-yellow-100 text-yellow-700' :
+                                            'bg-gray-100 text-gray-700'
                                         }`}>
                                         {puppy.status === 'available' ? 'Disponível' :
                                             puppy.status === 'reserved' ? 'Reservado' : 'Vendido'}
                                     </span>
                                 )}
                             </div>
-                            {puppy.color && (
-                                <p className="text-sm text-gray-600">Cor: {puppy.color}</p>
-                            )}
-                            {puppy.weight && (
-                                <p className="text-sm text-gray-600">Peso: {puppy.weight}g</p>
-                            )}
+                            <div className="space-y-1">
+                                {puppy.coat_color && (
+                                    <p className="text-sm text-gray-600">Coloração: {puppy.coat_color}</p>
+                                )}
+                                {puppy.collar_color && (
+                                    <p className="text-sm text-gray-600">Coleira: {puppy.collar_color}</p>
+                                )}
+                                {puppy.unique_code && (
+                                    <p className="text-xs text-gray-500 font-mono">{puppy.unique_code}</p>
+                                )}
+                            </div>
                         </div>
                     ))}
                 </div>

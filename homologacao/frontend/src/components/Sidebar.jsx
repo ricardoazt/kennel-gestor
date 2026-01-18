@@ -25,6 +25,7 @@ const Sidebar = ({ isCollapsed = false, onToggle }) => {
 			children: [
 				{ name: 'Funil de Vendas', path: '/crm/funil-vendas' },
 				{ name: 'Reservas', path: '/cadastros/reservas' },
+				{ name: 'Lista de Espera', path: '/comercial/lista-espera' },
 				{ name: 'Clientes', path: '/cadastros/clientes', disabled: true, tag: 'Em breve' },
 				{ name: 'Contratos', path: '/comercial/contratos' }
 			]
@@ -32,11 +33,7 @@ const Sidebar = ({ isCollapsed = false, onToggle }) => {
 		{
 			name: 'Plantel',
 			icon: 'pets',
-			path: '/plantel',
-			children: [
-				{ name: 'Todos os Cães', path: '/plantel' },
-				{ name: 'Pedigrees', path: '/pedigree-studio' }
-			]
+			path: '/plantel'
 		},
 		{
 			name: 'Reprodução',

@@ -12,7 +12,7 @@ module.exports = {
                 default_content: JSON.stringify({
                     modules: [
                         { id: 'hero', type: 'hero', title: 'Prenhez Confirmada!', subtitle: 'Aguardando filhotes incríveis', background_type: 'image', settings: { height: 'large' } },
-                        { id: 'parents', type: 'parent_showcase', title: 'Os Pais', layout: 'side-by-side', show_pedigree: true },
+                        { id: 'parents', type: 'parent_showcase', title: 'Os Pais', layout: 'side-by-side' },
                         { id: 'details', type: 'text', title: 'Detalhes da Prenhez', content: 'Adicione informações sobre a prenhez, data prevista do parto, etc.' },
                         { id: 'countdown', type: 'countdown', title: 'Contagem Regressiva', target_date: null, label: 'Dias para o nascimento' },
                         { id: 'contact', type: 'cta', title: 'Interessado?', button_text: 'Entre em Contato', button_link: 'whatsapp', show_whatsapp: true }

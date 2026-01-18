@@ -1,4 +1,5 @@
 const db = require('../models');
+const pdfService = require('../utils/pdfService');
 
 class LitterController {
     async create(req, res) {
@@ -97,6 +98,33 @@ class LitterController {
             res.json({ message: 'Ninhada deletada com sucesso' });
         } catch (error) {
             console.error('Erro ao deletar ninhada:', error);
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    async generatePDF(req, res) {
+        try {
+            const { id } = req.params;
+            const litter = await db.Litter.findByPk(id, {
+                include: [
+                    { model: db.Animal, as: 'Father' },
+                    { model: db.Animal, as: 'Mother' },
+                    { model: db.Puppy, as: 'puppies' }
+                ]
+            });
+
+            if (!litter) {
+                return res.status(404).json({ error: 'Ninhada não encontrada' });
+            }
+
+            const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+            const pdfBuffer = await pdfService.generateLitterPDF(litter, baseUrl);
+
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="ninhada-${litter.name || litter.id}.pdf"`);
+            res.send(pdfBuffer);
+        } catch (error) {
+            console.error('Erro ao gerar PDF:', error);
             res.status(500).json({ error: error.message });
         }
     }

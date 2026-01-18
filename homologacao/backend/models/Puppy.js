@@ -62,6 +62,23 @@ module.exports = (sequelize, DataTypes) => {
         weight_history: {
             type: DataTypes.JSONB,
             defaultValue: []
+        },
+        unique_code: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            unique: true
+        },
+        qr_code_data: {
+            type: DataTypes.TEXT,
+            allowNull: true
+        },
+        collar_color: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        coat_color: {
+            type: DataTypes.STRING,
+            allowNull: true
         }
     }, {
         sequelize,

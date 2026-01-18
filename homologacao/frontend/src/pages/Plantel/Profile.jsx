@@ -8,7 +8,7 @@ function PlantelProfile() {
     const navigate = useNavigate();
     const [animal, setAnimal] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('health'); // health, reproduction, documents, pedigree, agenda, photos
+    const [activeTab, setActiveTab] = useState('health'); // health, reproduction, documents, agenda, photos
     const [uploading, setUploading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
@@ -72,7 +72,7 @@ function PlantelProfile() {
                 microchip: response.data.microchip || `MC${Math.floor(Math.random() * 1000000000)}`,
                 cor: response.data.cor || 'Dourado',
                 data_nascimento: response.data.data_nascimento || '2020-08-15',
-                pedigree: response.data.pedigree || 'CBKC-123456',
+
                 proprietario: response.data.proprietario || 'Canil Central',
                 foto: response.data.foto || `https://source.unsplash.com/400x400/?dog,${response.data.id}`,
                 peso_atual: response.data.peso_atual || 38.5,
@@ -96,7 +96,7 @@ function PlantelProfile() {
                 })) : getMockAgenda(),
                 historico_cruzas: getMockBreedingHistory(),
                 documentos: getMockDocuments(),
-                pedigreeData: getMockPedigree(response.data.id)
+
             };
             setAnimal(enrichedAnimal);
         } catch (error) {
@@ -180,7 +180,7 @@ function PlantelProfile() {
             cor: 'Capa Preta',
             data_nascimento: '2020-08-15',
             microchip: '982123456789',
-            pedigree: 'CBKC-123456',
+
             proprietario: 'Canil Central',
             foto: 'https://images.unsplash.com/photo-1568572933382-74d440642117?w=400&h=400&fit=crop',
             peso_atual: 38.5,
@@ -195,7 +195,7 @@ function PlantelProfile() {
             agenda: getMockAgenda(),
             historico_cruzas: getMockBreedingHistory(),
             documentos: getMockDocuments(),
-            pedigreeData: getMockPedigree(id)
+
         };
     }
 
@@ -223,63 +223,13 @@ function PlantelProfile() {
 
     function getMockDocuments() {
         return [
-            { nome: 'Pedigree_Rex.pdf', tamanho: '2.4 MB', data: '10 Ago 2020', tipo: 'pdf' },
+
             { nome: 'Laudo_Displasia.jpg', tamanho: '1.1 MB', data: '15 Jun 2021', tipo: 'image' },
             { nome: 'Contrato_Compra.pdf', tamanho: '850 KB', data: '15 Ago 2020', tipo: 'pdf' }
         ];
     }
 
-    function getMockPedigree(animalId) {
-        // Mock pedigree data - 3 generations
-        return {
-            pai: {
-                id: 101,
-                nome: 'Thor von Edelstein',
-                registro: 'CBKC-PA-2015-001',
-                cor: 'Preto e Dourado',
-                foto: 'https://images.unsplash.com/photo-1568572933382-74d440642117?w=200&h=200&fit=crop',
-                pai: {
-                    id: 201,
-                    nome: 'Zeus vom Kraftwerk',
-                    registro: 'CBKC-PA-2012-045',
-                    cor: 'Preto e Dourado',
-                    pai: { nome: 'Odin vom Bergland', registro: 'CBKC-PA-2009-023' },
-                    mae: { nome: 'Freya vom Bergland', registro: 'CBKC-PA-2010-067' }
-                },
-                mae: {
-                    id: 202,
-                    nome: 'Hera vom Edelstein',
-                    registro: 'CBKC-PA-2013-089',
-                    cor: 'Preto e Marrom',
-                    pai: { nome: 'Apollo vom Stern', registro: 'CBKC-PA-2010-034' },
-                    mae: { nome: 'Athena vom Stern', registro: 'CBKC-PA-2011-056' }
-                }
-            },
-            mae: {
-                id: 102,
-                nome: 'Luna vom Waldhaus',
-                registro: 'CBKC-PA-2016-078',
-                cor: 'Preto e Marrom',
-                foto: 'https://images.unsplash.com/photo-1611003228941-98852ba62227?w=200&h=200&fit=crop',
-                pai: {
-                    id: 203,
-                    nome: 'Ares vom Kraftwerk',
-                    registro: 'CBKC-PA-2013-012',
-                    cor: 'Preto e Dourado',
-                    pai: { nome: 'Hades vom Bergland', registro: 'CBKC-PA-2010-078' },
-                    mae: { nome: 'Persephone vom Berg', registro: 'CBKC-PA-2011-089' }
-                },
-                mae: {
-                    id: 204,
-                    nome: 'Diana vom Waldhaus',
-                    registro: 'CBKC-PA-2014-045',
-                    cor: 'Preto e Marrom',
-                    pai: { nome: 'Artemis vom Wald', registro: 'CBKC-PA-2011-023' },
-                    mae: { nome: 'Selene vom Wald', registro: 'CBKC-PA-2012-034' }
-                }
-            }
-        };
-    }
+
 
     function calculateAge(birthDate) {
         const birth = new Date(birthDate);
@@ -573,7 +523,7 @@ function PlantelProfile() {
                                 </div>
 
                                 {/* Info Grid */}
-                                <div className="grid grid-cols-4 gap-6">
+                                <div className="grid grid-cols-3 gap-6">
                                     <div className="flex flex-col gap-1">
                                         <span className="text-xs text-slate-500 uppercase font-medium">DATA DE NASCIMENTO</span>
                                         <span className="text-sm font-semibold text-slate-900">{formatDate(animal.data_nascimento)}</span>
@@ -585,10 +535,7 @@ function PlantelProfile() {
                                             <span className="material-symbols-outlined text-blue-500 text-[16px]">verified</span>
                                         </div>
                                     </div>
-                                    <div className="flex flex-col gap-1">
-                                        <span className="text-xs text-slate-500 uppercase font-medium">PEDIGREE</span>
-                                        <span className="text-sm font-semibold text-primary cursor-pointer hover:underline">{animal.pedigree}</span>
-                                    </div>
+
                                     <div className="flex flex-col gap-1">
                                         <span className="text-xs text-slate-500 uppercase font-medium">PROPRIETÁRIO</span>
                                         <div className="flex items-center gap-1">
@@ -690,16 +637,7 @@ function PlantelProfile() {
                                 <span className="material-symbols-outlined text-[18px]">folder</span>
                                 Documentos e Averbo
                             </button>
-                            <button
-                                onClick={() => setActiveTab('pedigree')}
-                                className={`whitespace-nowrap py-4 px-1 border-b-2 text-sm font-medium flex items-center gap-2 ${activeTab === 'pedigree'
-                                    ? 'border-primary text-primary'
-                                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-                                    }`}
-                            >
-                                <span className="material-symbols-outlined text-[18px]">account_tree</span>
-                                Árvore Genealógica
-                            </button>
+
                             <button
                                 onClick={() => setActiveTab('photos')}
                                 className={`whitespace-nowrap py-4 px-1 border-b-2 text-sm font-medium flex items-center gap-2 ${activeTab === 'photos'
@@ -917,205 +855,7 @@ function PlantelProfile() {
                                 </div>
                             )}
 
-                            {/* Pedigree Section */}
-                            {activeTab === 'pedigree' && (
-                                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                                    <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/50">
-                                        <h3 className="font-bold text-slate-900 flex items-center gap-2">
-                                            <span className="material-symbols-outlined text-primary">account_tree</span>
-                                            Árvore Genealógica - 3 Gerações
-                                        </h3>
-                                        <p className="text-xs text-slate-500 mt-1">Linhagem completa com pais, avós e bisavós</p>
-                                    </div>
-                                    <div className="p-6 overflow-x-auto">
-                                        {/* Pedigree Tree */}
-                                        <div className="min-w-[800px]">
-                                            {/* Current Dog */}
-                                            <div className="flex items-center justify-center mb-8">
-                                                <div className="bg-gradient-to-br from-primary to-blue-600 text-white p-6 rounded-xl shadow-lg max-w-xs w-full">
-                                                    <div className="flex items-center gap-4">
-                                                        <div
-                                                            className="size-16 rounded-full border-4 border-white shadow-md bg-cover bg-center shrink-0"
-                                                            style={{ backgroundImage: `url(${animal.foto})` }}
-                                                        />
-                                                        <div className="flex-1 min-w-0">
-                                                            <h4 className="font-bold text-lg truncate">{animal.nome}</h4>
-                                                            <p className="text-xs opacity-90 truncate">{animal.pedigree}</p>
-                                                            <p className="text-xs opacity-75 mt-1">{animal.cor}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
 
-                                            {/* Parents Level */}
-                                            <div className="grid grid-cols-2 gap-6 mb-6">
-                                                {/* Father */}
-                                                {animal.pedigreeData?.pai && (
-                                                    <div className="space-y-4">
-                                                        <div className="bg-blue-50 border-2 border-blue-200 p-4 rounded-lg">
-                                                            <div className="flex items-center gap-3 mb-3">
-                                                                <div
-                                                                    className="size-12 rounded-full border-2 border-blue-300 bg-cover bg-center shrink-0"
-                                                                    style={{ backgroundImage: `url(${animal.pedigreeData.pai.foto})` }}
-                                                                />
-                                                                <div className="flex-1 min-w-0">
-                                                                    <div className="flex items-center gap-2">
-                                                                        <span className="material-symbols-outlined text-blue-600 text-sm">male</span>
-                                                                        <span className="text-xs font-semibold text-blue-600 uppercase">Pai</span>
-                                                                    </div>
-                                                                    <h5 className="font-bold text-slate-900 truncate">{animal.pedigreeData.pai.nome}</h5>
-                                                                    <p className="text-xs text-slate-600 truncate">{animal.pedigreeData.pai.registro}</p>
-                                                                </div>
-                                                            </div>
-
-                                                            {/* Paternal Grandparents */}
-                                                            <div className="space-y-2 pl-2 border-l-2 border-blue-200">
-                                                                {animal.pedigreeData.pai.pai && (
-                                                                    <div className="bg-white p-3 rounded border border-blue-100 ml-2">
-                                                                        <div className="flex items-center gap-2 mb-1">
-                                                                            <span className="material-symbols-outlined text-blue-500 text-xs">male</span>
-                                                                            <span className="text-xs font-semibold text-blue-500">Avô Paterno</span>
-                                                                        </div>
-                                                                        <p className="text-sm font-bold text-slate-800 truncate">{animal.pedigreeData.pai.pai.nome}</p>
-                                                                        <p className="text-xs text-slate-500 truncate">{animal.pedigreeData.pai.pai.registro}</p>
-
-                                                                        {/* Great-grandparents */}
-                                                                        {(animal.pedigreeData.pai.pai.pai || animal.pedigreeData.pai.pai.mae) && (
-                                                                            <div className="mt-2 pt-2 border-t border-slate-100 space-y-1">
-                                                                                {animal.pedigreeData.pai.pai.pai && (
-                                                                                    <p className="text-xs text-slate-600 truncate">↳ {animal.pedigreeData.pai.pai.pai.nome}</p>
-                                                                                )}
-                                                                                {animal.pedigreeData.pai.pai.mae && (
-                                                                                    <p className="text-xs text-slate-600 truncate">↳ {animal.pedigreeData.pai.pai.mae.nome}</p>
-                                                                                )}
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                )}
-                                                                {animal.pedigreeData.pai.mae && (
-                                                                    <div className="bg-white p-3 rounded border border-pink-100 ml-2">
-                                                                        <div className="flex items-center gap-2 mb-1">
-                                                                            <span className="material-symbols-outlined text-pink-500 text-xs">female</span>
-                                                                            <span className="text-xs font-semibold text-pink-500">Avó Paterna</span>
-                                                                        </div>
-                                                                        <p className="text-sm font-bold text-slate-800 truncate">{animal.pedigreeData.pai.mae.nome}</p>
-                                                                        <p className="text-xs text-slate-500 truncate">{animal.pedigreeData.pai.mae.registro}</p>
-
-                                                                        {/* Great-grandparents */}
-                                                                        {(animal.pedigreeData.pai.mae.pai || animal.pedigreeData.pai.mae.mae) && (
-                                                                            <div className="mt-2 pt-2 border-t border-slate-100 space-y-1">
-                                                                                {animal.pedigreeData.pai.mae.pai && (
-                                                                                    <p className="text-xs text-slate-600 truncate">↳ {animal.pedigreeData.pai.mae.pai.nome}</p>
-                                                                                )}
-                                                                                {animal.pedigreeData.pai.mae.mae && (
-                                                                                    <p className="text-xs text-slate-600 truncate">↳ {animal.pedigreeData.pai.mae.mae.nome}</p>
-                                                                                )}
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )}
-
-                                                {/* Mother */}
-                                                {animal.pedigreeData?.mae && (
-                                                    <div className="space-y-4">
-                                                        <div className="bg-pink-50 border-2 border-pink-200 p-4 rounded-lg">
-                                                            <div className="flex items-center gap-3 mb-3">
-                                                                <div
-                                                                    className="size-12 rounded-full border-2 border-pink-300 bg-cover bg-center shrink-0"
-                                                                    style={{ backgroundImage: `url(${animal.pedigreeData.mae.foto})` }}
-                                                                />
-                                                                <div className="flex-1 min-w-0">
-                                                                    <div className="flex items-center gap-2">
-                                                                        <span className="material-symbols-outlined text-pink-600 text-sm">female</span>
-                                                                        <span className="text-xs font-semibold text-pink-600 uppercase">Mãe</span>
-                                                                    </div>
-                                                                    <h5 className="font-bold text-slate-900 truncate">{animal.pedigreeData.mae.nome}</h5>
-                                                                    <p className="text-xs text-slate-600 truncate">{animal.pedigreeData.mae.registro}</p>
-                                                                </div>
-                                                            </div>
-
-                                                            {/* Maternal Grandparents */}
-                                                            <div className="space-y-2 pl-2 border-l-2 border-pink-200">
-                                                                {animal.pedigreeData.mae.pai && (
-                                                                    <div className="bg-white p-3 rounded border border-blue-100 ml-2">
-                                                                        <div className="flex items-center gap-2 mb-1">
-                                                                            <span className="material-symbols-outlined text-blue-500 text-xs">male</span>
-                                                                            <span className="text-xs font-semibold text-blue-500">Avô Materno</span>
-                                                                        </div>
-                                                                        <p className="text-sm font-bold text-slate-800 truncate">{animal.pedigreeData.mae.pai.nome}</p>
-                                                                        <p className="text-xs text-slate-500 truncate">{animal.pedigreeData.mae.pai.registro}</p>
-
-                                                                        {/* Great-grandparents */}
-                                                                        {(animal.pedigreeData.mae.pai.pai || animal.pedigreeData.mae.pai.mae) && (
-                                                                            <div className="mt-2 pt-2 border-t border-slate-100 space-y-1">
-                                                                                {animal.pedigreeData.mae.pai.pai && (
-                                                                                    <p className="text-xs text-slate-600 truncate">↳ {animal.pedigreeData.mae.pai.pai.nome}</p>
-                                                                                )}
-                                                                                {animal.pedigreeData.mae.pai.mae && (
-                                                                                    <p className="text-xs text-slate-600 truncate">↳ {animal.pedigreeData.mae.pai.mae.nome}</p>
-                                                                                )}
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                )}
-                                                                {animal.pedigreeData.mae.mae && (
-                                                                    <div className="bg-white p-3 rounded border border-pink-100 ml-2">
-                                                                        <div className="flex items-center gap-2 mb-1">
-                                                                            <span className="material-symbols-outlined text-pink-500 text-xs">female</span>
-                                                                            <span className="text-xs font-semibold text-pink-500">Avó Materna</span>
-                                                                        </div>
-                                                                        <p className="text-sm font-bold text-slate-800 truncate">{animal.pedigreeData.mae.mae.nome}</p>
-                                                                        <p className="text-xs text-slate-500 truncate">{animal.pedigreeData.mae.mae.registro}</p>
-
-                                                                        {/* Great-grandparents */}
-                                                                        {(animal.pedigreeData.mae.mae.pai || animal.pedigreeData.mae.mae.mae) && (
-                                                                            <div className="mt-2 pt-2 border-t border-slate-100 space-y-1">
-                                                                                {animal.pedigreeData.mae.mae.pai && (
-                                                                                    <p className="text-xs text-slate-600 truncate">↳ {animal.pedigreeData.mae.mae.pai.nome}</p>
-                                                                                )}
-                                                                                {animal.pedigreeData.mae.mae.mae && (
-                                                                                    <p className="text-xs text-slate-600 truncate">↳ {animal.pedigreeData.mae.mae.mae.nome}</p>
-                                                                                )}
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            {/* Legend */}
-                                            <div className="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                                                <h4 className="text-sm font-semibold text-slate-700 mb-2">Legenda</h4>
-                                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="size-4 bg-gradient-to-br from-primary to-blue-600 rounded"></div>
-                                                        <span className="text-slate-600">Cão Atual</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="size-4 bg-blue-100 border border-blue-200 rounded"></div>
-                                                        <span className="text-slate-600">Linhagem Paterna</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="size-4 bg-pink-100 border border-pink-200 rounded"></div>
-                                                        <span className="text-slate-600">Linhagem Materna</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="material-symbols-outlined text-slate-400 text-sm">account_tree</span>
-                                                        <span className="text-slate-600">3 Gerações</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
 
                             {/* Documents Section */}
                             {activeTab === 'documents' && (

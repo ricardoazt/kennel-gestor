@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import litterService from '../../services/litterService';
 import puppyService from '../../services/puppyService';
+import animalService from '../../services/animalService';
 
 const LitterForm = () => {
     const location = useLocation();
@@ -9,6 +10,8 @@ const LitterForm = () => {
     const pregnancyData = location.state || {};
 
     const [loading, setLoading] = useState(false);
+    const [animals, setAnimals] = useState([]);
+    const [loadingAnimals, setLoadingAnimals] = useState(true);
     const [formData, setFormData] = useState({
         father_id: pregnancyData.fatherId || '',
         mother_id: pregnancyData.motherId || '',
@@ -18,12 +21,33 @@ const LitterForm = () => {
         name: ''
     });
 
+    useEffect(() => {
+        loadAnimals();
+    }, []);
+
+    const loadAnimals = async () => {
+        try {
+            setLoadingAnimals(true);
+            const data = await animalService.getActive();
+            setAnimals(data);
+        } catch (error) {
+            console.error('Error loading animals:', error);
+        } finally {
+            setLoadingAnimals(false);
+        }
+    };
+
+    const females = animals.filter(a => a.sexo === 'Femea');
+    const males = animals.filter(a => a.sexo === 'Macho');
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate parent IDs
-        if (!formData.father_id || !formData.mother_id) {
-            alert('Erro: IDs do pai e mãe não foram informados. Por favor, volte à página de gestação e confirme o nascimento novamente.');
+        console.log('Form submitted with data:', formData);
+
+        // Validate parent IDs - treat empty strings as invalid
+        if (!formData.father_id || formData.father_id === '' || !formData.mother_id || formData.mother_id === '') {
+            alert('Erro: Por favor, selecione a mãe e o pai da ninhada.');
             console.error('Missing parent IDs:', { father_id: formData.father_id, mother_id: formData.mother_id, pregnancyData });
             return;
         }
@@ -137,6 +161,55 @@ const LitterForm = () => {
 
 
                 <div className="space-y-6">
+                    {/* Parent Selection - only shown if not from pregnancy */}
+                    {(!pregnancyData.fatherName || !pregnancyData.motherName) && (
+                        <>
+                            {/* Mother selection */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <span className="material-symbols-outlined text-base align-middle mr-1 text-pink-500">female</span>
+                                    Mãe *
+                                </label>
+                                <select
+                                    value={formData.mother_id}
+                                    onChange={(e) => setFormData({ ...formData, mother_id: e.target.value })}
+                                    required
+                                    disabled={loadingAnimals}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option value="">Selecione a mãe</option>
+                                    {females.map(animal => (
+                                        <option key={animal.id} value={animal.id}>
+                                            {animal.nome} {animal.registro ? `(${animal.registro})` : ''}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Father selection */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <span className="material-symbols-outlined text-base align-middle mr-1 text-blue-500">male</span>
+                                    Pai *
+                                </label>
+                                <select
+                                    value={formData.father_id}
+                                    onChange={(e) => setFormData({ ...formData, father_id: e.target.value })}
+                                    required
+                                    disabled={loadingAnimals}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option value="">Selecione o pai</option>
+                                    {males.map(animal => (
+                                        <option key={animal.id} value={animal.id}>
+                                            {animal.nome} {animal.registro ? `(${animal.registro})` : ''}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </>
+                    )}
+
                     {/* Litter name */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">

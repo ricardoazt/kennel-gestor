@@ -5,7 +5,7 @@ import Dashboard from './pages/Dashboard';
 import PlantelList from './pages/Plantel/List';
 import PlantelForm from './pages/Plantel/Form';
 import PlantelProfile from './pages/Plantel/Profile';
-import PedigreeStudio from './pages/PedigreeStudio';
+
 import MediaCenter from './pages/MediaCenter';
 import Gallery from './pages/MediaCenter/Gallery';
 import AlbumDetails from './pages/MediaCenter/AlbumDetails';
@@ -14,6 +14,7 @@ import CampaignBuilder from './pages/MediaCenter/CampaignBuilder';
 import SharedAlbum from './pages/SharedAlbum';
 import FunilVendas from './pages/CRM/FunilVendas';
 import Contratos from './pages/Comercial/Contratos';
+import ListaEspera from './pages/Comercial/ListaEspera';
 import CalendarioCios from './pages/Reproducao/CalendarioCios';
 import PlanejadorCruzas from './pages/Reproducao/PlanejadorCruzas';
 import Gestacao from './pages/Reproducao/Gestacao';
@@ -32,12 +33,16 @@ import Integracoes from './pages/Configuracoes/Integracoes';
 import LitterList from './pages/Ninhadas/List';
 import LitterForm from './pages/Ninhadas/Form';
 import LitterDetail from './pages/Ninhadas/Detail';
+import PuppyProfile from './pages/Puppies/PuppyProfile';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/album/:token" element={<SharedAlbum />} />
+        {/* Public puppy profile route */}
+        <Route path="/f/:code" element={<PuppyProfile />} />
+
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Dashboard />} />
 
@@ -45,13 +50,14 @@ function App() {
           <Route path="crm/funil-vendas" element={<FunilVendas />} />
           <Route path="cadastros/reservas" element={<Reservations />} />
           <Route path="comercial/contratos" element={<Contratos />} />
+          <Route path="comercial/lista-espera" element={<ListaEspera />} />
 
           {/* Plantel Module */}
           <Route path="plantel" element={<PlantelList />} />
           <Route path="plantel/novo" element={<PlantelForm />} />
           <Route path="plantel/editar/:id" element={<PlantelForm />} />
           <Route path="plantel/:id" element={<PlantelProfile />} />
-          <Route path="pedigree-studio" element={<PedigreeStudio />} />
+
 
           {/* Reprodução Module */}
           <Route path="reproducao/calendario-cios" element={<CalendarioCios />} />
@@ -62,6 +68,9 @@ function App() {
           <Route path="ninhadas" element={<LitterList />} />
           <Route path="ninhadas/nova" element={<LitterForm />} />
           <Route path="ninhadas/:id" element={<LitterDetail />} />
+
+          {/* Puppy Profile */}
+          <Route path="filhotes/:id" element={<PuppyProfile />} />
 
           {/* Saúde Module */}
           <Route path="saude/protocolos" element={<Protocolos />} />

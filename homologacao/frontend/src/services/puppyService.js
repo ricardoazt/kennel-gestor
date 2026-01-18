@@ -23,6 +23,17 @@ const puppyService = {
         }
     },
 
+    // Get puppy by unique code
+    async getByCode(code) {
+        try {
+            const response = await api.get(`/api/puppies/code/${code}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching puppy by code:', error);
+            throw error;
+        }
+    },
+
     // Create new puppy
     async create(data) {
         try {
@@ -52,6 +63,39 @@ const puppyService = {
             return response.data;
         } catch (error) {
             console.error('Error deleting puppy:', error);
+            throw error;
+        }
+    },
+
+    // Add weight entry
+    async addWeightEntry(id, weight, date) {
+        try {
+            const response = await api.post(`/api/puppies/${id}/weight`, { weight, date });
+            return response.data;
+        } catch (error) {
+            console.error('Error adding weight entry:', error);
+            throw error;
+        }
+    },
+
+    // Get weight history
+    async getWeightHistory(id) {
+        try {
+            const response = await api.get(`/api/puppies/${id}/weight-history`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching weight history:', error);
+            throw error;
+        }
+    },
+
+    // Regenerate QR code
+    async regenerateQRCode(id) {
+        try {
+            const response = await api.post(`/api/puppies/${id}/qrcode`);
+            return response.data;
+        } catch (error) {
+            console.error('Error regenerating QR code:', error);
             throw error;
         }
     }

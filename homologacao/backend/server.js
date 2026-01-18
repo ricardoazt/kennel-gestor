@@ -13,6 +13,7 @@ const LitterController = require('./controllers/LitterController');
 const PuppyController = require('./controllers/PuppyController');
 const ClientController = require('./controllers/ClientController');
 const PregnancyController = require('./controllers/PregnancyController');
+const WaitingListController = require('./controllers/WaitingListController');
 
 require('dotenv').config();
 
@@ -135,9 +136,16 @@ app.delete('/api/litters/:id', LitterController.delete);
 // === Puppy Management ===
 app.post('/api/puppies', PuppyController.create);
 app.get('/api/puppies', PuppyController.findAll);
+app.get('/api/puppies/code/:code', PuppyController.findByCode); // New: Find by unique code
 app.get('/api/puppies/:id', PuppyController.findOne);
 app.put('/api/puppies/:id', PuppyController.update);
 app.delete('/api/puppies/:id', PuppyController.delete);
+app.post('/api/puppies/:id/weight', PuppyController.addWeightEntry); // New: Add weight entry
+app.get('/api/puppies/:id/weight-history', PuppyController.getWeightHistory); // New: Get weight history
+app.post('/api/puppies/:id/qrcode', PuppyController.regenerateQRCode); // New: Regenerate QR code
+
+// === Litter PDF Generation ===
+app.get('/api/litters/:id/pdf', LitterController.generatePDF); // New: Generate litter PDF
 
 // === Client Management (CRM) ===
 app.post('/api/clients', ClientController.create);
@@ -153,6 +161,14 @@ app.get('/api/pregnancies/:id', PregnancyController.findOne);
 app.put('/api/pregnancies/:id', PregnancyController.update);
 app.put('/api/pregnancies/:id/status', PregnancyController.updateStatus);
 app.delete('/api/pregnancies/:id', PregnancyController.delete);
+
+// === Waiting List Management ===
+app.post('/api/waiting-list', WaitingListController.create);
+app.get('/api/waiting-list', WaitingListController.findAll);
+app.get('/api/waiting-list/:id', WaitingListController.findOne);
+app.put('/api/waiting-list/:id', WaitingListController.update);
+app.put('/api/waiting-list/:id/status', WaitingListController.updateStatus);
+app.delete('/api/waiting-list/:id', WaitingListController.delete);
 
 // Retry logic for Database Synchronization
 const startServer = async () => {
