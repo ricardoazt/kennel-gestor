@@ -154,7 +154,8 @@ class PuppyController {
                 return res.status(404).json({ error: 'Filhote não encontrado' });
             }
 
-            const weightHistory = puppy.weight_history || [];
+            // Create a NEW array reference so Sequelize detects the change
+            const weightHistory = [...(puppy.weight_history || [])];
             weightHistory.push({ weight: parseFloat(weight), date, recorded_at: new Date() });
 
             // Sort by date
@@ -164,6 +165,44 @@ class PuppyController {
             res.json(puppy);
         } catch (error) {
             console.error('Erro ao adicionar pesagem:', error);
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    async removeWeightEntry(req, res) {
+        try {
+            const { id } = req.params;
+            const { weight, date, recorded_at } = req.body;
+
+            const puppy = await db.Puppy.findByPk(id);
+            if (!puppy) {
+                return res.status(404).json({ error: 'Filhote não encontrado' });
+            }
+
+            let weightHistory = puppy.weight_history || [];
+            const initialLength = weightHistory.length;
+
+            // Filter out the entry to delete
+            // We use loose comparison for weight/date/recorded_at to ensure we match correctly
+            weightHistory = weightHistory.filter(entry => {
+                // If recorded_at is provided, simplify match using equality check on primitive values
+                // or check if ALL fields match
+                const isMatch =
+                    parseFloat(entry.weight) === parseFloat(weight) &&
+                    new Date(entry.date).toISOString().split('T')[0] === new Date(date).toISOString().split('T')[0] &&
+                    (recorded_at ? new Date(entry.recorded_at).getTime() === new Date(recorded_at).getTime() : true);
+
+                return !isMatch;
+            });
+
+            if (weightHistory.length === initialLength) {
+                return res.status(404).json({ error: 'Pesagem não encontrada para exclusão' });
+            }
+
+            await puppy.update({ weight_history: weightHistory });
+            res.json(puppy);
+        } catch (error) {
+            console.error('Erro ao remover pesagem:', error);
             res.status(500).json({ error: error.message });
         }
     }

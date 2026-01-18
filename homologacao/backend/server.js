@@ -141,6 +141,7 @@ app.get('/api/puppies/:id', PuppyController.findOne);
 app.put('/api/puppies/:id', PuppyController.update);
 app.delete('/api/puppies/:id', PuppyController.delete);
 app.post('/api/puppies/:id/weight', PuppyController.addWeightEntry); // New: Add weight entry
+app.delete('/api/puppies/:id/weight', PuppyController.removeWeightEntry); // New: Remove weight entry
 app.get('/api/puppies/:id/weight-history', PuppyController.getWeightHistory); // New: Get weight history
 app.post('/api/puppies/:id/qrcode', PuppyController.regenerateQRCode); // New: Regenerate QR code
 

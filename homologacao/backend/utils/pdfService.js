@@ -65,7 +65,7 @@ class PDFService {
                 doc.fontSize(12)
                     .font('Helvetica-Bold')
                     .fillColor('#d946a6')
-                    .text('♀ Mãe: ', { continued: true })
+                    .text('Mãe: ', { continued: true })
                     .fillColor('#000000')
                     .font('Helvetica')
                     .text(litter.Mother?.nome || 'N/A');
@@ -81,7 +81,7 @@ class PDFService {
                 doc.fontSize(12)
                     .font('Helvetica-Bold')
                     .fillColor('#3b82f6')
-                    .text('♂ Pai: ', { continued: true })
+                    .text('Pai: ', { continued: true })
                     .fillColor('#000000')
                     .font('Helvetica')
                     .text(litter.Father?.nome || 'N/A');
@@ -120,15 +120,15 @@ class PDFService {
 
                     const startY = doc.y;
 
-                    // Draw puppy card border
-                    doc.rect(50, startY, 495, 140)
+                    // Draw puppy card border (increased height to fit all fields)
+                    doc.rect(50, startY, 495, 150)
                         .stroke();
 
                     // Puppy info (left side)
                     doc.fontSize(14)
                         .font('Helvetica-Bold')
                         .fillColor(puppy.gender === 'Macho' ? '#3b82f6' : '#d946a6')
-                        .text(`${puppy.gender === 'Macho' ? '♂' : '♀'} ${puppy.name || `Filhote #${i + 1}`}`, 60, startY + 10);
+                        .text(`${puppy.name || `Filhote #${i + 1}`}`, 60, startY + 10);
 
                     doc.fontSize(10)
                         .fillColor('#000000')
@@ -136,26 +136,20 @@ class PDFService {
 
                     let infoY = startY + 35;
 
-                    if (puppy.unique_code) {
-                        doc.text(`Código: ${puppy.unique_code}`, 60, infoY);
-                        infoY += 15;
-                    }
+                    // Always show all fields to maintain consistent layout
+                    doc.text(`Código: ${puppy.unique_code || 'N/A'}`, 60, infoY);
+                    infoY += 15;
 
-                    if (puppy.coat_color) {
-                        doc.text(`Coloração: ${puppy.coat_color}`, 60, infoY);
-                        infoY += 15;
-                    }
+                    doc.text(`Coloração: ${puppy.coat_color || 'Não informada'}`, 60, infoY);
+                    infoY += 15;
 
-                    if (puppy.collar_color) {
-                        doc.text(`Cor da Coleira: ${puppy.collar_color}`, 60, infoY);
-                        infoY += 15;
-                    }
+                    doc.text(`Cor da Coleira: ${puppy.collar_color || 'Não informada'}`, 60, infoY);
+                    infoY += 15;
 
-                    if (puppy.status) {
-                        const statusText = puppy.status === 'available' ? 'Disponível' :
-                            puppy.status === 'reserved' ? 'Reservado' : 'Vendido';
-                        doc.text(`Status: ${statusText}`, 60, infoY);
-                    }
+                    const statusText = puppy.status === 'available' ? 'Disponível' :
+                        puppy.status === 'reserved' ? 'Reservado' :
+                            puppy.status === 'sold' ? 'Vendido' : 'Indisponível';
+                    doc.text(`Status: ${statusText}`, 60, infoY);
 
                     // QR Code (right side)
                     if (puppy.unique_code) {
@@ -180,8 +174,8 @@ class PDFService {
                     }
 
                     doc.moveDown(2);
-                    if (doc.y < startY + 150) {
-                        doc.y = startY + 150;
+                    if (doc.y < startY + 160) {
+                        doc.y = startY + 160;
                     }
                 }
 

@@ -47,6 +47,18 @@ const PuppyProfile = () => {
         await loadPuppyData();
     };
 
+    const handleDeleteWeight = async (weightEntry) => {
+        if (!window.confirm('Tem certeza que deseja excluir esta pesagem?')) return;
+
+        try {
+            await puppyService.removeWeightEntry(puppy.id, weightEntry);
+            await loadPuppyData();
+        } catch (error) {
+            console.error('Erro ao remover pesagem:', error);
+            alert('Erro ao remover pesagem');
+        }
+    };
+
     const handleSave = async () => {
         try {
             await puppyService.update(puppy.id, formData);
@@ -207,27 +219,14 @@ const PuppyProfile = () => {
 
                         {editing ? (
                             <div className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Nome</label>
-                                        <input
-                                            type="text"
-                                            value={formData.name}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Sexo</label>
-                                        <select
-                                            value={formData.gender}
-                                            onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                        >
-                                            <option value="Macho">Macho</option>
-                                            <option value="Fêmea">Fêmea</option>
-                                        </select>
-                                    </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Nome</label>
+                                    <input
+                                        type="text"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    />
                                 </div>
 
                                 <div>
@@ -276,9 +275,9 @@ const PuppyProfile = () => {
                                 <div>
                                     <p className="text-sm text-gray-500 mb-1">Status</p>
                                     <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${puppy.status === 'available' ? 'bg-green-100 text-green-700' :
-                                            puppy.status === 'reserved' ? 'bg-yellow-100 text-yellow-700' :
-                                                puppy.status === 'sold' ? 'bg-blue-100 text-blue-700' :
-                                                    'bg-gray-100 text-gray-700'
+                                        puppy.status === 'reserved' ? 'bg-yellow-100 text-yellow-700' :
+                                            puppy.status === 'sold' ? 'bg-blue-100 text-blue-700' :
+                                                'bg-gray-100 text-gray-700'
                                         }`}>
                                         {puppy.status === 'available' ? 'Disponível' :
                                             puppy.status === 'reserved' ? 'Reservado' :
@@ -286,16 +285,16 @@ const PuppyProfile = () => {
                                     </span>
                                 </div>
 
-                                {puppy.coat_color && (
-                                    <div>
-                                        <p className="text-sm text-gray-500 mb-1">Coloração do Pelo</p>
-                                        <p className="text-lg font-medium text-gray-900">{puppy.coat_color}</p>
-                                    </div>
-                                )}
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-1">Coloração do Pelo</p>
+                                    <p className="text-lg font-medium text-gray-900">
+                                        {puppy.coat_color || <span className="text-gray-400">Não informado</span>}
+                                    </p>
+                                </div>
 
-                                {puppy.collar_color && (
-                                    <div>
-                                        <p className="text-sm text-gray-500 mb-1">Cor da Coleira</p>
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-1">Cor da Coleira</p>
+                                    {puppy.collar_color ? (
                                         <div className="flex items-center gap-2">
                                             <div
                                                 className="w-6 h-6 rounded-full shadow-sm"
@@ -306,8 +305,10 @@ const PuppyProfile = () => {
                                             />
                                             <p className="text-lg font-medium text-gray-900">{puppy.collar_color}</p>
                                         </div>
-                                    </div>
-                                )}
+                                    ) : (
+                                        <p className="text-lg font-medium text-gray-400">Não informado</p>
+                                    )}
+                                </div>
                             </div>
                         )}
                     </div>
@@ -318,6 +319,8 @@ const PuppyProfile = () => {
                             puppyId={puppy.id}
                             weightHistory={puppy.weight_history || []}
                             onAddWeight={handleAddWeight}
+                            isEditing={editing}
+                            onDeleteWeight={handleDeleteWeight}
                         />
                     </div>
                 </div>

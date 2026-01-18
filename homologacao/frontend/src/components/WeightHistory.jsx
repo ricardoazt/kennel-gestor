@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const WeightHistory = ({ puppyId, weightHistory = [], onAddWeight }) => {
+const WeightHistory = ({ puppyId, weightHistory = [], onAddWeight, isEditing, onDeleteWeight }) => {
     const [showModal, setShowModal] = useState(false);
     const [newWeight, setNewWeight] = useState({ weight: '', date: '' });
     const [loading, setLoading] = useState(false);
+
+    // Auto-fill today's date when modal opens
+    useEffect(() => {
+        if (showModal) {
+            const today = new Date().toISOString().split('T')[0];
+            setNewWeight({ weight: '', date: today });
+        }
+    }, [showModal]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -52,13 +60,16 @@ const WeightHistory = ({ puppyId, weightHistory = [], onAddWeight }) => {
                                 <th className="text-left py-3 px-4 font-semibold text-gray-700">Data</th>
                                 <th className="text-left py-3 px-4 font-semibold text-gray-700">Peso</th>
                                 <th className="text-left py-3 px-4 font-semibold text-gray-700">Idade Aprox.</th>
+                                {isEditing && (
+                                    <th className="text-right py-3 px-4 font-semibold text-gray-700">Ações</th>
+                                )}
                             </tr>
                         </thead>
                         <tbody>
                             {sortedHistory.map((entry, index) => (
                                 <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
                                     <td className="py-3 px-4 text-gray-900">
-                                        {new Date(entry.date).toLocaleDateString('pt-BR')}
+                                        {entry.date ? entry.date.split('-').reverse().join('/') : '-'}
                                     </td>
                                     <td className="py-3 px-4">
                                         <span className="font-semibold text-blue-600">
@@ -68,6 +79,17 @@ const WeightHistory = ({ puppyId, weightHistory = [], onAddWeight }) => {
                                     <td className="py-3 px-4 text-gray-600 text-sm">
                                         {entry.recorded_at && new Date(entry.recorded_at).toLocaleDateString('pt-BR')}
                                     </td>
+                                    {isEditing && (
+                                        <td className="py-3 px-4 text-right">
+                                            <button
+                                                onClick={() => onDeleteWeight(entry)}
+                                                className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50"
+                                                title="Excluir pesagem"
+                                            >
+                                                <span className="material-symbols-outlined text-sm">delete</span>
+                                            </button>
+                                        </td>
+                                    )}
                                 </tr>
                             ))}
                         </tbody>

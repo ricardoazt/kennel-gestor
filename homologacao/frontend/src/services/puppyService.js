@@ -78,6 +78,19 @@ const puppyService = {
         }
     },
 
+    // Remove weight entry
+    async removeWeightEntry(id, weightEntry) {
+        try {
+            // Using logic in DELETE method, usually parameters need to be passed as data or query
+            // Axios DELETE supports 'data' property in config
+            const response = await api.delete(`/api/puppies/${id}/weight`, { data: weightEntry });
+            return response.data;
+        } catch (error) {
+            console.error('Error removing weight entry:', error);
+            throw error;
+        }
+    },
+
     // Get weight history
     async getWeightHistory(id) {
         try {
