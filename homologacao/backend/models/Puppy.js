@@ -79,6 +79,14 @@ module.exports = (sequelize, DataTypes) => {
         coat_color: {
             type: DataTypes.STRING,
             allowNull: true
+        },
+        lactation_status: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        food_acceptance: {
+            type: DataTypes.STRING,
+            allowNull: true
         }
     }, {
         sequelize,

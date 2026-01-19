@@ -4,6 +4,60 @@ import puppyService from '../../services/puppyService';
 import ColorPicker, { COLLAR_COLORS } from '../../components/ColorPicker';
 import WeightHistory from '../../components/WeightHistory';
 
+const LACTATION_LEVELS = {
+    'level_1': {
+        label: 'Nível 1 (Forte)',
+        color: 'bg-green-50 border-green-200',
+        textColor: 'text-green-800',
+        icon: 'check_circle',
+        iconColor: 'text-green-500',
+        description: 'Peso subindo e mamada vigorosa.'
+    },
+    'level_2': {
+        label: 'Nível 2 (Regular)',
+        color: 'bg-yellow-50 border-yellow-200',
+        textColor: 'text-yellow-800',
+        icon: 'warning',
+        iconColor: 'text-yellow-500',
+        description: 'Estável, mas requer observação.'
+    },
+    'level_3': {
+        label: 'Nível 3 (Alerta)',
+        color: 'bg-red-50 border-red-200',
+        textColor: 'text-red-800',
+        icon: 'error',
+        iconColor: 'text-red-500',
+        description: 'Filhote que está "ficando para trás" na disputa por alimento.'
+    }
+};
+
+const FOOD_ACCEPTANCE_LEVELS = {
+    'level_1': {
+        label: 'Nível 1 (Independente)',
+        color: 'bg-green-50 border-green-200',
+        textColor: 'text-green-800',
+        icon: 'restaurant',
+        iconColor: 'text-green-500',
+        description: 'Corre para o comedouro. Come toda a porção sem estímulo. Pronto para desmame.'
+    },
+    'level_2': {
+        label: 'Nível 2 (Interessado)',
+        color: 'bg-yellow-50 border-yellow-200',
+        textColor: 'text-yellow-800',
+        icon: 'restaurant_menu',
+        iconColor: 'text-yellow-500',
+        description: 'Come mas às vezes precisa de papinha. Consumo irregular. Requer observação.'
+    },
+    'level_3': {
+        label: 'Nível 3 (Relutante/Seletivo)',
+        color: 'bg-red-50 border-red-200',
+        textColor: 'text-red-800',
+        icon: 'no_meals',
+        iconColor: 'text-red-500',
+        description: 'Ignora ração, busca a mãe. Come pouco/apenas na mão. Risco de queda de imunidade.'
+    }
+};
+
 const PuppyProfile = () => {
     const { id, code } = useParams();
     const navigate = useNavigate();
@@ -31,7 +85,9 @@ const PuppyProfile = () => {
                 gender: data.gender || 'Macho',
                 coat_color: data.coat_color || '',
                 collar_color: data.collar_color || '',
-                status: data.status || 'available'
+                status: data.status || 'available',
+                lactation_status: data.lactation_status || '',
+                food_acceptance: data.food_acceptance || ''
             });
         } catch (error) {
             console.error('Error loading puppy:', error);
@@ -307,6 +363,122 @@ const PuppyProfile = () => {
                                         </div>
                                     ) : (
                                         <p className="text-lg font-medium text-gray-400">Não informado</p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Monitoring Card */}
+                    <div className="bg-white rounded-xl shadow-md p-6">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                            <span className="material-symbols-outlined">monitor_heart</span>
+                            Monitoramento de Alimentação
+                        </h3>
+
+                        {editing ? (
+                            <div className="space-y-6">
+                                {/* Lactation Selection */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-3">Lactação</label>
+                                    <div className="grid grid-cols-1 gap-3">
+                                        {Object.entries(LACTATION_LEVELS).map(([key, level]) => (
+                                            <div
+                                                key={key}
+                                                onClick={() => setFormData({ ...formData, lactation_status: key })}
+                                                className={`cursor-pointer p-4 rounded-lg border-2 transition-all ${formData.lactation_status === key
+                                                    ? `${level.color} border-current`
+                                                    : 'border-gray-200 hover:border-gray-300'
+                                                    }`}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <span className={`material-symbols-outlined ${level.iconColor}`}>
+                                                        {formData.lactation_status === key ? 'radio_button_checked' : 'radio_button_unchecked'}
+                                                    </span>
+                                                    <div>
+                                                        <p className={`font-semibold ${level.textColor}`}>{level.label}</p>
+                                                        <p className="text-xs text-gray-600 mt-1">{level.description}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Food Acceptance Selection */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-3">Aceitação da Ração</label>
+                                    <div className="grid grid-cols-1 gap-3">
+                                        {Object.entries(FOOD_ACCEPTANCE_LEVELS).map(([key, level]) => (
+                                            <div
+                                                key={key}
+                                                onClick={() => setFormData({ ...formData, food_acceptance: key })}
+                                                className={`cursor-pointer p-4 rounded-lg border-2 transition-all ${formData.food_acceptance === key
+                                                    ? `${level.color} border-current`
+                                                    : 'border-gray-200 hover:border-gray-300'
+                                                    }`}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <span className={`material-symbols-outlined ${level.iconColor}`}>
+                                                        {formData.food_acceptance === key ? 'radio_button_checked' : 'radio_button_unchecked'}
+                                                    </span>
+                                                    <div>
+                                                        <p className={`font-semibold ${level.textColor}`}>{level.label}</p>
+                                                        <p className="text-xs text-gray-600 mt-1">{level.description}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Lactation View */}
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-2">Lactação</p>
+                                    {puppy.lactation_status && LACTATION_LEVELS[puppy.lactation_status] ? (
+                                        <div className={`p-4 rounded-lg border ${LACTATION_LEVELS[puppy.lactation_status].color}`}>
+                                            <div className="flex items-start gap-3">
+                                                <span className={`material-symbols-outlined ${LACTATION_LEVELS[puppy.lactation_status].iconColor} mt-1`}>
+                                                    {LACTATION_LEVELS[puppy.lactation_status].icon}
+                                                </span>
+                                                <div>
+                                                    <p className={`font-semibold ${LACTATION_LEVELS[puppy.lactation_status].textColor}`}>
+                                                        {LACTATION_LEVELS[puppy.lactation_status].label}
+                                                    </p>
+                                                    <p className="text-sm text-gray-700 mt-1">
+                                                        {LACTATION_LEVELS[puppy.lactation_status].description}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <p className="text-gray-400 italic">Não monitorado</p>
+                                    )}
+                                </div>
+
+                                {/* Food Acceptance View */}
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-2">Aceitação da Ração</p>
+                                    {puppy.food_acceptance && FOOD_ACCEPTANCE_LEVELS[puppy.food_acceptance] ? (
+                                        <div className={`p-4 rounded-lg border ${FOOD_ACCEPTANCE_LEVELS[puppy.food_acceptance].color}`}>
+                                            <div className="flex items-start gap-3">
+                                                <span className={`material-symbols-outlined ${FOOD_ACCEPTANCE_LEVELS[puppy.food_acceptance].iconColor} mt-1`}>
+                                                    {FOOD_ACCEPTANCE_LEVELS[puppy.food_acceptance].icon}
+                                                </span>
+                                                <div>
+                                                    <p className={`font-semibold ${FOOD_ACCEPTANCE_LEVELS[puppy.food_acceptance].textColor}`}>
+                                                        {FOOD_ACCEPTANCE_LEVELS[puppy.food_acceptance].label}
+                                                    </p>
+                                                    <p className="text-sm text-gray-700 mt-1">
+                                                        {FOOD_ACCEPTANCE_LEVELS[puppy.food_acceptance].description}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <p className="text-gray-400 italic">Não monitorado</p>
                                     )}
                                 </div>
                             </div>
