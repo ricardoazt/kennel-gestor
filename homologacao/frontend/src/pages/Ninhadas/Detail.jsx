@@ -2,6 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import litterService from '../../services/litterService';
 import puppyService from '../../services/puppyService';
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
+    ResponsiveContainer
+} from 'recharts';
 
 const LitterDetail = () => {
     const { id } = useParams();
@@ -75,6 +85,81 @@ const LitterDetail = () => {
     if (!litter) return null;
 
     const age = calculateAge(litter.birth_date);
+
+    // Helpers for Chart
+    const generateColor = (str) => {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+        return '#' + '00000'.substring(0, 6 - c.length) + c;
+    };
+
+    const getPuppyColor = (puppy) => {
+        if (puppy.collar_color) {
+            // Using brighter/neon versions of colors for dark theme
+            const colorMap = {
+                'Vermelho': '#ef4444', // Red-500
+                'Azul': '#3b82f6',     // Blue-500
+                'Verde': '#22c55e',    // Green-500
+                'Amarelo': '#eab308',  // Yellow-500
+                'Preto': '#9ca3af',    // Gray-400 (Adjusted for visibility on dark bg)
+                'Branco': '#ffffff',   // White
+                'Roxo': '#a855f7',     // Purple-500
+                'Rosa': '#ec4899',     // Pink-500
+                'Laranja': '#f97316',  // Orange-500
+                'Marrom': '#d97706',   // Amber-600 (Lighter brown)
+                'Cinza': '#9ca3af',    // Gray-400
+                'Bege': '#fde68a',     // Amber-200
+                'Dourado': '#facc15',  // Yellow-400
+                'Prata': '#e5e7eb',    // Gray-200
+                'Lilás': '#c084fc',    // Purple-400
+            };
+            const normalizedColor = Object.keys(colorMap).find(key => key.toLowerCase() === puppy.collar_color.toLowerCase());
+            return normalizedColor ? colorMap[normalizedColor] : generateColor(puppy.name || puppy.id.toString());
+        }
+        return generateColor(puppy.name || puppy.id.toString());
+    };
+
+    const processChartData = (puppiesList) => {
+        if (!puppiesList || puppiesList.length === 0 || !litter?.birth_date) return [];
+
+        const birthDate = new Date(litter.birth_date);
+        const dataMap = new Map();
+
+        puppiesList.forEach(puppy => {
+            const puppyKey = puppy.name || `Filhote ${puppy.id}`;
+
+            // 1. Add birth weight (Day 0)
+            if (puppy.birth_weight) {
+                if (!dataMap.has(0)) dataMap.set(0, { day: 0 });
+                dataMap.get(0)[puppyKey] = parseFloat(puppy.birth_weight);
+            }
+
+            // 2. Add history weights
+            if (puppy.weight_history && Array.isArray(puppy.weight_history)) {
+                puppy.weight_history.forEach(entry => {
+                    const entryDate = new Date(entry.date);
+                    const diffTime = Math.abs(entryDate - birthDate);
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+                    if (diffDays >= 0) {
+                        if (!dataMap.has(diffDays)) dataMap.set(diffDays, { day: diffDays });
+                        dataMap.get(diffDays)[puppyKey] = parseFloat(entry.weight);
+                    }
+                });
+            }
+        });
+
+        return Array.from(dataMap.values()).sort((a, b) => a.day - b.day);
+    };
+
+    const males = puppies.filter(p => p.gender === 'Macho' || p.gender === 'male');
+    const females = puppies.filter(p => p.gender === 'Fêmea' || p.gender === 'Femea' || p.gender === 'female');
+
+    const malesData = processChartData(males);
+    const femalesData = processChartData(females);
 
     return (
         <div>
@@ -161,7 +246,7 @@ const LitterDetail = () => {
             </div>
 
             {/* Puppies section */}
-            <div>
+            <div className="mb-8">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Filhotes</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {puppies.map(puppy => (
@@ -202,6 +287,95 @@ const LitterDetail = () => {
                     ))}
                 </div>
             </div>
+
+            {/* Weight Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                {/* Males Chart */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-blue-500">show_chart</span>
+                        Evolução de Peso - Machos
+                    </h3>
+                    <div className="h-[300px] w-full">
+                        {males.length > 0 ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={malesData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis
+                                        dataKey="day"
+                                        label={{ value: 'Dias', position: 'insideBottomRight', offset: -5 }}
+                                    />
+                                    <YAxis
+                                        label={{ value: 'g', angle: -90, position: 'insideLeft' }}
+                                    />
+                                    <Tooltip />
+                                    <Legend />
+                                    {males.map(puppy => (
+                                        <Line
+                                            key={puppy.id}
+                                            type="monotone"
+                                            dataKey={puppy.name || `Filhote ${puppy.id}`}
+                                            stroke={getPuppyColor(puppy)}
+                                            activeDot={{ r: 8 }}
+                                            connectNulls
+                                            strokeWidth={2}
+                                            name={puppy.name || `Filhote ${puppy.id}`}
+                                        />
+                                    ))}
+                                </LineChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div className="h-full flex items-center justify-center text-gray-400">
+                                Sem dados para machos
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Females Chart */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-pink-500">show_chart</span>
+                        Evolução de Peso - Fêmeas
+                    </h3>
+                    <div className="h-[300px] w-full">
+                        {females.length > 0 ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={femalesData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis
+                                        dataKey="day"
+                                        label={{ value: 'Dias', position: 'insideBottomRight', offset: -5 }}
+                                    />
+                                    <YAxis
+                                        label={{ value: 'g', angle: -90, position: 'insideLeft' }}
+                                    />
+                                    <Tooltip />
+                                    <Legend />
+                                    {females.map(puppy => (
+                                        <Line
+                                            key={puppy.id}
+                                            type="monotone"
+                                            dataKey={puppy.name || `Filhote ${puppy.id}`}
+                                            stroke={getPuppyColor(puppy)}
+                                            activeDot={{ r: 8 }}
+                                            connectNulls
+                                            strokeWidth={2}
+                                            name={puppy.name || `Filhote ${puppy.id}`}
+                                        />
+                                    ))}
+                                </LineChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div className="h-full flex items-center justify-center text-gray-400">
+                                Sem dados para fêmeas
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+
 
             {/* Puppy Modal */}
             {showPuppyModal && selectedPuppy && (

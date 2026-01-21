@@ -171,6 +171,13 @@ app.put('/api/waiting-list/:id', WaitingListController.update);
 app.put('/api/waiting-list/:id/status', WaitingListController.updateStatus);
 app.delete('/api/waiting-list/:id', WaitingListController.delete);
 
+// === Behavioral Tests ===
+const TestController = require('./controllers/TestController');
+app.get('/api/tests/templates', TestController.indexTemplates);
+app.get('/api/tests/templates/:id', TestController.showTemplate);
+app.post('/api/tests/results', TestController.storeResult);
+app.get('/api/tests/results/puppy/:puppy_id', TestController.getResultsByPuppy);
+
 // Retry logic for Database Synchronization
 const startServer = async () => {
 	const dns = require('dns');
