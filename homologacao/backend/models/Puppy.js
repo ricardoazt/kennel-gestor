@@ -87,6 +87,12 @@ module.exports = (sequelize, DataTypes) => {
         food_acceptance: {
             type: DataTypes.STRING,
             allowNull: true
+        },
+        ens_protocol: {
+            type: DataTypes.JSONB,
+            defaultValue: {},
+            allowNull: true,
+            comment: 'Early Neurological Stimulation protocol tracking (days 3-16)'
         }
     }, {
         sequelize,

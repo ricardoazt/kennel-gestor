@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import puppyService from '../../services/puppyService';
 import ColorPicker, { COLLAR_COLORS } from '../../components/ColorPicker';
+import ENSProtocol from '../../components/ENSProtocol';
 import WeightHistory from '../../components/WeightHistory';
 
 const LACTATION_LEVELS = {
@@ -67,7 +68,7 @@ const PuppyProfile = () => {
     const [loading, setLoading] = useState(true);
     const [editing, setEditing] = useState(false);
     const [formData, setFormData] = useState({});
-    const [activeTab, setActiveTab] = useState('general'); // 'general' or 'tests'
+    const [activeTab, setActiveTab] = useState('general'); // 'general', 'tests', or 'ens'
 
     useEffect(() => {
         loadPuppyData();
@@ -208,17 +209,27 @@ const PuppyProfile = () => {
                 <button
                     onClick={() => setActiveTab('general')}
                     className={`px-6 py-3 font-medium text-sm transition-all whitespace-nowrap ${activeTab === 'general'
-                            ? 'text-purple-600 border-b-2 border-purple-600'
-                            : 'text-gray-500 hover:text-gray-700'
+                        ? 'text-purple-600 border-b-2 border-purple-600'
+                        : 'text-gray-500 hover:text-gray-700'
                         }`}
                 >
                     Informações Gerais
                 </button>
                 <button
+                    onClick={() => setActiveTab('ens')}
+                    className={`px-6 py-3 font-medium text-sm transition-all whitespace-nowrap flex items-center gap-2 ${activeTab === 'ens'
+                        ? 'text-purple-600 border-b-2 border-purple-600'
+                        : 'text-gray-500 hover:text-gray-700'
+                        }`}
+                >
+                    <span className="material-symbols-outlined text-lg">neurology</span>
+                    Protocolo ENS
+                </button>
+                <button
                     onClick={() => setActiveTab('tests')}
                     className={`px-6 py-3 font-medium text-sm transition-all whitespace-nowrap flex items-center gap-2 ${activeTab === 'tests'
-                            ? 'text-purple-600 border-b-2 border-purple-600'
-                            : 'text-gray-500 hover:text-gray-700'
+                        ? 'text-purple-600 border-b-2 border-purple-600'
+                        : 'text-gray-500 hover:text-gray-700'
                         }`}
                 >
                     <span className="material-symbols-outlined text-lg">psychology</span>
@@ -226,7 +237,9 @@ const PuppyProfile = () => {
                 </button>
             </div>
 
-            {activeTab === 'tests' ? (
+            {activeTab === 'ens' ? (
+                <ENSProtocol puppy={puppy} onUpdate={loadPuppyData} />
+            ) : activeTab === 'tests' ? (
                 <BehavioralTests puppyId={puppy.id} />
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -524,6 +537,8 @@ const PuppyProfile = () => {
                                 onAddWeight={handleAddWeight}
                                 isEditing={editing}
                                 onDeleteWeight={handleDeleteWeight}
+                                birthWeight={puppy.birth_weight}
+                                birthDate={puppy.litter?.birth_date}
                             />
                         </div>
                     </div>

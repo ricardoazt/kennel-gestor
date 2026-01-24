@@ -12,6 +12,7 @@ import {
     Legend,
     ResponsiveContainer
 } from 'recharts';
+import { COLLAR_COLORS } from '../../components/ColorPicker';
 
 const LitterDetail = () => {
     const { id } = useParams();
@@ -87,39 +88,31 @@ const LitterDetail = () => {
     const age = calculateAge(litter.birth_date);
 
     // Helpers for Chart
-    const generateColor = (str) => {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            hash = str.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
-        return '#' + '00000'.substring(0, 6 - c.length) + c;
-    };
+    // Palette of distinct colors for puppies without collar colors
+    const defaultColorPalette = [
+        '#ef4444', // Red
+        '#3b82f6', // Blue
+        '#22c55e', // Green
+        '#f59e0b', // Amber
+        '#8b5cf6', // Violet
+        '#ec4899', // Pink
+        '#14b8a6', // Teal
+        '#f97316', // Orange
+        '#a855f7', // Purple
+        '#10b981', // Emerald
+        '#06b6d4', // Cyan
+        '#eab308', // Yellow
+        '#84cc16', // Lime
+        '#6366f1', // Indigo
+        '#f43f5e', // Rose
+    ];
 
-    const getPuppyColor = (puppy) => {
+    const getPuppyColor = (puppy, index) => {
         if (puppy.collar_color) {
-            // Using brighter/neon versions of colors for dark theme
-            const colorMap = {
-                'Vermelho': '#ef4444', // Red-500
-                'Azul': '#3b82f6',     // Blue-500
-                'Verde': '#22c55e',    // Green-500
-                'Amarelo': '#eab308',  // Yellow-500
-                'Preto': '#9ca3af',    // Gray-400 (Adjusted for visibility on dark bg)
-                'Branco': '#ffffff',   // White
-                'Roxo': '#a855f7',     // Purple-500
-                'Rosa': '#ec4899',     // Pink-500
-                'Laranja': '#f97316',  // Orange-500
-                'Marrom': '#d97706',   // Amber-600 (Lighter brown)
-                'Cinza': '#9ca3af',    // Gray-400
-                'Bege': '#fde68a',     // Amber-200
-                'Dourado': '#facc15',  // Yellow-400
-                'Prata': '#e5e7eb',    // Gray-200
-                'Lilás': '#c084fc',    // Purple-400
-            };
-            const normalizedColor = Object.keys(colorMap).find(key => key.toLowerCase() === puppy.collar_color.toLowerCase());
-            return normalizedColor ? colorMap[normalizedColor] : generateColor(puppy.name || puppy.id.toString());
+            const colorObj = COLLAR_COLORS.find(c => c.name.toLowerCase() === puppy.collar_color.toLowerCase());
+            if (colorObj) return colorObj.color;
         }
-        return generateColor(puppy.name || puppy.id.toString());
+        return defaultColorPalette[index % defaultColorPalette.length];
     };
 
     const processChartData = (puppiesList) => {
@@ -153,6 +146,45 @@ const LitterDetail = () => {
         });
 
         return Array.from(dataMap.values()).sort((a, b) => a.day - b.day);
+    };
+
+    // Get latest weight alert for puppy card
+    const getLatestWeightAlert = (puppy) => {
+        if (!puppy.weight_history || puppy.weight_history.length === 0) return null;
+
+        // Sort by date and get last two entries
+        const sorted = [...puppy.weight_history].sort((a, b) => new Date(a.date) - new Date(b.date));
+        const latest = sorted[sorted.length - 1];
+        const previous = sorted.length > 1 ? sorted[sorted.length - 2] : null;
+
+        const currentWeight = parseFloat(latest.weight);
+        const previousWeight = previous ? parseFloat(previous.weight) : (puppy.birth_weight || null);
+
+        if (!previousWeight) return null;
+
+        const gainPercent = ((currentWeight - previousWeight) / previousWeight) * 100;
+
+        // Return alert based on gain
+        if (gainPercent < 0) {
+            return {
+                type: 'critical',
+                icon: 'warning',
+                color: 'bg-red-100 text-red-700 border-red-300',
+                message: `${gainPercent.toFixed(1)}% (Perda de peso)`,
+                pulse: true
+            };
+        }
+
+        if (gainPercent < 2) {
+            return {
+                type: 'warning',
+                icon: 'error_outline',
+                color: 'bg-orange-100 text-orange-700 border-orange-300',
+                message: `${gainPercent.toFixed(1)}% (Baixo ganho)`
+            };
+        }
+
+        return null; // No alert needed for normal/good gains
     };
 
     const males = puppies.filter(p => p.gender === 'Macho' || p.gender === 'male');
@@ -249,42 +281,77 @@ const LitterDetail = () => {
             <div className="mb-8">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Filhotes</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {puppies.map(puppy => (
-                        <div
-                            key={puppy.id}
-                            onClick={() => handlePuppyClick(puppy)}
-                            className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-all cursor-pointer border border-gray-100 hover:border-blue-300"
-                        >
-                            <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center gap-2">
-                                    <span className={`material-symbols-outlined ${puppy.gender === 'Macho' ? 'text-blue-500' : 'text-pink-500'}`}>
-                                        {puppy.gender === 'Macho' ? 'male' : 'female'}
-                                    </span>
-                                    <span className="font-semibold text-gray-900">{puppy.name}</span>
+                    {puppies.map((puppy, index) => {
+                        // Get collar color for display
+                        const collarColorObj = COLLAR_COLORS.find(
+                            c => c.name.toLowerCase() === puppy.collar_color?.toLowerCase()
+                        );
+                        const collarColorHex = collarColorObj?.color || '#D1D5DB'; // Gray if not found
+
+                        return (
+                            <div
+                                key={puppy.id}
+                                onClick={() => handlePuppyClick(puppy)}
+                                className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-all cursor-pointer border border-gray-100 hover:border-blue-300"
+                            >
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-2">
+                                        <span className={`material-symbols-outlined ${puppy.gender === 'Macho' ? 'text-blue-500' : 'text-pink-500'}`}>
+                                            {puppy.gender === 'Macho' ? 'male' : 'female'}
+                                        </span>
+                                        <span className="font-semibold text-gray-900">{puppy.name}</span>
+                                        {puppy.collar_color && (
+                                            <div
+                                                className="w-5 h-5 rounded-full shadow-sm border-2 border-white"
+                                                style={{
+                                                    backgroundColor: collarColorHex,
+                                                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                                                }}
+                                                title={`Coleira: ${puppy.collar_color}`}
+                                            />
+                                        )}
+                                    </div>
+                                    {puppy.status && (
+                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${puppy.status === 'available' ? 'bg-green-100 text-green-700' :
+                                            puppy.status === 'reserved' ? 'bg-yellow-100 text-yellow-700' :
+                                                'bg-gray-100 text-gray-700'
+                                            }`}>
+                                            {puppy.status === 'available' ? 'Disponível' :
+                                                puppy.status === 'reserved' ? 'Reservado' : 'Vendido'}
+                                        </span>
+                                    )}
                                 </div>
-                                {puppy.status && (
-                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${puppy.status === 'available' ? 'bg-green-100 text-green-700' :
-                                        puppy.status === 'reserved' ? 'bg-yellow-100 text-yellow-700' :
-                                            'bg-gray-100 text-gray-700'
-                                        }`}>
-                                        {puppy.status === 'available' ? 'Disponível' :
-                                            puppy.status === 'reserved' ? 'Reservado' : 'Vendido'}
-                                    </span>
-                                )}
+                                <div className="space-y-1">
+                                    {puppy.coat_color && (
+                                        <p className="text-sm text-gray-600">Coloração: {puppy.coat_color}</p>
+                                    )}
+                                    {puppy.collar_color && (
+                                        <p className="text-sm text-gray-600">Coleira: {puppy.collar_color}</p>
+                                    )}
+                                    {puppy.unique_code && (
+                                        <p className="text-xs text-gray-500 font-mono">{puppy.unique_code}</p>
+                                    )}
+                                </div>
+
+                                {/* Weight Alert */}
+                                {(() => {
+                                    const alert = getLatestWeightAlert(puppy);
+                                    if (!alert) return null;
+
+                                    return (
+                                        <div className={`mt-3 px-3 py-2 rounded-lg border flex items-center gap-2 ${alert.color}`}>
+                                            <span className={`material-symbols-outlined text-sm ${alert.pulse ? 'animate-pulse' : ''}`}>
+                                                {alert.icon}
+                                            </span>
+                                            <span className="text-xs font-medium">
+                                                {alert.message}
+                                            </span>
+                                        </div>
+                                    );
+                                })()}
                             </div>
-                            <div className="space-y-1">
-                                {puppy.coat_color && (
-                                    <p className="text-sm text-gray-600">Coloração: {puppy.coat_color}</p>
-                                )}
-                                {puppy.collar_color && (
-                                    <p className="text-sm text-gray-600">Coleira: {puppy.collar_color}</p>
-                                )}
-                                {puppy.unique_code && (
-                                    <p className="text-xs text-gray-500 font-mono">{puppy.unique_code}</p>
-                                )}
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
 
@@ -310,12 +377,12 @@ const LitterDetail = () => {
                                     />
                                     <Tooltip />
                                     <Legend />
-                                    {males.map(puppy => (
+                                    {males.map((puppy, index) => (
                                         <Line
                                             key={puppy.id}
                                             type="monotone"
                                             dataKey={puppy.name || `Filhote ${puppy.id}`}
-                                            stroke={getPuppyColor(puppy)}
+                                            stroke={getPuppyColor(puppy, index)}
                                             activeDot={{ r: 8 }}
                                             connectNulls
                                             strokeWidth={2}
@@ -352,12 +419,12 @@ const LitterDetail = () => {
                                     />
                                     <Tooltip />
                                     <Legend />
-                                    {females.map(puppy => (
+                                    {females.map((puppy, index) => (
                                         <Line
                                             key={puppy.id}
                                             type="monotone"
                                             dataKey={puppy.name || `Filhote ${puppy.id}`}
-                                            stroke={getPuppyColor(puppy)}
+                                            stroke={getPuppyColor(puppy, index)}
                                             activeDot={{ r: 8 }}
                                             connectNulls
                                             strokeWidth={2}

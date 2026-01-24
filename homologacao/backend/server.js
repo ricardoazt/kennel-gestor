@@ -21,8 +21,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+// Dynamic CORS configuration based on environment
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+	? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
+	: ['http://localhost:5173', 'http://localhost:3173', 'http://localhost:3000'];
+
 app.use(cors({
-	origin: ['http://localhost:5173', 'http://localhost:3173', 'http://localhost:3000'],
+	origin: allowedOrigins,
 	credentials: true,
 	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 	allowedHeaders: ['Content-Type', 'Authorization']

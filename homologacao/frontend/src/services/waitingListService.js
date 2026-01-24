@@ -1,10 +1,10 @@
-import axios from 'axios';
+import api from './api';
 
-const API_URL = 'http://localhost:3000/api/waiting-list';
+const API_URL = '/api/waiting-list';
 
 const waitingListService = {
     create: async (data) => {
-        const response = await axios.post(API_URL, data);
+        const response = await api.post(API_URL, data);
         return response.data;
     },
 
@@ -13,27 +13,27 @@ const waitingListService = {
         if (filters.status) params.append('status', filters.status);
         if (filters.search) params.append('search', filters.search);
 
-        const response = await axios.get(`${API_URL}?${params.toString()}`);
+        const response = await api.get(`${API_URL}?${params.toString()}`);
         return response.data;
     },
 
     getById: async (id) => {
-        const response = await axios.get(`${API_URL}/${id}`);
+        const response = await api.get(`${API_URL}/${id}`);
         return response.data;
     },
 
     update: async (id, data) => {
-        const response = await axios.put(`${API_URL}/${id}`, data);
+        const response = await api.put(`${API_URL}/${id}`, data);
         return response.data;
     },
 
     updateStatus: async (id, status) => {
-        const response = await axios.put(`${API_URL}/${id}/status`, { status });
+        const response = await api.put(`${API_URL}/${id}/status`, { status });
         return response.data;
     },
 
     remove: async (id) => {
-        const response = await axios.delete(`${API_URL}/${id}`);
+        const response = await api.delete(`${API_URL}/${id}`);
         return response.data;
     }
 };
