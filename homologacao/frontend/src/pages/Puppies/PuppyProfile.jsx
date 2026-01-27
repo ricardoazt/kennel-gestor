@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import puppyService from '../../services/puppyService';
 import ColorPicker, { COLLAR_COLORS } from '../../components/ColorPicker';
-import ENSProtocol from '../../components/ENSProtocol';
+import BiostimulationProtocols from '../../components/BiostimulationProtocols';
 import WeightHistory from '../../components/WeightHistory';
 
 const LACTATION_LEVELS = {
@@ -68,7 +68,7 @@ const PuppyProfile = () => {
     const [loading, setLoading] = useState(true);
     const [editing, setEditing] = useState(false);
     const [formData, setFormData] = useState({});
-    const [activeTab, setActiveTab] = useState('general'); // 'general', 'tests', or 'ens'
+    const [activeTab, setActiveTab] = useState('general'); // 'general', 'tests', or 'biostimulation'
 
     useEffect(() => {
         loadPuppyData();
@@ -216,14 +216,14 @@ const PuppyProfile = () => {
                     Informações Gerais
                 </button>
                 <button
-                    onClick={() => setActiveTab('ens')}
-                    className={`px-6 py-3 font-medium text-sm transition-all whitespace-nowrap flex items-center gap-2 ${activeTab === 'ens'
+                    onClick={() => setActiveTab('biostimulation')}
+                    className={`px-6 py-3 font-medium text-sm transition-all whitespace-nowrap flex items-center gap-2 ${activeTab === 'biostimulation'
                         ? 'text-purple-600 border-b-2 border-purple-600'
                         : 'text-gray-500 hover:text-gray-700'
                         }`}
                 >
                     <span className="material-symbols-outlined text-lg">neurology</span>
-                    Protocolo ENS
+                    Bioestímulo
                 </button>
                 <button
                     onClick={() => setActiveTab('tests')}
@@ -237,8 +237,8 @@ const PuppyProfile = () => {
                 </button>
             </div>
 
-            {activeTab === 'ens' ? (
-                <ENSProtocol puppy={puppy} onUpdate={loadPuppyData} />
+            {activeTab === 'biostimulation' ? (
+                <BiostimulationProtocols puppy={puppy} onUpdate={loadPuppyData} />
             ) : activeTab === 'tests' ? (
                 <BehavioralTests puppyId={puppy.id} />
             ) : (

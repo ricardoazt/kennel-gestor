@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import PlantelList from './pages/Plantel/List';
 import PlantelForm from './pages/Plantel/Form';
 import PlantelProfile from './pages/Plantel/Profile';
+import Breeds from './pages/Plantel/Breeds';
 
 import MediaCenter from './pages/MediaCenter';
 import Gallery from './pages/MediaCenter/Gallery';
@@ -57,6 +58,8 @@ function App() {
           <Route path="plantel/novo" element={<PlantelForm />} />
           <Route path="plantel/editar/:id" element={<PlantelForm />} />
           <Route path="plantel/:id" element={<PlantelProfile />} />
+          <Route path="plantel/racas" element={<Breeds />} />
+
 
 
           {/* Reprodução Module */}

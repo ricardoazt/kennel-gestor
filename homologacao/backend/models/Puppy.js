@@ -93,6 +93,24 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: {},
             allowNull: true,
             comment: 'Early Neurological Stimulation protocol tracking (days 3-16)'
+        },
+        esi_protocol: {
+            type: DataTypes.JSONB,
+            defaultValue: {},
+            allowNull: true,
+            comment: 'Early Scent Introduction protocol tracking (days 3-16)'
+        },
+        sound_desensitization: {
+            type: DataTypes.JSONB,
+            defaultValue: {},
+            allowNull: true,
+            comment: 'Sound exposure checklist (days 21-60)'
+        },
+        environmental_enrichment: {
+            type: DataTypes.JSONB,
+            defaultValue: {},
+            allowNull: true,
+            comment: 'Texture and surface exposure (days 25-60)'
         }
     }, {
         sequelize,

@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../services/api';
+import breedService from '../../services/breedService';
 
 function PlantelForm() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [animals, setAnimals] = useState([]); // For parent selection
+    const [breeds, setBreeds] = useState([]); // For breed selection
 
     const [formData, setFormData] = useState({
         nome: '',
@@ -15,12 +17,14 @@ function PlantelForm() {
         data_nascimento: '',
         cor: '',
         microchip: '',
+        breed_id: '',
         pai_id: '',
         mae_id: ''
     });
 
     useEffect(() => {
         loadAnimals();
+        loadBreeds();
         if (id) {
             loadAnimal();
         }
@@ -36,6 +40,15 @@ function PlantelForm() {
         }
     }
 
+    async function loadBreeds() {
+        try {
+            const data = await breedService.getAll(true); // Only active breeds
+            setBreeds(data);
+        } catch (error) {
+            console.error('Erro ao carregar raças:', error);
+        }
+    }
+
     async function loadAnimal() {
         try {
             setLoading(true);
@@ -48,6 +61,7 @@ function PlantelForm() {
                 data_nascimento: data.data_nascimento || '',
                 cor: data.cor || '',
                 microchip: data.microchip || '',
+                breed_id: data.breed_id || '',
                 pai_id: data.pai_id || '',
                 mae_id: data.mae_id || ''
             });
@@ -70,6 +84,7 @@ function PlantelForm() {
 
         const payload = {
             ...formData,
+            breed_id: formData.breed_id ? parseInt(formData.breed_id) : null,
             pai_id: formData.pai_id ? parseInt(formData.pai_id) : null,
             mae_id: formData.mae_id ? parseInt(formData.mae_id) : null
         };
@@ -156,15 +171,31 @@ function PlantelForm() {
                     </div>
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Microchip</label>
-                    <input
-                        type="text"
-                        name="microchip"
-                        value={formData.microchip}
-                        onChange={handleChange}
-                        className="mt-1 block w-full rounded border-gray-300 shadow-sm p-2 border"
-                    />
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Microchip</label>
+                        <input
+                            type="text"
+                            name="microchip"
+                            value={formData.microchip}
+                            onChange={handleChange}
+                            className="mt-1 block w-full rounded border-gray-300 shadow-sm p-2 border"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Raça</label>
+                        <select
+                            name="breed_id"
+                            value={formData.breed_id}
+                            onChange={handleChange}
+                            className="mt-1 block w-full rounded border-gray-300 shadow-sm p-2 border"
+                        >
+                            <option value="">-- Selecione a raça --</option>
+                            {breeds.map(breed => (
+                                <option key={breed.id} value={breed.id}>{breed.name}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 border-t pt-4">

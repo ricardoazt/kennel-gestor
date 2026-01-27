@@ -10,6 +10,9 @@ module.exports = (sequelize, DataTypes) => {
             Animal.hasMany(models.Animal, { as: 'FilhosPai', foreignKey: 'pai_id' });
             Animal.hasMany(models.Animal, { as: 'FilhosMae', foreignKey: 'mae_id' });
 
+            // Association with Breed
+            Animal.belongsTo(models.Breed, { as: 'Breed', foreignKey: 'breed_id' });
+
             // Associations with Medical Records and Agenda Events
             Animal.hasMany(models.MedicalRecord, { foreignKey: 'animal_id', as: 'medicalRecords' });
             Animal.hasMany(models.AgendaEvent, { foreignKey: 'animal_id', as: 'agendaEvents' });
@@ -33,12 +36,32 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATEONLY,
             allowNull: true
         },
+        raca: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
         cor: {
             type: DataTypes.STRING,
             allowNull: true
         },
         microchip: {
             type: DataTypes.STRING,
+            allowNull: true
+        },
+        breed_id: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'Breeds',
+                key: 'id'
+            }
+        },
+        pai_id: {
+            type: DataTypes.INTEGER,
+            allowNull: true
+        },
+        mae_id: {
+            type: DataTypes.INTEGER,
             allowNull: true
         },
         photos: {

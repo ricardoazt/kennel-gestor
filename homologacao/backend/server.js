@@ -75,6 +75,11 @@ app.post('/animals/:id/medical-records', upload.single('file'), AnimalController
 app.post('/animals/:id/photos', upload.any(), AnimalController.addPhoto);
 app.delete('/animals/:id/photos/:photoIndex', AnimalController.deletePhoto);
 
+// === Breed Routes ===
+const breedRoutes = require('./routes/breeds');
+app.use('/api/breeds', breedRoutes);
+
+
 // === Agenda Routes ===
 app.post('/agenda', AgendaController.create);
 app.get('/animals/:animal_id/agenda', AgendaController.findByAnimal);

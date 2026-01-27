@@ -33,7 +33,11 @@ const Sidebar = ({ isCollapsed = false, onToggle }) => {
 		{
 			name: 'Plantel',
 			icon: 'pets',
-			path: '/plantel'
+			path: '/plantel',
+			children: [
+				{ name: 'Animais', path: '/plantel' },
+				{ name: 'Raças', path: '/plantel/racas' }
+			]
 		},
 		{
 			name: 'Reprodução',

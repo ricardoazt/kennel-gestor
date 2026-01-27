@@ -224,56 +224,18 @@ const LitterDetail = () => {
             <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-6 mb-8 border border-amber-200">
                 <h3 className="font-semibold text-gray-900 mb-4">Informações dos Pais</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="flex items-center gap-4">
-                        <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-200">
-                            {litter.Mother?.photos?.[0] ? (
-                                <img
-                                    src={`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${litter.Mother.photos[0]}`}
-                                    alt={litter.Mother.nome}
-                                    className="w-full h-full object-cover"
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-gray-400 text-4xl">pets</span>
-                                </div>
-                            )}
-                        </div>
-                        <div>
-                            <div className="flex items-center gap-2 mb-1">
-                                <span className="material-symbols-outlined text-pink-500">female</span>
-                                <span className="font-semibold text-gray-900">Mãe</span>
-                            </div>
-                            <p className="text-gray-700">{litter.Mother?.nome}</p>
-                            {litter.Mother?.registro && (
-                                <p className="text-sm text-gray-500">{litter.Mother.registro}</p>
-                            )}
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-200">
-                            {litter.Father?.photos?.[0] ? (
-                                <img
-                                    src={`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${litter.Father.photos[0]}`}
-                                    alt={litter.Father.nome}
-                                    className="w-full h-full object-cover"
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-gray-400 text-4xl">pets</span>
-                                </div>
-                            )}
-                        </div>
-                        <div>
-                            <div className="flex items-center gap-2 mb-1">
-                                <span className="material-symbols-outlined text-blue-500">male</span>
-                                <span className="font-semibold text-gray-900">Pai</span>
-                            </div>
-                            <p className="text-gray-700">{litter.Father?.nome}</p>
-                            {litter.Father?.registro && (
-                                <p className="text-sm text-gray-500">{litter.Father.registro}</p>
-                            )}
-                        </div>
-                    </div>
+                    <ParentCard
+                        parent={litter.Mother}
+                        gender="female"
+                        label="Mãe"
+                        color="pink"
+                    />
+                    <ParentCard
+                        parent={litter.Father}
+                        gender="male"
+                        label="Pai"
+                        color="blue"
+                    />
                 </div>
             </div>
 
@@ -452,6 +414,59 @@ const LitterDetail = () => {
                     onUpdate={(data) => handlePuppyUpdate(selectedPuppy.id, data)}
                 />
             )}
+        </div>
+    );
+};
+
+// ParentCard Component with error handling for broken images
+const ParentCard = ({ parent, gender, label, color }) => {
+    const [imageError, setImageError] = useState(false);
+
+    const hasValidPhoto = parent?.photos &&
+        Array.isArray(parent.photos) &&
+        parent.photos.length > 0 &&
+        parent.photos[0] &&
+        !imageError;
+
+    const colorClasses = {
+        pink: {
+            bg: 'from-pink-100 to-pink-200',
+            icon: 'text-pink-300',
+            accent: 'text-pink-500'
+        },
+        blue: {
+            bg: 'from-blue-100 to-blue-200',
+            icon: 'text-blue-300',
+            accent: 'text-blue-500'
+        }
+    };
+
+    const colors = colorClasses[color] || colorClasses.blue;
+
+    return (
+        <div className="flex items-center gap-4">
+            <div className={`w-20 h-20 rounded-xl overflow-hidden bg-gradient-to-br ${colors.bg} flex items-center justify-center`}>
+                {hasValidPhoto ? (
+                    <img
+                        src={`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${parent.photos[0]}`}
+                        alt={parent.nome}
+                        className="w-full h-full object-cover"
+                        onError={() => setImageError(true)}
+                    />
+                ) : (
+                    <span className={`material-symbols-outlined ${colors.icon}`} style={{ fontSize: '48px' }}>pets</span>
+                )}
+            </div>
+            <div>
+                <div className="flex items-center gap-2 mb-1">
+                    <span className={`material-symbols-outlined ${colors.accent}`}>{gender}</span>
+                    <span className="font-semibold text-gray-900">{label}</span>
+                </div>
+                <p className="text-gray-700">{parent?.nome}</p>
+                {parent?.registro && (
+                    <p className="text-sm text-gray-500">{parent.registro}</p>
+                )}
+            </div>
         </div>
     );
 };
